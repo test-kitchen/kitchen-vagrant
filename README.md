@@ -1,5 +1,8 @@
 # Jamie::Vagrant
 
+[![Build Status](https://secure.travis-ci.org/jamie-ci/jamie-vagrant.png)](https://travis-ci.org/jamie-ci/jamie-vagrant)
+[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/jamie-ci/jamie-vagrant)
+
 TODO: Write a gem description
 
 ## Installation
