@@ -8,7 +8,7 @@ Gem::Specification.new do |gem|
   gem.version       = Jamie::Driver::VAGRANT_VERSION
   gem.authors       = ["Fletcher Nichol"]
   gem.email         = ["fnichol@nichol.ca"]
-  gem.description   = "Jamie::Driver::Vagrant - A Jamie Driver for Vagrant"
+  gem.description   = "Jamie::Driver::Vagrant - A Vagrant Driver for Jamie."
   gem.summary       = gem.description
   gem.homepage      = "https://github.com/jamie-ci/jamie-vagrant/"
 
@@ -18,6 +18,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_dependency 'jamie'
+  gem.add_dependency 'vagrant', '~> 1.0.5'
 
   gem.add_development_dependency 'cane'
   gem.add_development_dependency 'tailor'
