@@ -37,6 +37,8 @@ module Jamie
       end
 
       def perform_destroy(instance, state)
+        return if state['vagrant_vm'].nil?
+
         run_command "vagrant destroy #{state['vagrant_vm']} -f"
         state.delete('vagrant_vm')
       end
