@@ -28,19 +28,19 @@ module Jamie
       default_config 'memory', '256'
 
       def create(instance, state)
-        state['vagrant_vm'] = instance.name
-        run_command "vagrant up #{state['vagrant_vm']} --no-provision"
+        state['hostname'] = instance.name
+        run_command "vagrant up #{state['hostname']} --no-provision"
       end
 
       def converge(instance, state)
-        run_command "vagrant provision #{state['vagrant_vm']}"
+        run_command "vagrant provision #{state['hostname']}"
       end
 
       def destroy(instance, state)
-        return if state['vagrant_vm'].nil?
+        return if state['hostname'].nil?
 
-        run_command "vagrant destroy #{state['vagrant_vm']} -f"
-        state.delete('vagrant_vm')
+        run_command "vagrant destroy #{state['hostname']} -f"
+        state.delete('hostname')
       end
 
       protected
@@ -49,10 +49,6 @@ module Jamie
         vagrantfile = File.join(config['jamie_root'], "Vagrantfile")
         create_vagrantfile(vagrantfile) unless File.exists?(vagrantfile)
         super
-      end
-
-      def generate_ssh_args(state)
-        Array(state['vagrant_vm'])
       end
 
       def ssh(ssh_args, cmd)
