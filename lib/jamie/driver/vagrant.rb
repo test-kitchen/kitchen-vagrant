@@ -27,16 +27,16 @@ module Jamie
 
       default_config 'memory', '256'
 
-      def perform_create(instance, state)
+      def create(instance, state)
         state['vagrant_vm'] = instance.name
         run_command "vagrant up #{state['vagrant_vm']} --no-provision"
       end
 
-      def perform_converge(instance, state)
+      def converge(instance, state)
         run_command "vagrant provision #{state['vagrant_vm']}"
       end
 
-      def perform_destroy(instance, state)
+      def destroy(instance, state)
         return if state['vagrant_vm'].nil?
 
         run_command "vagrant destroy #{state['vagrant_vm']} -f"
