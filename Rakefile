@@ -11,4 +11,10 @@ end
 
 Tailor::RakeTask.new
 
-task :default => [ :cane, :tailor ]
+desc "Display LOC stats"
+task :stats do
+  puts "\n## Production Code Stats"
+  sh "countloc -r lib/jamie"
+end
+
+task :default => [ :cane, :tailor, :stats ]
