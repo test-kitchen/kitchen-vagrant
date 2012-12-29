@@ -23,6 +23,8 @@ module Jamie
   module Driver
 
     # Vagrant driver for Jamie. It communicates to Vagrant via the CLI.
+    #
+    # @author Fletcher Nichol <fnichol@nichol.ca>
     class Vagrant < Jamie::Driver::SSHBase
 
       default_config 'memory', '256'

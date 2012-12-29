@@ -26,6 +26,8 @@ module Jamie
   module Vagrant
 
     # A Vagrant confiuration class which wraps a Jamie::Config instance.
+    #
+    # @author Fletcher Nichol <fnichol@nichol.ca>
     class Config < ::Vagrant::Config::Base
       extend Forwardable
 
