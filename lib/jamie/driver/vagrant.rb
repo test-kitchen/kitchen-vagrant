@@ -30,6 +30,11 @@ module Jamie
       default_config 'memory', '256'
 
       def create(instance, state)
+        # @todo Vagrantfile setup will be placed in any dependency hook
+        #   checks when feature is released
+        vagrantfile = File.join(config['jamie_root'], "Vagrantfile")
+        create_vagrantfile(vagrantfile) unless File.exists?(vagrantfile)
+
         state['hostname'] = instance.name
         run_command "vagrant up #{state['hostname']} --no-provision"
       end
@@ -46,12 +51,6 @@ module Jamie
       end
 
       protected
-
-      def load_state(instance)
-        vagrantfile = File.join(config['jamie_root'], "Vagrantfile")
-        create_vagrantfile(vagrantfile) unless File.exists?(vagrantfile)
-        super
-      end
 
       def ssh(ssh_args, cmd)
         run_command %{vagrant ssh #{ssh_args.first} --command '#{cmd}'}
