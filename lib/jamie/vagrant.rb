@@ -61,7 +61,7 @@ module Jamie
     private
 
     def self.define_vagrant_vm(config, instance)
-      driver = instance.platform.driver
+      driver = instance.driver
 
       config.vm.define instance.name do |c|
         c.vm.box = driver['box']
