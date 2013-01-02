@@ -36,24 +36,29 @@ module Jamie
         create_vagrantfile(vagrantfile) unless File.exists?(vagrantfile)
 
         state['hostname'] = instance.name
-        run_command "vagrant up #{state['hostname']} --no-provision"
+        run "vagrant up #{state['hostname']} --no-provision"
       end
 
       def converge(instance, state)
-        run_command "vagrant provision #{state['hostname']}"
+        run "vagrant provision #{state['hostname']}"
       end
 
       def destroy(instance, state)
         return if state['hostname'].nil?
 
-        run_command "vagrant destroy #{state['hostname']} -f"
+        run "vagrant destroy #{state['hostname']} -f"
         state.delete('hostname')
       end
 
       protected
 
       def ssh(ssh_args, cmd)
-        run_command %{vagrant ssh #{ssh_args.first} --command '#{cmd}'}
+        run %{vagrant ssh #{ssh_args.first} --command '#{cmd}'}
+      end
+
+      def run(cmd)
+        cmd = "echo #{cmd}" if config['dry_run']
+        run_command(cmd)
       end
 
       def create_vagrantfile(vagrantfile)
