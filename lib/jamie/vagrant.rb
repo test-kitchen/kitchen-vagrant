@@ -39,6 +39,14 @@ module Jamie
         @config = Jamie::Config.new
         @config.yaml_file = ENV['JAMIE_YAML'] if ENV['JAMIE_YAML']
       end
+
+      # Override default implementation to prevent serializing the config
+      # instance variable, which may contain circular references.
+      #
+      # @return [Hash] an empty Hash
+      def instance_variables_hash
+        {}
+      end
     end
 
     # Defines all Vagrant virtual machines, one for each instance.
