@@ -37,6 +37,7 @@ module Jamie
 
         state['hostname'] = instance.name
         run "vagrant up #{state['hostname']} --no-provision"
+        info("Vagrant instance <#{state['hostname']}> created.")
       end
 
       def converge(state)
@@ -47,6 +48,7 @@ module Jamie
         return if state['hostname'].nil?
 
         run "vagrant destroy #{state['hostname']} -f"
+        info("Vagrant instance <#{state['hostname']}> destroyed.")
         state.delete('hostname')
       end
 
