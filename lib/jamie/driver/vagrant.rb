@@ -29,7 +29,7 @@ module Jamie
 
       default_config 'memory', '256'
 
-      def create(instance, state)
+      def create(state)
         # @todo Vagrantfile setup will be placed in any dependency hook
         #   checks when feature is released
         vagrantfile = File.join(config['jamie_root'], "Vagrantfile")
@@ -39,11 +39,11 @@ module Jamie
         run "vagrant up #{state['hostname']} --no-provision"
       end
 
-      def converge(instance, state)
+      def converge(state)
         run "vagrant provision #{state['hostname']}"
       end
 
-      def destroy(instance, state)
+      def destroy(state)
         return if state['hostname'].nil?
 
         run "vagrant destroy #{state['hostname']} -f"
