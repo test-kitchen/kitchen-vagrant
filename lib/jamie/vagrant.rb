@@ -67,7 +67,10 @@ module Jamie
         c.vm.box = driver['box']
         c.vm.box_url = driver['box_url'] if driver['box_url']
         c.vm.host_name = "#{instance.name}.vagrantup.com"
-        c.vm.customize ["modifyvm", :id, "--memory", driver['memory']]
+
+        driver['customize'].each do |key,value|
+          c.vm.customize ["modifyvm", :id, "--#{key}", value]
+        end
 
         c.vm.provision :chef_solo do |chef|
           chef.log_level = config.jamie.log_level
