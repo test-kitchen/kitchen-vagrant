@@ -27,7 +27,7 @@ module Jamie
     # @author Fletcher Nichol <fnichol@nichol.ca>
     class Vagrant < Jamie::Driver::SSHBase
 
-      default_config 'memory', '256'
+      default_config 'customize', {'memory' => '256'}
 
       def create(state)
         # @todo Vagrantfile setup will be placed in any dependency hook
