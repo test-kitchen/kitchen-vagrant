@@ -21,6 +21,6 @@ module Jamie
   module Driver
 
     # Version string for Vagrant Jamie driver
-    VAGRANT_VERSION = "0.2.3"
+    VAGRANT_VERSION = "0.2.4"
   end
 end
