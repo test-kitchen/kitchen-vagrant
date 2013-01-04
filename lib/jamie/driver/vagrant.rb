@@ -52,6 +52,10 @@ module Jamie
         state.delete('hostname')
       end
 
+      def login_command(state)
+        %W{vagrant ssh #{state['hostname']}}
+      end
+
       protected
 
       def ssh(ssh_args, cmd)
