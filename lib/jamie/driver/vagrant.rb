@@ -27,33 +27,33 @@ module Jamie
     # @author Fletcher Nichol <fnichol@nichol.ca>
     class Vagrant < Jamie::Driver::SSHBase
 
-      default_config 'customize', {'memory' => '256'}
+      default_config :customize, {:memory => '256'}
 
       def create(state)
         # @todo Vagrantfile setup will be placed in any dependency hook
         #   checks when feature is released
-        vagrantfile = File.join(config['jamie_root'], "Vagrantfile")
+        vagrantfile = File.join(config[:jamie_root], "Vagrantfile")
         create_vagrantfile(vagrantfile) unless File.exists?(vagrantfile)
 
-        state['hostname'] = instance.name
-        run "vagrant up #{state['hostname']} --no-provision"
-        info("Vagrant instance <#{state['hostname']}> created.")
+        state[:hostname] = instance.name
+        run "vagrant up #{state[:hostname]} --no-provision"
+        info("Vagrant instance <#{state[:hostname]}> created.")
       end
 
       def converge(state)
-        run "vagrant provision #{state['hostname']}"
+        run "vagrant provision #{state[:hostname]}"
       end
 
       def destroy(state)
-        return if state['hostname'].nil?
+        return if state[:hostname].nil?
 
-        run "vagrant destroy #{state['hostname']} -f"
-        info("Vagrant instance <#{state['hostname']}> destroyed.")
-        state.delete('hostname')
+        run "vagrant destroy #{state[:hostname]} -f"
+        info("Vagrant instance <#{state[:hostname]}> destroyed.")
+        state.delete(:hostname)
       end
 
       def login_command(state)
-        %W{vagrant ssh #{state['hostname']}}
+        %W{vagrant ssh #{state[:hostname]}}
       end
 
       protected
@@ -63,7 +63,7 @@ module Jamie
       end
 
       def run(cmd)
-        cmd = "echo #{cmd}" if config['dry_run']
+        cmd = "echo #{cmd}" if config[:dry_run]
         run_command(cmd)
       end
 
