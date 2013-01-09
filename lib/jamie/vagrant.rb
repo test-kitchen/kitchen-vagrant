@@ -64,11 +64,11 @@ module Jamie
       driver = instance.driver
 
       config.vm.define instance.name do |c|
-        c.vm.box = driver['box']
-        c.vm.box_url = driver['box_url'] if driver['box_url']
+        c.vm.box = driver[:box]
+        c.vm.box_url = driver[:box_url] if driver[:box_url]
         c.vm.host_name = "#{instance.name}.vagrantup.com"
 
-        driver['customize'].each do |key,value|
+        driver[:customize].each do |key,value|
           c.vm.customize ["modifyvm", :id, "--#{key}", value]
         end
 
