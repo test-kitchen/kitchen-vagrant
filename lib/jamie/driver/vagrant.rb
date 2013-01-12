@@ -29,6 +29,8 @@ module Jamie
 
       default_config :customize, {:memory => '256'}
 
+      no_parallel_for :create, :destroy
+
       def create(state)
         # @todo Vagrantfile setup will be placed in any dependency hook
         #   checks when feature is released
