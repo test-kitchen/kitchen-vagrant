@@ -34,6 +34,7 @@ module Jamie
       def create(state)
         # @todo Vagrantfile setup will be placed in any dependency hook
         #   checks when feature is released
+        require 'pry' ; binding.pry
         vagrantfile = File.join(config[:jamie_root], "Vagrantfile")
         create_vagrantfile(vagrantfile) unless File.exists?(vagrantfile)
 
@@ -76,7 +77,7 @@ module Jamie
       def vagrantfile_contents
         arr = []
         arr << %{require 'jamie/vagrant'}
-        if File.exists?(File.join(config['jamie_root'], "Berksfile"))
+        if File.exists?(File.join(config[:jamie_root], "Berksfile"))
           arr << %{require 'berkshelf/vagrant'}
         end
         arr << %{}
