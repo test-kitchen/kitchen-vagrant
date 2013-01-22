@@ -34,7 +34,6 @@ module Jamie
       def create(state)
         # @todo Vagrantfile setup will be placed in any dependency hook
         #   checks when feature is released
-        require 'pry' ; binding.pry
         vagrantfile = File.join(config[:jamie_root], "Vagrantfile")
         create_vagrantfile(vagrantfile) unless File.exists?(vagrantfile)
 
