@@ -16,11 +16,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module Jamie
+module Kitchen
 
   module Driver
 
-    # Version string for Vagrant Jamie driver
+    # Version string for Vagrant Kitchen driver
     VAGRANT_VERSION = "0.5.2"
   end
 end

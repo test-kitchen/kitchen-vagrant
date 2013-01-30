@@ -19,13 +19,13 @@
 require 'forwardable'
 require 'vagrant'
 
-require 'jamie'
+require 'kitchen'
 
-module Jamie
+module Kitchen
 
   module Vagrant
 
-    # A Vagrant confiuration class which wraps a Jamie::Config instance.
+    # A Vagrant confiuration class which wraps a Kitchen::Config instance.
     #
     # @author Fletcher Nichol <fnichol@nichol.ca>
     class Config < ::Vagrant::Config::Base
@@ -36,8 +36,8 @@ module Jamie
         :test_base_path, :test_base_path=, :yaml_data
 
       def initialize
-        @config = Jamie::Config.new
-        @config.yaml_file = ENV['JAMIE_YAML'] if ENV['JAMIE_YAML']
+        @config = Kitchen::Config.new
+        @config.yaml_file = ENV['KITCHEN_YAML'] if ENV['KITCHEN_YAML']
       end
 
       # Override default implementation to prevent serializing the config
@@ -53,7 +53,7 @@ module Jamie
     #
     # @param config [Vagrant::Config::Top] Vagrant top level config object
     def self.define_vms(config)
-      config.jamie.instances.each do |instance|
+      config.kitchen.instances.each do |instance|
         define_vagrant_vm(config, instance)
       end
     end
@@ -73,7 +73,7 @@ module Jamie
         end
 
         c.vm.provision :chef_solo do |chef|
-          chef.log_level = config.jamie.log_level
+          chef.log_level = config.kitchen.log_level
           chef.run_list = instance.run_list
           chef.json = instance.attributes
           chef.data_bags_path = instance.suite.data_bags_path
@@ -84,4 +84,4 @@ module Jamie
   end
 end
 
-Vagrant.config_keys.register(:jamie) { Jamie::Vagrant::Config }
+Vagrant.config_keys.register(:kitchen) { Kitchen::Vagrant::Config }

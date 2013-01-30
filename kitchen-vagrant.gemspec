@@ -1,24 +1,24 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'jamie/driver/vagrant_version.rb'
+require 'kitchen/driver/vagrant_version.rb'
 
 Gem::Specification.new do |gem|
-  gem.name          = "jamie-vagrant"
-  gem.version       = Jamie::Driver::VAGRANT_VERSION
+  gem.name          = "kitchen-vagrant"
+  gem.version       = Kitchen::Driver::VAGRANT_VERSION
   gem.authors       = ["Fletcher Nichol"]
   gem.email         = ["fnichol@nichol.ca"]
-  gem.description   = "Jamie::Driver::Vagrant - A Vagrant Driver for Jamie."
+  gem.description   = "Kitchen::Driver::Vagrant - A Vagrant Driver for Test Kitchen."
   gem.summary       = gem.description
-  gem.homepage      = "https://github.com/jamie-ci/jamie-vagrant/"
+  gem.homepage      = "https://github.com/opscode/kitchen-vagrant/"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = []
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency 'jamie', '~> 0.1.0.beta1'
-  gem.add_dependency 'vagrant', '~> 1.0.5'
+  gem.add_dependency 'test-kitchen', '~> 0.1.0.beta1'
+  gem.add_dependency 'vagrant', '~> 1.0'
 
   gem.add_development_dependency 'cane'
   gem.add_development_dependency 'tailor'

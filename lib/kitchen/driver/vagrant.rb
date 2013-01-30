@@ -16,16 +16,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'jamie'
+require 'kitchen'
 
-module Jamie
+module Kitchen
 
   module Driver
 
-    # Vagrant driver for Jamie. It communicates to Vagrant via the CLI.
+    # Vagrant driver for Kitchen. It communicates to Vagrant via the CLI.
     #
     # @author Fletcher Nichol <fnichol@nichol.ca>
-    class Vagrant < Jamie::Driver::SSHBase
+    class Vagrant < Kitchen::Driver::SSHBase
 
       default_config :customize, {:memory => '256'}
 
@@ -34,7 +34,7 @@ module Jamie
       def create(state)
         # @todo Vagrantfile setup will be placed in any dependency hook
         #   checks when feature is released
-        vagrantfile = File.join(config[:jamie_root], "Vagrantfile")
+        vagrantfile = File.join(config[:kitchen_root], "Vagrantfile")
         create_vagrantfile(vagrantfile) unless File.exists?(vagrantfile)
 
         state[:hostname] = instance.name
@@ -75,13 +75,13 @@ module Jamie
 
       def vagrantfile_contents
         arr = []
-        arr << %{require 'jamie/vagrant'}
-        if File.exists?(File.join(config[:jamie_root], "Berksfile"))
+        arr << %{require 'kitchen/vagrant'}
+        if File.exists?(File.join(config[:kitchen_root], "Berksfile"))
           arr << %{require 'berkshelf/vagrant'}
         end
         arr << %{}
         arr << %{Vagrant::Config.run do |config|}
-        arr << %{  Jamie::Vagrant.define_vms(config)}
+        arr << %{  Kitchen::Vagrant.define_vms(config)}
         arr << %{end\n}
         arr.join("\n")
       end
