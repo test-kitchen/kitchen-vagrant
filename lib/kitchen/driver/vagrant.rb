@@ -43,6 +43,8 @@ module Kitchen
       end
 
       def converge(state)
+        ssh_args = build_ssh_args(state)
+        install_omnibus(ssh_args) if config[:require_chef_omnibus]
         run "vagrant provision #{state[:hostname]}"
       end
 
