@@ -68,7 +68,21 @@ module Kitchen
         c.vm.box_url = driver[:box_url] if driver[:box_url]
         c.vm.host_name = "#{instance.name}.vagrantup.com"
 
-        driver[:customize].each do |key,value|
+        Array(driver[:forward_port]).each do |ports|
+          if ports.length != 2
+            raise ArgumentError,
+              "Vagrant config.vm.forward_port only accepts two arguments"
+          end
+          c.vm.forward_port(*ports)
+        end
+
+        Array(driver[:network]).each do |network_options|
+          options = Array(network_options)
+          type = options.shift
+          c.vm.network(type.to_sym, *options)
+        end
+
+        driver[:customize].each do |key, value|
           c.vm.customize ["modifyvm", :id, "--#{key}", value]
         end
 
