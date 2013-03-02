@@ -85,7 +85,7 @@ module Kitchen
             instance_eval "c.vm.network #{network_options}"
           end
         end
-        
+
         driver[:customize].each do |key,value|
           c.vm.customize ["modifyvm", :id, "--#{key}", value]
         end
