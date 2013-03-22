@@ -31,25 +31,25 @@ module Kitchen
       end
 
       def render
-        vagrantfile_contents_v2
-      end
-
-      private
-
-      attr_reader :instance, :config
-
-      def vagrantfile_contents_v2
         arr = []
         arr << %{Vagrant.configure("2") do |c|}
-        arr << %{  c.vm.box = "#{config[:box]}"}
-        arr << %{  c.vm.box_url = "#{config[:box_url]}"} if config[:box_url]
-        arr << %{  c.vm.hostname = "#{instance.name}.vagrantup.com"}
+        common_block(arr)
         network_block(arr)
         provider_block(arr)
         chef_block(arr)
         berkshelf_block(arr)
         arr << %{end}
         arr.join("\n")
+      end
+
+      private
+
+      attr_reader :instance, :config
+
+      def common_block(arr)
+        arr << %{  c.vm.box = "#{config[:box]}"}
+        arr << %{  c.vm.box_url = "#{config[:box_url]}"} if config[:box_url]
+        arr << %{  c.vm.hostname = "#{instance.name}.vagrantup.com"}
       end
 
       def network_block(arr)
