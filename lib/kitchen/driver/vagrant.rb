@@ -73,8 +73,7 @@ module Kitchen
 
       def login_command(state)
         create_vagrantfile(state)
-        FileUtils.cd(vagrant_root, :verbose => logger.debug? ? true : false)
-        %W{vagrant ssh}
+        LoginCommand.new(%W{vagrant ssh}, :chdir => vagrant_root)
       end
 
       protected
@@ -85,9 +84,7 @@ module Kitchen
 
       def run(cmd)
         cmd = "echo #{cmd}" if config[:dry_run]
-        FileUtils.cd(vagrant_root, :verbose => logger.debug? ? true : false) do
-          run_command(cmd)
-        end
+        run_command(cmd, :cwd => vagrant_root)
       end
 
       def vagrant_root
