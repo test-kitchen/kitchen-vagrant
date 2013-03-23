@@ -18,7 +18,6 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_dependency 'test-kitchen', '~> 1.0.0.alpha.0'
-  gem.add_dependency 'vagrant', '~> 1.0'
 
   gem.add_development_dependency 'cane'
   gem.add_development_dependency 'tailor'

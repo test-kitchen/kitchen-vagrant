@@ -3,11 +3,7 @@ require 'cane/rake_task'
 require 'tailor/rake_task'
 
 desc "Run cane to check quality metrics"
-Cane::RakeTask.new do |cane|
-  cane.abc_exclude = %w(
-    Kitchen::Vagrant.define_vagrant_vm
-  )
-end
+Cane::RakeTask.new
 
 Tailor::RakeTask.new
 
