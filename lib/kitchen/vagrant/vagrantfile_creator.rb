@@ -74,10 +74,10 @@ module Kitchen
         arr << %{    chef.run_list = #{instance.run_list.inspect}}
         arr << %{    chef.json = #{instance.attributes.to_s}}
         if instance.suite.data_bags_path
-          arr << %{    chef.data_bags_path = #{instance.suite.data_bags_path}}
+          arr << %{    chef.data_bags_path = "#{instance.suite.data_bags_path}"}
         end
         if instance.suite.roles_path
-          arr << %{    chef.roles_path = #{instance.suite.roles_path}}
+          arr << %{    chef.roles_path = "#{instance.suite.roles_path}"}
         end
         arr << %{  end}
       end
