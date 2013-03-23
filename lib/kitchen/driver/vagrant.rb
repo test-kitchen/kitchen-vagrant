@@ -17,6 +17,7 @@
 # limitations under the License.
 
 require 'fileutils'
+require 'rubygems/version'
 
 require 'kitchen'
 require 'kitchen/vagrant/vagrantfile_creator'
@@ -76,15 +77,28 @@ module Kitchen
         LoginCommand.new(%W{vagrant ssh}, :chdir => vagrant_root)
       end
 
+      def verify_dependencies
+        check_vagrant_version
+        check_berkshelf_plugin
+      end
+
       protected
+
+      WEBSITE = "http://downloads.vagrantup.com/"
+      MIN_VER = "1.1.0"
 
       def ssh(ssh_args, cmd)
         run %{vagrant ssh --command '#{cmd}'}
       end
 
-      def run(cmd)
+      def run(cmd, options = {})
         cmd = "echo #{cmd}" if config[:dry_run]
-        run_command(cmd, :cwd => vagrant_root)
+        run_command(cmd, { :cwd => vagrant_root }.merge(options))
+      end
+
+      def silently_run(cmd)
+        run_command(cmd,
+          :live_stream => nil, :quiet => logger.debug? ? false : true)
       end
 
       def vagrant_root
@@ -105,6 +119,33 @@ module Kitchen
 
       def creator
         Kitchen::Vagrant::VagrantfileCreator.new(instance, config)
+      end
+
+      def vagrant_version
+        version_string = silently_run("vagrant --version")
+        version_string = version_string.chomp.split(" ").last
+      rescue Errno::ENOENT
+        raise UserError, "Vagrant #{MIN_VER} or higher is not installed." +
+          " Please download a package from #{WEBSITE}."
+      end
+
+      def check_vagrant_version
+        version = vagrant_version
+        if Gem::Version.new(version) < Gem::Version.new(MIN_VER)
+          raise UserError, "Detected an old version of Vagrant (#{version})." +
+            " Please upgrade to version #{MIN_VER} or higher from #{WEBSITE}."
+        end
+      end
+
+      def check_berkshelf_plugin
+        if File.exists?(File.join(config[:kitchen_root], "Berksfile"))
+          plugins = silently_run("vagrant plugin list").split("\n")
+          if ! plugins.find { |p| p =~ /^berkshelf-vagrant\b/ }
+            raise UserError, "Detected a Berksfile but the berksfile-vagrant" +
+              " plugin was not found in Vagrant. Please run:" +
+              " `vagrant plugin install berkshelf-vagrant' and retry."
+          end
+        end
       end
     end
   end
