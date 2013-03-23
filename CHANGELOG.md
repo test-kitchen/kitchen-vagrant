@@ -1,4 +1,4 @@
-## 0.7.0 / Unreleased
+## 0.7.0 / 2013-03-22
 
 ### New features
 
