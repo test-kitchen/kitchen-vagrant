@@ -17,7 +17,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency 'test-kitchen', '~> 1.0.0.alpha.0'
+  gem.add_dependency 'test-kitchen', '~> 1.0.0.alpha.1'
 
   gem.add_development_dependency 'cane'
   gem.add_development_dependency 'tailor'

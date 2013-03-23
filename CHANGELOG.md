@@ -1,3 +1,10 @@
+## 0.7.1 / 2013-03-23
+
+### Bug fixes
+
+* Depend on test-kitchen ~> 1.0.0.alpha.1 to get API updates. ([@fnichol][])
+
+
 ## 0.7.0 / 2013-03-22
 
 ### New features
