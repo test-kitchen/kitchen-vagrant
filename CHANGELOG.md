@@ -1,3 +1,10 @@
+## 0.7.2 / 2013-03-23
+
+### Bug fixes
+
+* Wrap strings for data_bags_path and roles_path in Vagrantfiles. ([@fnichol][])
+
+
 ## 0.7.1 / 2013-03-23
 
 ### Bug fixes
