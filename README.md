@@ -1,7 +1,7 @@
 # Kitchen::Vagrant
 
-[![Build Status](https://secure.travis-ci.org/jamie-ci/kitchen-vagrant.png)](https://travis-ci.org/jamie-ci/kitchen-vagrant)
-[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/jamie-ci/kitchen-vagrant)
+[![Build Status](https://travis-ci.org/opscode/kitchen-vagrant.png)](https://travis-ci.org/opscode/kitchen-vagrant)
+[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/opscode/kitchen-vagrant)
 
 This gem provides `kitchen-vagrant`, a driver for `test-kitchen` to provision systems to test under Vagrant.
 
