@@ -1,3 +1,10 @@
+## 0.7.3 / 2013-03-28
+
+### Bug fixes
+
+* Calling #destroy should not memoize #create_vagrantfile. ([@fnichol][], [@sandfish8][])
+
+
 ## 0.7.2 / 2013-03-23
 
 ### Bug fixes
@@ -28,3 +35,4 @@ The initial release.
 [#7]: https://github.com/opscode/kitchen/issues/7
 [#8]: https://github.com/opscode/kitchen/issues/8
 [@fnichol]: https://github.com/fnichol
+[@sandfish8]: https://github.com/sandfish8
