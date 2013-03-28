@@ -66,6 +66,7 @@ module Kitchen
         return if state[:hostname].nil?
 
         create_vagrantfile(state)
+        @vagrantfile_created = false
         run "vagrant destroy -f"
         FileUtils.rm_rf(vagrant_root)
         info("Vagrant instance <#{state[:hostname]}> destroyed.")
