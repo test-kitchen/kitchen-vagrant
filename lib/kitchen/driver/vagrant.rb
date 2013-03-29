@@ -39,43 +39,38 @@ module Kitchen
       no_parallel_for :create, :destroy
 
       def create(state)
-        state[:hostname] = instance.name
-        create_vagrantfile(state)
+        create_vagrantfile
         run "vagrant up --no-provision"
-        info("Vagrant instance <#{state[:hostname]}> created.")
+        set_ssh_state(state)
+        info("Vagrant instance #{instance.to_str} created.")
       end
 
       def converge(state)
-        create_vagrantfile(state)
+        create_vagrantfile
         ssh_args = build_ssh_args(state)
         install_omnibus(ssh_args) if config[:require_chef_omnibus]
         run "vagrant provision"
       end
 
       def setup(state)
-        create_vagrantfile(state)
+        create_vagrantfile
         super
       end
 
       def verify(state)
-        create_vagrantfile(state)
+        create_vagrantfile
         super
       end
 
       def destroy(state)
         return if state[:hostname].nil?
 
-        create_vagrantfile(state)
+        create_vagrantfile
         @vagrantfile_created = false
         run "vagrant destroy -f"
         FileUtils.rm_rf(vagrant_root)
-        info("Vagrant instance <#{state[:hostname]}> destroyed.")
+        info("Vagrant instance #{instance.to_str} destroyed.")
         state.delete(:hostname)
-      end
-
-      def login_command(state)
-        create_vagrantfile(state)
-        LoginCommand.new(%W{vagrant ssh}, :chdir => vagrant_root)
       end
 
       def verify_dependencies
@@ -87,10 +82,6 @@ module Kitchen
 
       WEBSITE = "http://downloads.vagrantup.com/"
       MIN_VER = "1.1.0"
-
-      def ssh(ssh_args, cmd)
-        run %{vagrant ssh --command '#{cmd}'}
-      end
 
       def run(cmd, options = {})
         cmd = "echo #{cmd}" if config[:dry_run]
@@ -108,11 +99,11 @@ module Kitchen
         )
       end
 
-      def create_vagrantfile(state)
+      def create_vagrantfile
         return if @vagrantfile_created
 
         vagrantfile = File.join(vagrant_root, "Vagrantfile")
-        debug("Creating Vagrantfile for <#{state[:hostname]}> (#{vagrantfile})")
+        debug("Creating Vagrantfile for #{instance.to_str} (#{vagrantfile})")
         FileUtils.mkdir_p(vagrant_root)
         File.open(vagrantfile, "wb") { |f| f.write(creator.render) }
         @vagrantfile_created = true
@@ -120,6 +111,24 @@ module Kitchen
 
       def creator
         Kitchen::Vagrant::VagrantfileCreator.new(instance, config)
+      end
+
+      def set_ssh_state(state)
+        hash = vagrant_ssh_config
+
+        state[:hostname] = hash["HostName"]
+        state[:username] = hash["User"]
+        state[:ssh_key] = hash["IdentityFile"]
+        state[:port] = hash["Port"]
+      end
+
+      def vagrant_ssh_config
+        output = run("vagrant ssh-config", :live_stream => nil)
+        lines = output.split("\n").map do |line|
+          tokens = line.strip.partition(" ")
+          [tokens.first, tokens.last.gsub(/"/, '')]
+        end
+        Hash[lines]
       end
 
       def vagrant_version
