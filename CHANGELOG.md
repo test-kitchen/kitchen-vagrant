@@ -1,3 +1,10 @@
+## 0.7.4 / 2013-03-28
+
+### Improvements
+
+* Drop `vagrant ssh -c` & communicate directly via SSH. ([@fnichol][])
+
+
 ## 0.7.3 / 2013-03-28
 
 ### Bug fixes
