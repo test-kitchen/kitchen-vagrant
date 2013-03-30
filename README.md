@@ -5,6 +5,11 @@
 
 This gem provides `kitchen-vagrant`, a driver for `test-kitchen` to provision systems to test under Vagrant.
 
+## Requirements
+
+* [test-kitchen](https://github.com/opscode/test-kitchen) version 1.0 or later
+* [Vagrant](http://www.vagrantup.com/) 1.1 or newer
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -21,7 +26,15 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+If you were using this plugin before version 0.7, be sure to delete the
+`.kitchen` folder in your project and possibly remove your Vagrantfile
+unless you have specific configuration options in there. **This plugin
+does not need to be required anywhere other than your Gemfile.**
+
+Run the `kitchen init` command with the `-D vagrant` option to install
+the Vagrant driver. Define your box settings within the `.kitchen.yml`
+file to your liking. The next time you run `kitchen test` it will
+automatically generate a Vagrantfile for each defined test suite.
 
 ## Contributing
 
