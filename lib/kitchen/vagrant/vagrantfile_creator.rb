@@ -83,7 +83,7 @@ module Kitchen
       end
 
       def berkshelf_block(arr)
-        if File.exists?(berksfile)
+        if File.exists?(berksfile) && config[:use_vagrant_berkshelf_plugin]
           arr << %{  c.berkshelf.berksfile_path = "#{berksfile}"}
         end
       end
