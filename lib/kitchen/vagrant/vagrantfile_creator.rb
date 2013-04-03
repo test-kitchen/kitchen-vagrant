@@ -36,8 +36,8 @@ module Kitchen
         common_block(arr)
         network_block(arr)
         provider_block(arr)
-        chef_block(arr)
-        berkshelf_block(arr)
+        chef_block(arr) if config[:use_vagrant_provision]
+        berkshelf_block(arr) if config[:use_vagrant_berkshelf_plugin]
         synced_folders_block(arr)
         arr << %{end}
         arr.join("\n")
@@ -63,9 +63,9 @@ module Kitchen
 
       def provider_block(arr)
         arr << %{  c.vm.provider :virtualbox do |p|}
-          config[:customize].each do |key, value|
-            arr << %{    p.customize ["modifyvm", :id, "--#{key}", #{value}]}
-          end
+        config[:customize].each do |key, value|
+          arr << %{    p.customize ["modifyvm", :id, "--#{key}", #{value}]}
+        end
         arr << %{  end}
       end
 
@@ -84,13 +84,15 @@ module Kitchen
       end
 
       def berkshelf_block(arr)
-        if File.exists?(berksfile) && config[:use_vagrant_berkshelf_plugin]
+        if File.exists?(berksfile)
           arr << %{  c.berkshelf.berksfile_path = "#{berksfile}"}
         end
       end
 
       def synced_folders_block(arr)
-        arr << %{  c.vm.synced_folders = #{config[:synced_folders].inspect}}
+        config[:synced_folders].each do |source, destination|
+          arr << %{  c.vm.synced_folder #{source}, #{destination} }
+        end
       end
 
       def vagrant_logger_level
