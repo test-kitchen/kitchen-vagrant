@@ -35,6 +35,7 @@ module Kitchen
     class Vagrant < Kitchen::Driver::SSHBase
 
       default_config :customize, {:memory => '256'}
+      default_config :synced_folders, {}
 
       no_parallel_for :create, :destroy
 

@@ -38,6 +38,7 @@ module Kitchen
         provider_block(arr)
         chef_block(arr)
         berkshelf_block(arr)
+        synced_folders_block(arr)
         arr << %{end}
         arr.join("\n")
       end
@@ -86,6 +87,10 @@ module Kitchen
         if File.exists?(berksfile) && config[:use_vagrant_berkshelf_plugin]
           arr << %{  c.berkshelf.berksfile_path = "#{berksfile}"}
         end
+      end
+
+      def synced_folders_block(arr)
+        arr << %{  c.vm.synced_folders = #{config[:synced_folders].inspect}}
       end
 
       def vagrant_logger_level
