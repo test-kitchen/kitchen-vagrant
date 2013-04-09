@@ -117,7 +117,7 @@ There is **no** default value set.
 
 ### <a name="config-require-chef-omnibus"></a> require\_chef\_omnibus
 
-Determines whether or not a Chef [Omnibus package][omnibus_dl] will be
+Determines whether or not a Chef [Omnibus package][chef_omnibus_dl] will be
 installed. There are several different behaviors available:
 
 * `true` - the latest release will be installed. Subsequent converges
