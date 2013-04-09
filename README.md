@@ -86,6 +86,13 @@ more details.
 By default, each Vagrant virtual machine is configured with 256 MB of RAM. In
 other words the default value for `customize` is `{:memory => '256'}`.
 
+### <a name="config-dry-run"></a> dry\_run
+
+Useful when debugging Vagrant CLI commands. If set to `true`, all Vagrant CLI commands
+will be displayed rather than executed.
+
+The default is unset, or `nil`.
+
 ### <a name="config-network"></a> network
 
 An **Array** of network customizations for the virtual machine. Each Array
