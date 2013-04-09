@@ -36,6 +36,8 @@ module Kitchen
 
       default_config :customize, {:memory => '256'}
 
+      required_config :box
+
       no_parallel_for :create, :destroy
 
       def create(state)
