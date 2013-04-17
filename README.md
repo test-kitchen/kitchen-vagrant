@@ -5,6 +5,11 @@
 
 A Test Kitchen Driver for Vagrant.
 
+This driver works by generating a single Vagrantfile for each instance in a
+sandboxed directory. Since the Vagrantfile is written out on disk, Vagrant
+needs absolutely no knowledge of Test Kitchen. So no Vagrant plugin gem is
+required.
+
 ## <a name="requirements"></a> Requirements
 
 ### <a name="dependencies-vagrant"></a> Vagrant
