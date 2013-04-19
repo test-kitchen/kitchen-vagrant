@@ -152,10 +152,10 @@ module Kitchen
       def check_berkshelf_plugin
         if File.exists?(File.join(config[:kitchen_root], "Berksfile"))
           plugins = silently_run("vagrant plugin list").split("\n")
-          if ! plugins.find { |p| p =~ /^berkshelf-vagrant\b/ }
-            raise UserError, "Detected a Berksfile but the berksfile-vagrant" +
+          if ! plugins.find { |p| p =~ /^vagrant-berkshelf\b/ }
+            raise UserError, "Detected a Berksfile but the vagrant-berkshelf" +
               " plugin was not found in Vagrant. Please run:" +
-              " `vagrant plugin install berkshelf-vagrant' and retry."
+              " `vagrant plugin install vagrant-berkshelf' and retry."
           end
         end
       end
