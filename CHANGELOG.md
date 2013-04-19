@@ -1,3 +1,10 @@
+## 0.9.0 / 2013-04-19
+
+### Upstream changes
+
+* Pull request [#16][]: Update Vagrant Berkshelf plugin detection for the vagrant-berkshelf and drop detection for berkshelf-vagrant. ([@martinisoft][])
+
+
 ## 0.8.0 / 2013-04-16
 
 ### Improvements
@@ -50,6 +57,8 @@ The initial release.
 [#7]: https://github.com/opscode/kitchen/issues/7
 [#8]: https://github.com/opscode/kitchen/issues/8
 [#15]: https://github.com/opscode/kitchen/issues/15
+[#16]: https://github.com/opscode/kitchen/issues/16
 [@fnichol]: https://github.com/fnichol
+[@martinisoft]: https://github.com/martinisoft
 [@petejkim]: https://github.com/petejkim
 [@sandfish8]: https://github.com/sandfish8

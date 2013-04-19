@@ -29,13 +29,17 @@ environment.
 Currently this driver only supports the VirtualBox provisioner which requires
 the [VirtualBox package][virtualbox_dl] to be installed.
 
-### <a name="dependencies-berkshelf"></a> Berkshelf Vagrant Plugin
+### <a name="dependencies-berkshelf"></a> Vagrant Berkshelf Plugin
 
 If a Berksfile is present in your project's root directory, then this driver
-will check to ensure that the [berkshelf-vagrant][berkshelf_vagrant] Vagrant
-plugin is installed.
+will check to ensure that the [vagrant-berkshelf][vagrant_berkshelf] plugin is
+installed.
 
 If your project doesn't use Berkshelf then this check will be skipped.
+
+**Note:** Prior to release 1.2.0, then name of the vagrant-berkshelf gem was
+berkshelf-vagrant. This driver no longer checks for the existance of
+berkshelf-vagrant, so upgrading this Vagrant plugin is recommended.
 
 ## <a name="installation"></a> Installation and Setup
 
@@ -174,7 +178,7 @@ Apache 2.0 (see [LICENSE][license])
 [driver_usage]:     http://docs.kitchen-ci.org/drivers/usage
 [chef_omnibus_dl]:  http://www.opscode.com/chef/install/
 
-[berkshelf_vagrant]:        http://rubygems.org/gems/berkshelf-vagrant
+[vagrant_berkshelf]:        http://rubygems.org/gems/vagrant-berkshelf
 [vagrant_dl]:               http://downloads.vagrantup.com/
 [vagrant_machine_settings]: http://docs.vagrantup.com/v2/vagrantfile/machine_settings.html
 [vagrant_networking]:       http://docs.vagrantup.com/v2/networking/basic_usage.html
