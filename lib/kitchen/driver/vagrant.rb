@@ -35,6 +35,7 @@ module Kitchen
     class Vagrant < Kitchen::Driver::SSHBase
 
       default_config :customize, {:memory => '256'}
+      default_config :synced_folders, {}
 
       required_config :box
 
@@ -51,7 +52,13 @@ module Kitchen
         create_vagrantfile
         ssh_args = build_ssh_args(state)
         install_omnibus(ssh_args) if config[:require_chef_omnibus]
-        run "vagrant provision"
+        if config[:use_vagrant_provision]
+          run "vagrant provision"
+        else
+          prepare_chef_home(ssh_args)
+          upload_chef_data(ssh_args)
+          run_chef_solo(ssh_args)
+        end
       end
 
       def setup(state)
@@ -77,7 +84,7 @@ module Kitchen
 
       def verify_dependencies
         check_vagrant_version
-        check_berkshelf_plugin
+        check_berkshelf_plugin if config[:use_vagrant_berkshelf_plugin]
       end
 
       protected
