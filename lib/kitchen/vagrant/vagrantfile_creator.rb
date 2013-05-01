@@ -36,8 +36,9 @@ module Kitchen
         common_block(arr)
         network_block(arr)
         provider_block(arr)
-        chef_block(arr)
-        berkshelf_block(arr)
+        chef_block(arr) if config[:use_vagrant_provision]
+        berkshelf_block(arr) if config[:use_vagrant_berkshelf_plugin]
+        synced_folders_block(arr)
         arr << %{end}
         arr.join("\n")
       end
@@ -62,9 +63,9 @@ module Kitchen
 
       def provider_block(arr)
         arr << %{  c.vm.provider :virtualbox do |p|}
-          config[:customize].each do |key, value|
-            arr << %{    p.customize ["modifyvm", :id, "--#{key}", #{value}]}
-          end
+        config[:customize].each do |key, value|
+          arr << %{    p.customize ["modifyvm", :id, "--#{key}", #{value}]}
+        end
         arr << %{  end}
       end
 
@@ -88,6 +89,12 @@ module Kitchen
           arr << %{  if c.berkshelf.respond_to?(:enabled)}
           arr << %{    c.berkshelf.enabled = true}
           arr << %{  end}
+        end
+      end
+
+      def synced_folders_block(arr)
+        config[:synced_folders].each do |source, destination|
+          arr << %{  c.vm.synced_folder "#{source}", "#{destination}" }
         end
       end
 
