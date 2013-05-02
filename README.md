@@ -131,6 +131,33 @@ more details.
 
 There is **no** default value set.
 
+### <a name="config-use-vagrant-provision"></a> use_vagrant_provision
+
+Determines whether or not this driver will use a `vagrant provision` shell out
+in the **converge** action. If this value is falsey (`nil`, `false`) the
+behavior from `Kitchen::Driver::SSHBase` will be used, bypassing the Vagrant
+Chef solo provisioner. If this value is truthy, a `vagrant provision` will
+be used.
+
+The default is unset, or `nil`.
+
+### <a name="config-use-vagrant-berkshelf-plugin"></a> use_vagrant_berkshelf_plugin
+
+Determines whether or not this driver will use the vagrant-berkself Vagrant
+plugin to assemble cookbook dependencies. If this value if falsey (`nil`,
+`false`) then the driver will skip the vagrant-berkshelf dependency check
+and not activate the plugin in the rendered Vagrantfile. If this value is
+truthy the opposite behvior will be used.
+
+The default is unset, or `nil`.
+
+### <a name="config-synced-folders"></a> synced_folders
+
+Allow the user to specify a collection of synced folders for on each Vagrant
+instance.
+
+The default is an empty Hash, or `{}`.
+
 ### <a name="config-require-chef-omnibus"></a> require\_chef\_omnibus
 
 Determines whether or not a Chef [Omnibus package][chef_omnibus_dl] will be
