@@ -24,10 +24,22 @@ error message that Vagrant is too old despite having installed Vagrant as a
 package, you may be required to uninstall the gem version or modify your `PATH`
 environment.
 
-### <a name="dependencies-virtualbox"></a> Virtualbox
+### <a name="dependencies-virtualization"></a> Virtualbox and/or VMware Fusion/Workstation
 
-Currently this driver only supports the VirtualBox provisioner which requires
-the [VirtualBox package][virtualbox_dl] to be installed.
+Currently this driver supports VirtualBox and VMware Fusion/Workstation. Virtualbox 
+is free and is the default provider for Vagrant.
+
+[VirtualBox package][virtualbox_dl]
+
+If you would like to use VMware Fusion/Workstation you must purchase the
+software from VMware and then must also purchase the Vagrant VMware plugin.
+
+[Vagrant VMware Plugin][vmware_plugin]
+
+[VMware Fusion][fusion_dl]
+
+[VMware Workstation][workstation_dl]
+
 
 ### <a name="dependencies-berkshelf"></a> Vagrant Berkshelf Plugin
 
@@ -63,11 +75,21 @@ started.
 
 There is **no** default value set.
 
+### <a name="config-provider"></a> provider
+
+This determines which Vagrant provider to use when testing and should match
+the provider name in Vagrant. For example, to use VMware Fusion the provider
+should be `vmware_fusion`. Please see the docs on [providers][vagrant_providers]
+for further details.
+
+By default the value is unset, or `nil`. In this case the driver will use the 
+Vagrant default provider which at this current time is **virtualbox**
+
 ### <a name="config-customize"></a> customize
 
-A **Hash** of customizations to a Vagrant virtual machine backed by VirtualBox.
-Each key/value pair will be passed to the `virtualbox.customize` method. For
-example:
+A **Hash** of customizations to a Vagrant virtual machine.  Each key/value 
+pair will be passed to your providers customization block. For example, with
+the default `virtualbox` provider:
 
 ```ruby
 driver_config:
@@ -89,7 +111,7 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-Please read the Vagrant [VirtualBox configuration][vagrant_virtualbox] page for
+Please read the [Vagrantfile configuration][vagrantfile] page for
 more details.
 
 By default, each Vagrant virtual machine is configured with 256 MB of RAM. In
@@ -209,5 +231,9 @@ Apache 2.0 (see [LICENSE][license])
 [vagrant_dl]:               http://downloads.vagrantup.com/
 [vagrant_machine_settings]: http://docs.vagrantup.com/v2/vagrantfile/machine_settings.html
 [vagrant_networking]:       http://docs.vagrantup.com/v2/networking/basic_usage.html
-[vagrant_virtualbox]:       http://docs.vagrantup.com/v2/virtualbox/configuration.html
 [virtualbox_dl]:            https://www.virtualbox.org/wiki/Downloads
+[vagrantfile]:              http://docs.vagrantup.com/v2/vagrantfile/index.html
+[vagrant_providers]:        http://docs.vagrantup.com/v2/providers/index.html
+[vmware_plugin]:            http://www.vagrantup.com/vmware
+[fusion_dl]:                http://www.vmware.com/products/fusion/overview.html
+[workstation_dl]:           http://www.vmware.com/products/workstation/

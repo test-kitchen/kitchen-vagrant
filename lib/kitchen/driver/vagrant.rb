@@ -43,7 +43,9 @@ module Kitchen
 
       def create(state)
         create_vagrantfile
-        run "vagrant up --no-provision"
+        cmd = "vagrant up --no-provision"
+        cmd += " --provider=#{@config[:provider]}" if @config[:provider]
+        run cmd
         set_ssh_state(state)
         info("Vagrant instance #{instance.to_str} created.")
       end

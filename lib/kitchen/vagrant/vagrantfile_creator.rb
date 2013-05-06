@@ -62,9 +62,14 @@ module Kitchen
       end
 
       def provider_block(arr)
-        arr << %{  c.vm.provider :virtualbox do |p|}
-        config[:customize].each do |key, value|
-          arr << %{    p.customize ["modifyvm", :id, "--#{key}", #{value}]}
+        provider = config[:provider] || 'virtualbox'
+
+        arr << %{  c.vm.provider :#{provider} do |p|}
+        case provider
+        when 'virtualbox'
+          virtualbox_customize(arr)
+        when 'vmware_fusion', 'vmware_workstation'
+          vmware_customize(arr)
         end
         arr << %{  end}
       end
@@ -118,6 +123,30 @@ module Kitchen
 
       def berksfile
         File.join(config[:kitchen_root], "Berksfile")
+      end
+
+      def virtualbox_customize(arr)
+        config[:customize].each do |key, value|
+          arr << %{    p.customize ["modifyvm", :id, "--#{key}", #{value}]}
+        end
+      end
+
+      def vmware_customize(arr)
+        config[:customize].each do |key, value|
+          if key == :memory
+            # XXX: This is kind of a hack to address the fact that
+            # "memory" is a default attribute in our Vagrant driver.
+            #
+            # The VMware VMX format expects to see "memsize" instead of
+            # just "memory" like Virtualbox would. So if "memsize" has
+            # been specified we simply ignore the "memory" option.
+            unless config[:customize].include?(:memsize)
+              arr << %{    p.vmx["memsize"] = "#{value}"}
+            end
+          else
+            arr << %{    p.vmx["#{key}"] = "#{value}"}
+          end
+        end
       end
     end
   end
