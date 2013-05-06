@@ -22,7 +22,10 @@ Test Kitchen.
 to 1.1.0), this version may be resolved first in your `PATH`. If you receive an
 error message that Vagrant is too old despite having installed Vagrant as a
 package, you may be required to uninstall the gem version or modify your `PATH`
-environment.
+environment. If you require the vagrant gem for older projects you should
+consider the [vagrant-wrapper][vagrant_wrapper] gem which helps manage both
+styles of Vagrant installations
+([background details][vagrant_wrapper_background]).
 
 ### <a name="dependencies-virtualization"></a> Virtualbox and/or VMware Fusion/Workstation
 
@@ -234,6 +237,8 @@ Apache 2.0 (see [LICENSE][license])
 [virtualbox_dl]:            https://www.virtualbox.org/wiki/Downloads
 [vagrantfile]:              http://docs.vagrantup.com/v2/vagrantfile/index.html
 [vagrant_providers]:        http://docs.vagrantup.com/v2/providers/index.html
+[vagrant_wrapper]:          https://github.com/org-binbab/gem-vagrant-wrapper
+[vagrant_wrapper_background]: https://github.com/org-binbab/gem-vagrant-wrapper#background---aka-the-vagrant-gem-enigma
 [vmware_plugin]:            http://www.vagrantup.com/vmware
 [fusion_dl]:                http://www.vmware.com/products/fusion/overview.html
 [workstation_dl]:           http://www.vmware.com/products/workstation/
