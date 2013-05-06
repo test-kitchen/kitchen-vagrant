@@ -26,8 +26,8 @@ environment.
 
 ### <a name="dependencies-virtualization"></a> Virtualbox and/or VMware Fusion/Workstation
 
-Currently this driver supports VirtualBox and VMware Fusion/Workstation. Virtualbox 
-is free and is the default provider for Vagrant.
+Currently this driver supports VirtualBox and VMware Fusion/Workstation.
+Virtualbox is free and is the default provider for Vagrant.
 
 [VirtualBox package][virtualbox_dl]
 
@@ -61,7 +61,7 @@ Please read the [Driver usage][driver_usage] page for more details.
 
 ### <a name="config-box"></a> box
 
-(**Required**) This determines which Vagrant box will be used. For more
+**Required** This determines which Vagrant box will be used. For more
 details, please read the Vagrant [machine settings][vagrant_machine_settings]
 page.
 
@@ -82,12 +82,12 @@ the provider name in Vagrant. For example, to use VMware Fusion the provider
 should be `vmware_fusion`. Please see the docs on [providers][vagrant_providers]
 for further details.
 
-By default the value is unset, or `nil`. In this case the driver will use the 
+By default the value is unset, or `nil`. In this case the driver will use the
 Vagrant default provider which at this current time is **virtualbox**
 
 ### <a name="config-customize"></a> customize
 
-A **Hash** of customizations to a Vagrant virtual machine.  Each key/value 
+A **Hash** of customizations to a Vagrant virtual machine.  Each key/value
 pair will be passed to your providers customization block. For example, with
 the default `virtualbox` provider:
 
@@ -119,8 +119,8 @@ other words the default value for `customize` is `{:memory => '256'}`.
 
 ### <a name="config-dry-run"></a> dry\_run
 
-Useful when debugging Vagrant CLI commands. If set to `true`, all Vagrant CLI commands
-will be displayed rather than executed.
+Useful when debugging Vagrant CLI commands. If set to `true`, all Vagrant CLI
+commands will be displayed rather than executed.
 
 The default is unset, or `nil`.
 
