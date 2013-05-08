@@ -36,9 +36,9 @@ module Kitchen
         common_block(arr)
         network_block(arr)
         provider_block(arr)
-        chef_block(arr) if config[:use_vagrant_provision]
-        berkshelf_block(arr) if config[:use_vagrant_berkshelf_plugin]
         synced_folders_block(arr)
+        provisioner_block(arr) if config[:use_vagrant_provision]
+        berkshelf_block(arr) if config[:use_vagrant_berkshelf_plugin]
         arr << %{end}
         arr.join("\n")
       end
@@ -74,6 +74,18 @@ module Kitchen
         arr << %{  end}
       end
 
+      def provisioner_block(arr)
+        provisioner = config[:provisioner].nil? ? 'chef' : config[:provisioner]
+        case provisioner
+        when 'chef'
+          chef_block(arr)
+        when 'puppet'
+          puppet_block(arr)
+        else
+          raise UserError, "Vagrant provisioner not specified."
+        end
+      end
+
       def chef_block(arr)
         arr << %{  c.vm.provision :chef_solo do |chef|}
         arr << %{    chef.log_level = #{vagrant_logger_level}}
@@ -88,6 +100,18 @@ module Kitchen
         if instance.suite.roles_path
           arr << %{    chef.roles_path = "#{instance.suite.roles_path}"}
         end
+        arr << %{  end}
+      end
+
+      def puppet_block(arr)
+        manifests_path = instance.respond_to?('manifests_path') ? instance.manifests_path : 'manifests'
+        module_path = instance.respond_to?('module_path') ? instance.manifests_path : 'modules'
+        manifest_file = instance.respond_to?('manifest_file') ? instance.manifests_path : 'base.pp'
+        arr << %{  c.vm.provision :puppet,}
+        arr << %{    :options => ["--debug", "--verbose", "--summarize", "--reports", "store"] do |puppet|}
+        arr << %{      puppet.manifests_path = "#{manifests_path}"}
+        arr << %{      puppet.module_path = "#{module_path}"}
+        arr << %{      puppet.manifest_file = "#{manifest_file}"}
         arr << %{  end}
       end
 
