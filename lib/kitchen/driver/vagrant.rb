@@ -34,7 +34,7 @@ module Kitchen
     #   dependency hook checks when feature is released
     class Vagrant < Kitchen::Driver::SSHBase
 
-      default_config :customize, {:memory => '256'}
+      default_config :customize, { :memory => '256' }
       default_config :synced_folders, {}
 
       required_config :box
