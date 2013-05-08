@@ -82,8 +82,7 @@ module Kitchen
         if instance.suite.data_bags_path
           arr << %{    chef.data_bags_path = "#{instance.suite.data_bags_path}"}
         end
-        if key_path = instance.suite.encrypted_data_bag_secret_key_path
-          key_path = File.join(config[:kitchen_root], key_path)
+        if key_path
           arr << %{    chef.encrypted_data_bag_secret_key_path = "#{key_path}"}
         end
         if instance.suite.roles_path
@@ -147,6 +146,15 @@ module Kitchen
             arr << %{    p.vmx["#{key}"] = "#{value}"}
           end
         end
+      end
+
+      def key_path
+        return nil if instance.suite.encrypted_data_bag_secret_key_path.nil?
+
+        File.join(
+          config[:kitchen_root],
+          instance.suite.encrypted_data_bag_secret_key_path
+        )
       end
     end
   end
