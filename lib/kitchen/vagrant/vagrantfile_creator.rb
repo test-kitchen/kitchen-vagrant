@@ -50,6 +50,7 @@ module Kitchen
       def common_block(arr)
         arr << %{  c.vm.box = "#{config[:box]}"}
         arr << %{  c.vm.box_url = "#{config[:box_url]}"} if config[:box_url]
+        arr << %{  c.ssh.private_key_path = "#{config[:ssh_key]}"} if config[:ssh_key]
         arr << %{  c.vm.hostname = "#{instance.name}.vagrantup.com"}
       end
 
