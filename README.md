@@ -259,6 +259,16 @@ would like to connect with a different account than Vagrant default user.
 If this value is nil, then Vagrant parameter `config.ssh.default.username`
 will be used (which is usually set to 'vagrant').
 
+### <a name="config-ssh-key"></a> ssh\_key
+
+This is the path to the private key file used for SSH authentication if you
+would like to use your own private ssh key instead of the default vagrant
+insecure private key.
+
+If this value is a relative path, then it will be expanded relative to the
+location of the main Vagrantfile. If this value is nil, then the default
+insecure private key that ships with Vagrant will be used.
+
 The default value is unset, or `nil`.
 
 ## <a name="development"></a> Development
