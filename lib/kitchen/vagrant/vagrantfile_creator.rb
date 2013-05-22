@@ -70,6 +70,8 @@ module Kitchen
           virtualbox_customize(arr)
         when 'vmware_fusion', 'vmware_workstation'
           vmware_customize(arr)
+        when 'rackspace'
+          rackspace_customize(arr)
         end
         arr << %{  end}
       end
@@ -145,6 +147,12 @@ module Kitchen
           else
             arr << %{    p.vmx["#{key}"] = "#{value}"}
           end
+        end
+      end
+
+      def rackspace_customize(arr)
+        config[:customize].each do |key, value|
+          arr << %{    p.#{key} = "#{value}"}
         end
       end
 
