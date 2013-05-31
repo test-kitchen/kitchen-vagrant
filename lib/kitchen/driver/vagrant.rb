@@ -52,14 +52,10 @@ module Kitchen
 
       def converge(state)
         create_vagrantfile
-        ssh_args = build_ssh_args(state)
-        install_omnibus(ssh_args) if config[:require_chef_omnibus]
         if config[:use_vagrant_provision]
           run "vagrant provision"
         else
-          prepare_chef_home(ssh_args)
-          upload_chef_data(ssh_args)
-          run_chef_solo(ssh_args)
+          super
         end
       end
 
