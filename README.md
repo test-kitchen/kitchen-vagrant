@@ -199,6 +199,16 @@ installed. There are several different behaviors available:
 
 The default value is unset, or `nil`.
 
+### <a name="config-username"></a> username
+
+This is the username used for SSH authentication if you
+would like to connect with a different account than Vagrant default user.
+
+If this value is nil, then Vagrant parameter `config.ssh.default.username`
+will be used (which is usually set to 'vagrant').
+
+The default value is unset, or `nil`.
+
 ## <a name="development"></a> Development
 
 * Source hosted at [GitHub][repo]
