@@ -62,8 +62,6 @@ module Kitchen
       end
 
       def provider_block(arr)
-        provider = config[:provider] || 'virtualbox'
-
         arr << %{  c.vm.provider :#{provider} do |p|}
         case provider
         when 'virtualbox'
@@ -122,6 +120,10 @@ module Kitchen
 
       def berksfile
         File.join(config[:kitchen_root], "Berksfile")
+      end
+
+      def provider
+        config[:provider] || ENV['VAGRANT_DEFAULT_PROVIDER'] || 'virtualbox'
       end
 
       def virtualbox_customize(arr)
