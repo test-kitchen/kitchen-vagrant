@@ -34,6 +34,7 @@ module Kitchen
         arr = []
         arr << %{Vagrant.configure("2") do |c|}
         common_block(arr)
+        guest_block(arr)
         network_block(arr)
         provider_block(arr)
         chef_block(arr) if config[:use_vagrant_provision]
@@ -54,6 +55,12 @@ module Kitchen
         arr << %{  c.ssh.username = "#{config[:username]}"} if config[:username]
       end
 
+      def guest_block(arr)
+        if config[:guest]
+          arr << %{  c.vm.guest = #{config[:guest]}}
+        end
+      end
+      
       def network_block(arr)
         Array(config[:network]).each do |network_options|
           options = Array(network_options.dup)
