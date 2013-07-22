@@ -15,4 +15,7 @@ task :stats do
   sh "countloc -r lib/kitchen"
 end
 
-task :default => [ :cane, :tailor, :stats ]
+desc "Run all quality tasks"
+task :quality => [:cane, :tailor, :stats]
+
+task :default => [ :quality ]
