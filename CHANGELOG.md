@@ -1,3 +1,22 @@
+## 0.11.0 / 2013-07-23
+
+### New features
+
+* Pull request #30: Support computed defaults for a select list of pre-determined platforms (see pull request and readme for quick example). (@fnichol)
+* Pull request #25: Add rackspace support. (@josephholsten)
+
+### Improvements
+
+* Pull request #20: Respect `VAGRANT_DEFAULT_PROVIDER` environment variable. (@tmatilai)
+* Pull request #24: Allow to override Vagrant default SSH username. (@gildegoma)
+* Pull request #21: Configure tailor to actually check the code style. (@tmatilai)
+
+### Bug fixes
+
+* Pull request #29, issue #28: Allow the vagrant guest setting to be set in the generated Vagrantfile via the kitchen.yml. (@keiths-osc)
+* Pull request #31: Add some quotes around Vagrantfile value. (@albertsj1)
+
+
 ## 0.10.0 / 2013-05-08
 
 ### New features
