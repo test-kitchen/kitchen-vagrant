@@ -60,6 +60,43 @@ berkshelf-vagrant, so upgrading this Vagrant plugin is recommended.
 
 Please read the [Driver usage][driver_usage] page for more details.
 
+## <a name="default-config"></a> Default Configuration
+
+This driver can determine the Vagrant box name and download URL for a select
+number of platforms. Currently, the following platform names are supported:
+
+```ruby
+---
+platforms:
+- name: ubuntu-10.04
+- name: ubuntu-12.04
+- name: ubuntu-12.10
+- name: ubuntu-13.04
+- name: centos-5.9
+- name: centos-6.4
+- name: debian-7.1.0
+```
+
+This will effectively generate a configuration similar to:
+
+```ruby
+---
+platforms:
+- name: ubuntu-10.04
+  driver_config:
+    box: opscode-ubuntu-10.04
+    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-10.04_provisionerless.box
+- name: ubuntu-12.04
+  driver_config:
+    box: opscode-ubuntu-12.04
+    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box
+- name: ubuntu-12.10
+  driver_config:
+    box: opscode-ubuntu-12.10
+    box_url: ...
+# ...
+```
+
 ## <a name="config"></a> Configuration
 
 ### <a name="config-box"></a> box
