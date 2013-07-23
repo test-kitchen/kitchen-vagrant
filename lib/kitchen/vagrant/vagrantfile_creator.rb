@@ -138,7 +138,7 @@ module Kitchen
 
       def virtualbox_customize(arr)
         config[:customize].each do |key, value|
-          arr << %{    p.customize ["modifyvm", :id, "--#{key}", #{value}]}
+          arr << %{    p.customize ["modifyvm", :id, "--#{key}", "#{value}"]}
         end
       end
 
