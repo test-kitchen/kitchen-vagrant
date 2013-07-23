@@ -60,7 +60,7 @@ module Kitchen
           arr << %{  c.vm.guest = #{config[:guest]}}
         end
       end
-      
+
       def network_block(arr)
         Array(config[:network]).each do |network_options|
           options = Array(network_options.dup)
