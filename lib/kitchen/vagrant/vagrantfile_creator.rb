@@ -37,6 +37,7 @@ module Kitchen
         guest_block(arr)
         network_block(arr)
         provider_block(arr)
+        omnibus_block(arr) if config[:require_chef_omnibus]
         chef_block(arr) if config[:use_vagrant_provision]
         berkshelf_block(arr) if config[:use_vagrant_berkshelf_plugin]
         synced_folders_block(arr)
@@ -80,6 +81,10 @@ module Kitchen
           rackspace_customize(arr)
         end
         arr << %{  end}
+      end
+
+      def omnibus_block(arr)
+        arr << %{  c.omnibus.chef_version = "#{config[:require_chef_omnibus]}"}
       end
 
       def chef_block(arr)
