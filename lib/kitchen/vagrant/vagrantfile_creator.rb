@@ -37,6 +37,7 @@ module Kitchen
         guest_block(arr)
         network_block(arr)
         provider_block(arr)
+        cachier_block(arr) if config[:use_cachier_plugin]
         chef_block(arr) if config[:use_vagrant_provision]
         berkshelf_block(arr) if config[:use_vagrant_berkshelf_plugin]
         synced_folders_block(arr)
@@ -81,6 +82,10 @@ module Kitchen
           rackspace_customize(arr)
         end
         arr << %{  end}
+      end
+
+      def cachier_block(arr)
+        arr << %{  c.cache.auto_detect = true}
       end
 
       def chef_block(arr)
