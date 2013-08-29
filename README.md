@@ -218,7 +218,22 @@ The default is unset, or `nil`.
 Allow the user to specify a collection of synced folders for on each Vagrant
 instance.
 
-The default is an empty Hash, or `{}`.
+The default is an empty Array, or `[]`. The example:
+
+```ruby
+driver_config:
+  synced_folders: [["/Users/mray/ws/cookbooks/pxe_dust/.kitchen/kitchen-vagrant/opt/chef", "/opt/chef"]]
+```
+
+will generate a Vagrantfile configuration similar to:
+
+```ruby
+Vagrant.configure("2") do |config|
+  # ...
+
+  c.vm.synced_folder "/Users/mray/ws/cookbooks/pxe_dust/.kitchen/kitchen-vagrant/opt/chef", "/opt/chef"
+end
+```
 
 ### <a name="config-require-chef-omnibus"></a> require\_chef\_omnibus
 
