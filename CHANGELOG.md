@@ -1,3 +1,14 @@
+## 0.11.1 / 2013-08-29
+
+### Bug fixes
+
+* Pull request #36: README fix for synched_folders. (@mattray)
+
+### Improvements
+
+* Pull request #34: Disable synced folders by default. (@dje)
+
+
 ## 0.11.0 / 2013-07-23
 
 ### New features
