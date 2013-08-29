@@ -2,11 +2,11 @@
 
 ### Bug fixes
 
-* Pull request #36: README fix for synched_folders. (@mattray)
+* Pull request [#36][]: README fix for synched_folders. ([@mattray][])
 
 ### Improvements
 
-* Pull request #34: Disable synced folders by default. (@dje)
+* Pull request [#34][]: Disable synced folders by default. ([@dje][])
 
 
 ## 0.11.0 / 2013-07-23
@@ -111,14 +111,18 @@ The initial release.
 [#29]: https://github.com/opscode/kitchen-vagrant/issues/29
 [#30]: https://github.com/opscode/kitchen-vagrant/issues/30
 [#31]: https://github.com/opscode/kitchen-vagrant/issues/31
+[#34]: https://github.com/opscode/kitchen-vagrant/issues/34
+[#36]: https://github.com/opscode/kitchen-vagrant/issues/36
 [@TheDude05]: https://github.com/TheDude05
 [@albertsj1]: https://github.com/albertsj1
+[@dje]: https://github.com/dje
 [@fnichol]: https://github.com/fnichol
 [@fujin]: https://github.com/fujin
 [@gildegoma]: https://github.com/gildegoma
 [@josephholsten]: https://github.com/josephholsten
 [@keiths-osc]: https://github.com/keiths-osc
 [@martinisoft]: https://github.com/martinisoft
+[@mattray]: https://github.com/mattray
 [@petejkim]: https://github.com/petejkim
 [@sandfish8]: https://github.com/sandfish8
 [@tmatilai]: https://github.com/tmatilai
