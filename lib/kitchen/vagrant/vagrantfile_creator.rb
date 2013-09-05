@@ -36,6 +36,7 @@ module Kitchen
         common_block(arr)
         guest_block(arr)
         network_block(arr)
+        ssh_block(arr)
         provider_block(arr)
         chef_block(arr) if config[:use_vagrant_provision]
         berkshelf_block(arr) if config[:use_vagrant_berkshelf_plugin]
@@ -53,7 +54,6 @@ module Kitchen
         arr << %{  c.vm.box_url = "#{config[:box_url]}"} if config[:box_url]
         arr << %{  c.vm.synced_folder ".", "/vagrant", disabled: true}
         arr << %{  c.vm.hostname = "#{instance.name}.vagrantup.com"}
-        arr << %{  c.ssh.username = "#{config[:username]}"} if config[:username]
       end
 
       def guest_block(arr)
@@ -68,6 +68,19 @@ module Kitchen
           type = options.shift
           arr << %{  c.vm.network(:#{type}, #{options.join(", ")})}
         end
+      end
+
+      def ssh_block(arr)
+        ssh_config = config[:ssh]
+        if ssh_config
+          [:host, :port, :private_key_path, :forward_agent, :forward_x11,
+            :guest_port, :keep_alive, :max_tries, :shell, :timeout].each do |ssh_option|
+            arr << %{  c.ssh.#{ssh_option} = #{ssh_config[ssh_option].inspect}} if ssh_config.has_key? ssh_option
+          end
+          # backwards compatibility to top-level :username config
+          config[:username] = ssh_config[:username] if !config[:username] && ssh_config[:username]
+        end
+        arr << %{  c.ssh.username = "#{config[:username]}"} if config[:username]
       end
 
       def provider_block(arr)

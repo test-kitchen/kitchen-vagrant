@@ -261,6 +261,50 @@ will be used (which is usually set to 'vagrant').
 
 The default value is unset, or `nil`.
 
+### <a name="config-ssh"></a> ssh
+
+A **Hash** of customizations to Vagrants SSH settings used to access your box.
+Please read the [vagrantfile_ssh_settings][Vagrant SSH Settings] page for more
+informations.
+
+Available settings are:
+
+* `username`
+* `host`
+* `port`
+* `private_key_path`
+* `forward_agent`
+* `forward_x11`
+* `guest_port`
+* `keep_alive`
+* `max_tries`
+* `shell`
+* `timeout`
+
+There is **no** default value set.
+
+The Example:
+
+```ruby
+driver_config:
+  ssh:
+    forward_agent: true
+```
+
+Will enable agent forwarding over SSH connections.
+
+The "ssh.username" setting will get overwritten by the "username" setting when
+set. In this example:
+
+```ruby
+driver_config:
+  username: joe
+  ssh:
+    username: vagrant
+```
+
+the effective username setting will be "joe".
+
 ## <a name="development"></a> Development
 
 * Source hosted at [GitHub][repo]
@@ -298,6 +342,7 @@ Apache 2.0 (see [LICENSE][license])
 [vagrant_networking]:       http://docs.vagrantup.com/v2/networking/basic_usage.html
 [virtualbox_dl]:            https://www.virtualbox.org/wiki/Downloads
 [vagrantfile]:              http://docs.vagrantup.com/v2/vagrantfile/index.html
+[vagrantfile_ssh_settings]: http://docs.vagrantup.com/v2/vagrantfile/ssh_settings.html
 [vagrant_providers]:        http://docs.vagrantup.com/v2/providers/index.html
 [vagrant_wrapper]:          https://github.com/org-binbab/gem-vagrant-wrapper
 [vagrant_wrapper_background]: https://github.com/org-binbab/gem-vagrant-wrapper#background---aka-the-vagrant-gem-enigma
