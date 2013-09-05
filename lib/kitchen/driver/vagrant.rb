@@ -168,7 +168,7 @@ module Kitchen
 
       def vagrant_version
         version_string = silently_run("vagrant --version")
-        version_string = version_string.chomp.split(" ").last
+        version_string = version_string.chomp.split(" ").last.gsub(/^v/, '')
       rescue Errno::ENOENT
         raise UserError, "Vagrant #{MIN_VER} or higher is not installed." +
           " Please download a package from #{WEBSITE}."
