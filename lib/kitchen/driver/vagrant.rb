@@ -168,7 +168,12 @@ module Kitchen
 
       def vagrant_version
         version_string = silently_run("vagrant --version")
-        version_string = version_string.chomp.split(" ").last
+
+        if match = version_string.match(/(\d+\.\d+\.\d+)/)
+          match[1]
+        else
+          raise UserError, "Vagrant version could not be determined."
+        end
       rescue Errno::ENOENT
         raise UserError, "Vagrant #{MIN_VER} or higher is not installed." +
           " Please download a package from #{WEBSITE}."
