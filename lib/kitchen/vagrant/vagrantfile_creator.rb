@@ -34,6 +34,7 @@ module Kitchen
         arr = []
         arr << %{Vagrant.configure("2") do |c|}
         common_block(arr)
+        cache_block(arr)
         guest_block(arr)
         network_block(arr)
         provider_block(arr)
@@ -54,6 +55,10 @@ module Kitchen
         arr << %{  c.vm.synced_folder ".", "/vagrant", disabled: true}
         arr << %{  c.vm.hostname = "#{instance.name}.vagrantup.com"}
         arr << %{  c.ssh.username = "#{config[:username]}"} if config[:username]
+      end
+
+      def cache_block(arr)
+        arr << %{  c.cache.auto_detect = "true"} if config[:use_vagrant_cachier]
       end
 
       def guest_block(arr)

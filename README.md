@@ -261,6 +261,16 @@ will be used (which is usually set to 'vagrant').
 
 The default value is unset, or `nil`.
 
+### <a name="config-use-vagrant-cachier"></a> use\_vagrant\_cachier
+
+Determines whether or not this driver will use the [vagrant-cachier][vagrant_cachier] Vagrant
+plugin to cache downloaded package files. If this value is falsey (`nil`,
+`false`) then the setup will not include the vagrant-cachier configuration line.
+
+Use `vagrant plugin install vagrant-cachier` to install the plugin.
+
+The default value is unset, or `nil`.
+
 ## <a name="development"></a> Development
 
 * Source hosted at [GitHub][repo]
@@ -304,3 +314,4 @@ Apache 2.0 (see [LICENSE][license])
 [vmware_plugin]:            http://www.vagrantup.com/vmware
 [fusion_dl]:                http://www.vmware.com/products/fusion/overview.html
 [workstation_dl]:           http://www.vmware.com/products/workstation/
+[vagrant_cachier]:          https://github.com/fgrehm/vagrant-cachier
