@@ -62,8 +62,8 @@ Please read the [Driver usage][driver_usage] page for more details.
 
 ## <a name="default-config"></a> Default Configuration
 
-This driver can determine the Vagrant box name and download URL for a select
-number of platforms. Currently, the following platform names are supported:
+This driver can predict the Vagrant box name and download URL for a select
+number of platforms that have been published by Opscode, such as:
 
 ```ruby
 ---
