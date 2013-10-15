@@ -54,6 +54,9 @@ module Kitchen
         arr << %{  c.vm.synced_folder ".", "/vagrant", disabled: true}
         arr << %{  c.vm.hostname = "#{instance.name}.vagrantup.com"}
         arr << %{  c.ssh.username = "#{config[:username]}"} if config[:username]
+        (config[:custom_commands] || []).each do |line|
+          arr << %{  #{line}}
+        end
       end
 
       def guest_block(arr)
