@@ -109,7 +109,7 @@ module Kitchen
         if flag.is_a?(String) && flag != "latest"
           version = flag.downcase
         end
-        arr << %{  c.omnibus.chef_version = #{version}}
+        arr << %{  c.omnibus.chef_version = #{version.inspect}}
       end
 
       def berkshelf_block(arr)
