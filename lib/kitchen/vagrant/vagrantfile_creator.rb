@@ -103,7 +103,7 @@ module Kitchen
         arr << %{  end}
       end
 
-      def chef_omnibus_block
+      def chef_omnibus_block(arr)
         flag = config[:require_chef_omnibus]
         version = :latest
         if flag.is_a?(String) && flag != "latest"
