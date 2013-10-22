@@ -59,6 +59,7 @@ module Kitchen
       def converge(state)
         create_vagrantfile
         if config[:use_vagrant_provision]
+          install_project_plugins if config[:use_vagrant_bindler_plugin]
           run "vagrant provision"
         else
           super
@@ -88,6 +89,7 @@ module Kitchen
 
       def verify_dependencies
         check_vagrant_version
+        check_bindler_plugin if config[:use_vagrant_bindler_plugin]
         check_berkshelf_plugin if config[:use_vagrant_berkshelf_plugin]
       end
 
@@ -180,6 +182,39 @@ module Kitchen
           raise UserError, "Detected an old version of Vagrant (#{version})." +
             " Please upgrade to version #{MIN_VER} or higher from #{WEBSITE}."
         end
+      end
+
+      def check_bindler_plugin
+        plugins = silently_run("vagrant plugin list").split("\n")
+        if ! plugins.find { |p| p =~ /^bindler\b/ }
+          raise UserError, "bindler plugin was not found in Vagrant." +
+            " Please run `vagrant plugin install bindler' and" +
+            " `vagrant bindler setup' to install bindler."
+        end
+
+        if project_plugin_file.nil?
+          raise UserError, "bindler looks up project dependent vagrant plugins" +
+            " in one of these locations - #{bindler_plugin_files.join(',')}." +
+            " Create one of these files and retry."
+        end
+      end
+
+      def project_plugin_file
+        bindler_plugin_files.each do |filename|
+          file = File.join(config[:kitchen_root], filename)
+          return file if File.exist?(file)
+        end
+      end
+
+      def bindler_plugin_files
+        # Bindler looks for plugins file in these 3 places from the root directory
+        # plugins.json, .vagrant_plugins.json, vagrant/plugins.json
+        %w{plugins.json .vagrant_plugins.json vagrant/plugins.json}
+      end
+
+      def install_project_plugins
+        FileUtils.cp(project_plugin_file, vagrant_root)
+        run "vagrant plugin bundle"
       end
 
       def check_berkshelf_plugin

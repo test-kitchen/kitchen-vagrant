@@ -213,6 +213,12 @@ truthy the opposite behvior will be used.
 
 The default is unset, or `nil`.
 
+### <a name="config-use-vagrant-bindler-plugin"></a> use_vagrant_bindler_plugin
+
+Set this value to `true` to install project dependent vagrant plugins before kitchen
+converge. The `use_vagrant_provision` config parameter should be set to `true` for
+this parameter to work.
+
 ### <a name="config-synced-folders"></a> synced_folders
 
 Allow the user to specify a collection of synced folders for on each Vagrant
