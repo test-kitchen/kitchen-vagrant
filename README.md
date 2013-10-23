@@ -56,6 +56,11 @@ If your project doesn't use Berkshelf then this check will be skipped.
 berkshelf-vagrant. This driver no longer checks for the existance of
 berkshelf-vagrant, so upgrading this Vagrant plugin is recommended.
 
+### <a name="dependencies-bindler"></a> Vagrant Bindler Plugin
+
+This driver ensures that the project dependent vagrant plugins gets installed
+during the converge phase of kitchen-vagrant. See [Bindler Usage](https://github.com/fgrehm/bindler#usage)
+
 ## <a name="installation"></a> Installation and Setup
 
 Please read the [Driver usage][driver_usage] page for more details.

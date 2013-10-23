@@ -207,8 +207,6 @@ module Kitchen
       end
 
       def bindler_plugin_files
-        # Bindler looks for plugins file in these 3 places from the root directory
-        # plugins.json, .vagrant_plugins.json, vagrant/plugins.json
         %w{plugins.json .vagrant_plugins.json vagrant/plugins.json}
       end
 
