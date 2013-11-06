@@ -37,7 +37,10 @@ module Kitchen
         guest_block(arr)
         network_block(arr)
         provider_block(arr)
-        chef_block(arr) if config[:use_vagrant_provision]
+        if config[:use_vagrant_provision]
+          chef_block(arr)
+          chef_omnibus_block(arr) if config[:require_chef_omnibus]
+        end
         berkshelf_block(arr) if config[:use_vagrant_berkshelf_plugin]
         synced_folders_block(arr)
         arr << %{end}
@@ -99,6 +102,15 @@ module Kitchen
           arr << %{    chef.roles_path = "#{instance.suite.roles_path}"}
         end
         arr << %{  end}
+      end
+
+      def chef_omnibus_block(arr)
+        flag = config[:require_chef_omnibus]
+        version = :latest
+        if flag.is_a?(String) && flag != "latest"
+          version = flag.downcase
+        end
+        arr << %{  c.omnibus.chef_version = #{version.inspect}}
       end
 
       def berkshelf_block(arr)
