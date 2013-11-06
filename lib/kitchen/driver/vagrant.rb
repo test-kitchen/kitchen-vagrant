@@ -41,7 +41,7 @@ module Kitchen
       end
       default_config :box_url do |driver|
         "https://opscode-vm-bento.s3.amazonaws.com/vagrant/" \
-           "opscode_#{driver.instance.platform.name}_provisionerless.box"
+          "opscode_#{driver.instance.platform.name}_provisionerless.box"
       end
 
       required_config :box
