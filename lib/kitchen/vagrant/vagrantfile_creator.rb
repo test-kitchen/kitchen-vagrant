@@ -111,8 +111,11 @@ module Kitchen
       end
 
       def synced_folders_block(arr)
-        config[:synced_folders].each do |source, destination|
-          arr << %{  c.vm.synced_folder "#{source}", "#{destination}" }
+        config[:synced_folders].each do |folder|
+          if folder.last.is_a?(Hash) && folder.last.has_key?(:nfs)
+            nfs_string = ", nfs: true"
+          end
+          arr << %{ c.vm.synced_folder "#{folder[0,2].join('", "')}"#{nfs_string}}
         end
       end
 
