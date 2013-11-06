@@ -1,3 +1,16 @@
+## 0.11.2 / 2013-11-05
+
+### Bug fixes
+
+* Remove misleading `quiet` option ([@sethvargo][])
+* Relax dependency on Test Kitchen ([@sethvargo][])
+* Remove deprecated references to `vagrant-berkshelf` ([@sethvargo][])
+
+### Improvements
+
+* Allow users to specify custom SSH private key ([@manul][])
+* Use platform to determine which vagrant box to download (assume Opscode) ([@sethvargo][])
+
 ## 0.11.1 / 2013-08-29
 
 ### Bug fixes
@@ -121,8 +134,10 @@ The initial release.
 [@gildegoma]: https://github.com/gildegoma
 [@josephholsten]: https://github.com/josephholsten
 [@keiths-osc]: https://github.com/keiths-osc
+[@manul]: https://github.com/manul
 [@martinisoft]: https://github.com/martinisoft
 [@mattray]: https://github.com/mattray
 [@petejkim]: https://github.com/petejkim
 [@sandfish8]: https://github.com/sandfish8
+[@sethvargo]: https://github.com/sethvargo
 [@tmatilai]: https://github.com/tmatilai
