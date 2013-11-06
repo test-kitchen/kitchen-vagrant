@@ -145,6 +145,7 @@ module Kitchen
       end
 
       def vmware_customize(arr)
+        arr << %{    p.gui = #{config[:gui]}} if config[:gui]
         config[:customize].each do |key, value|
           if key == :memory
             # XXX: This is kind of a hack to address the fact that
