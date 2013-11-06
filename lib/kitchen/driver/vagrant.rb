@@ -41,7 +41,7 @@ module Kitchen
       end
       default_config :box_url do |driver|
         "https://opscode-vm-bento.s3.amazonaws.com/vagrant/" \
-           "opscode_#{driver.instance.platform.name}_provisionerless.box"
+          "opscode_#{driver.instance.platform.name}_provisionerless.box"
       end
 
       required_config :box
@@ -59,11 +59,7 @@ module Kitchen
 
       def converge(state)
         create_vagrantfile
-        if config[:use_vagrant_provision]
-          run "vagrant provision"
-        else
-          super
-        end
+        super
       end
 
       def setup(state)
@@ -89,7 +85,6 @@ module Kitchen
 
       def verify_dependencies
         check_vagrant_version
-        check_berkshelf_plugin if config[:use_vagrant_berkshelf_plugin]
       end
 
       protected
@@ -157,17 +152,6 @@ module Kitchen
         if Gem::Version.new(version) < Gem::Version.new(MIN_VER)
           raise UserError, "Detected an old version of Vagrant (#{version})." +
             " Please upgrade to version #{MIN_VER} or higher from #{WEBSITE}."
-        end
-      end
-
-      def check_berkshelf_plugin
-        if File.exists?(File.join(config[:kitchen_root], "Berksfile"))
-          plugins = silently_run("vagrant plugin list").split("\n")
-          if ! plugins.find { |p| p =~ /^vagrant-berkshelf\b/ }
-            raise UserError, "Detected a Berksfile but the vagrant-berkshelf" +
-              " plugin was not found in Vagrant. Please run:" +
-              " `vagrant plugin install vagrant-berkshelf' and retry."
-          end
         end
       end
     end
