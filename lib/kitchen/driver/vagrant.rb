@@ -37,10 +37,11 @@ module Kitchen
       default_config :customize, { :memory => '256' }
       default_config :synced_folders, {}
       default_config :box do |driver|
-        driver.default_values("box")
+        "opscode-#{driver.instance.platform.name}"
       end
       default_config :box_url do |driver|
-        driver.default_values("box_url")
+        "https://opscode-vm-bento.s3.amazonaws.com/vagrant/" \
+           "opscode_#{driver.instance.platform.name}_provisionerless.box"
       end
 
       required_config :box
@@ -91,32 +92,10 @@ module Kitchen
         check_berkshelf_plugin if config[:use_vagrant_berkshelf_plugin]
       end
 
-      def default_values(value)
-        (default_boxes[instance.platform.name] || Hash.new)[value]
-      end
-
       protected
 
       WEBSITE = "http://downloads.vagrantup.com/"
       MIN_VER = "1.1.0"
-      OMNITRUCK_PREFIX = "https://opscode-vm-bento.s3.amazonaws.com/vagrant"
-      PLATFORMS = %w{
-        ubuntu-10.04 ubuntu-12.04 ubuntu-12.10 ubuntu-13.04
-        centos-6.4 centos-5.9 debian-7.1.0
-      }
-
-      def default_boxes
-        @default_boxes ||= begin
-          hash = Hash.new
-          PLATFORMS.each do |platform|
-            hash[platform] = Hash.new
-            hash[platform]["box"] = "opscode-#{platform}"
-            hash[platform]["box_url"] =
-              "#{OMNITRUCK_PREFIX}/opscode_#{platform}_provisionerless.box"
-          end
-          hash
-        end
-      end
 
       def run(cmd, options = {})
         cmd = "echo #{cmd}" if config[:dry_run]
