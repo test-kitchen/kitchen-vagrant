@@ -38,7 +38,6 @@ module Kitchen
         network_block(arr)
         provider_block(arr)
         chef_block(arr) if config[:use_vagrant_provision]
-        berkshelf_block(arr) if config[:use_vagrant_berkshelf_plugin]
         synced_folders_block(arr)
         arr << %{end}
         arr.join("\n")
@@ -101,15 +100,6 @@ module Kitchen
           arr << %{    chef.roles_path = "#{instance.suite.roles_path}"}
         end
         arr << %{  end}
-      end
-
-      def berkshelf_block(arr)
-        if File.exists?(berksfile)
-          arr << %{  c.berkshelf.berksfile_path = "#{berksfile}"}
-          arr << %{  if c.berkshelf.respond_to?(:enabled)}
-          arr << %{    c.berkshelf.enabled = true}
-          arr << %{  end}
-        end
       end
 
       def synced_folders_block(arr)
