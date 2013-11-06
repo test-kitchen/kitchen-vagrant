@@ -213,6 +213,16 @@ truthy the opposite behvior will be used.
 
 The default is unset, or `nil`.
 
+### <a name="config-use-cachier-plugin"></a> use_cachier_plugin
+
+Determines whether or not this driver will use the vagrant-cachier Vagrant
+plugin to cache assets. If this value if falsey (`nil`, `false`) then the
+driver will skip the vagrant-cachier dependency check and not activate the
+plugin in the rendered Vagrantfile. If this value is truthy, the Vagrantfile
+will be populated with `cache.auto_detect` set to `true`.
+
+The default is unset, or `nil`.
+
 ### <a name="config-synced-folders"></a> synced_folders
 
 Allow the user to specify a collection of synced folders for on each Vagrant
