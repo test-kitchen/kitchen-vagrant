@@ -44,18 +44,6 @@ software from VMware and then must also purchase the Vagrant VMware plugin.
 [VMware Workstation][workstation_dl]
 
 
-### <a name="dependencies-berkshelf"></a> Vagrant Berkshelf Plugin
-
-If a Berksfile is present in your project's root directory, then this driver
-will check to ensure that the [vagrant-berkshelf][vagrant_berkshelf] plugin is
-installed.
-
-If your project doesn't use Berkshelf then this check will be skipped.
-
-**Note:** Prior to release 1.2.0, then name of the vagrant-berkshelf gem was
-berkshelf-vagrant. This driver no longer checks for the existance of
-berkshelf-vagrant, so upgrading this Vagrant plugin is recommended.
-
 ## <a name="installation"></a> Installation and Setup
 
 Please read the [Driver usage][driver_usage] page for more details.
@@ -203,16 +191,6 @@ be used.
 
 The default is unset, or `nil`.
 
-### <a name="config-use-vagrant-berkshelf-plugin"></a> use_vagrant_berkshelf_plugin
-
-Determines whether or not this driver will use the vagrant-berkself Vagrant
-plugin to assemble cookbook dependencies. If this value if falsey (`nil`,
-`false`) then the driver will skip the vagrant-berkshelf dependency check
-and not activate the plugin in the rendered Vagrantfile. If this value is
-truthy the opposite behvior will be used.
-
-The default is unset, or `nil`.
-
 ### <a name="config-synced-folders"></a> synced_folders
 
 Allow the user to specify a collection of synced folders for on each Vagrant
@@ -302,7 +280,6 @@ Apache 2.0 (see [LICENSE][license])
 [driver_usage]:     http://docs.kitchen-ci.org/drivers/usage
 [chef_omnibus_dl]:  http://www.opscode.com/chef/install/
 
-[vagrant_berkshelf]:        http://rubygems.org/gems/vagrant-berkshelf
 [vagrant_dl]:               http://downloads.vagrantup.com/
 [vagrant_machine_settings]: http://docs.vagrantup.com/v2/vagrantfile/machine_settings.html
 [vagrant_networking]:       http://docs.vagrantup.com/v2/networking/basic_usage.html
