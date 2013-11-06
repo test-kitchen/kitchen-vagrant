@@ -25,6 +25,9 @@ module Kitchen
     # @author Fletcher Nichol <fnichol@nichol.ca>
     class VagrantfileCreator
 
+      include Kitchen::ShellOut
+      include Kitchen::Logging
+
       def initialize(instance, config)
         @instance = instance
         @config = config
@@ -47,6 +50,10 @@ module Kitchen
       private
 
       attr_reader :instance, :config
+
+      def logger
+        instance ? instance.logger : Kitchen.logger
+      end
 
       def common_block(arr)
         arr << %{  c.vm.box = "#{config[:box]}"}
@@ -90,20 +97,20 @@ module Kitchen
         arr << %{    chef.run_list = #{instance.run_list.inspect}}
         arr << %{    chef.json = #{instance.attributes.to_s}}
         if instance.suite.data_bags_path
-          arr << %{    chef.data_bags_path = "#{instance.suite.data_bags_path}"}
+          arr << %{    chef.data_bags_path = #{convert_path(instance.suite.data_bags_path).inspect}}
         end
         if key_path
-          arr << %{    chef.encrypted_data_bag_secret_key_path = "#{key_path}"}
+          arr << %{    chef.encrypted_data_bag_secret_key_path = #{convert_path(key_path).inspect}}
         end
         if instance.suite.roles_path
-          arr << %{    chef.roles_path = "#{instance.suite.roles_path}"}
+          arr << %{    chef.roles_path = #{convert_path(instance.suite.roles_path).inspect}}
         end
         arr << %{  end}
       end
 
       def berkshelf_block(arr)
         if File.exists?(berksfile)
-          arr << %{  c.berkshelf.berksfile_path = "#{berksfile}"}
+          arr << %{  c.berkshelf.berksfile_path = #{convert_path(berksfile).inspect}}
           arr << %{  if c.berkshelf.respond_to?(:enabled)}
           arr << %{    c.berkshelf.enabled = true}
           arr << %{  end}
@@ -175,6 +182,14 @@ module Kitchen
           config[:kitchen_root],
           instance.suite.encrypted_data_bag_secret_key_path
         )
+      end
+
+      def convert_path(path)
+        if RbConfig::CONFIG['host_os'] == 'cygwin'
+          run_command("cygpath --windows #{path.inspect}").chomp
+        else
+          path
+        end
       end
     end
   end
