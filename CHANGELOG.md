@@ -1,3 +1,10 @@
+## 0.11.3 / 2013-11-09
+
+### Bug fixes
+
+* Revert `quiet` option used for Vagrant version checking. ([@fnichol][])
+
+
 ## 0.11.2 / 2013-11-05
 
 ### Bug fixes
@@ -10,6 +17,7 @@
 
 * Allow users to specify custom SSH private key ([@manul][])
 * Use platform to determine which vagrant box to download (assume Opscode) ([@sethvargo][])
+
 
 ## 0.11.1 / 2013-08-29
 
