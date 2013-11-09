@@ -98,7 +98,8 @@ module Kitchen
       end
 
       def silently_run(cmd)
-        run_command(cmd, :live_stream => nil)
+        run_command(cmd,
+          :live_stream => nil, :quiet => logger.debug? ? false : true)
       end
 
       def vagrant_root
