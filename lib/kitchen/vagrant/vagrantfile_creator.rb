@@ -103,8 +103,8 @@ module Kitchen
       end
 
       def synced_folders_block(arr)
-        config[:synced_folders].each do |source, destination|
-          arr << %{  c.vm.synced_folder "#{source}", "#{destination}" }
+        config[:synced_folders].each do |source, destination, options|
+            arr << %{ c.vm.synced_folder "#{source}", "#{destination}"#{(options.nil? ? '' : ", #{options}")} }
         end
       end
 
