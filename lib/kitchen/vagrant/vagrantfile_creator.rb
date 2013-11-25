@@ -105,8 +105,8 @@ module Kitchen
       def synced_folders_block(arr)
         instance_name = instance.name
         config[:synced_folders].each do |source, destination, options|
-          source = source.gsub!("%{instance_name}", instance_name)
-          destination = destination.gsub!("%{instance_name}", instance_name)
+          source.gsub!("%{instance_name}", instance_name)
+          destination.gsub!("%{instance_name}", instance_name)
           opt = (options.nil? ? '' : ", #{options}")
           arr << %{ c.vm.synced_folder "#{source}", "#{destination}"#{opt} }
         end
