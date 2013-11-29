@@ -1,7 +1,7 @@
 # <a name="title"></a> Kitchen::Vagrant
 
-[![Build Status](https://travis-ci.org/opscode/kitchen-vagrant.png)](https://travis-ci.org/opscode/kitchen-vagrant)
-[![Code Climate](https://codeclimate.com/github/opscode/kitchen-vagrant.png)](https://codeclimate.com/github/opscode/kitchen-vagrant)
+[![Build Status](https://travis-ci.org/test-kitchen/kitchen-vagrant.png)](https://travis-ci.org/test-kitchen/kitchen-vagrant)
+[![Code Climate](https://codeclimate.com/github/test-kitchen/kitchen-vagrant.png)](https://codeclimate.com/github/test-kitchen/kitchen-vagrant)
 
 A Test Kitchen Driver for Vagrant.
 
