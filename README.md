@@ -215,22 +215,6 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-### <a name="config-require-chef-omnibus"></a> require\_chef\_omnibus
-
-Determines whether or not a Chef [Omnibus package][chef_omnibus_dl] will be
-installed. There are several different behaviors available:
-
-* `true` - the latest release will be installed. Subsequent converges
-  will skip re-installing if chef is present.
-* `latest` - the latest release will be installed. Subsequent converges
-  will always re-install even if chef is present.
-* `<VERSION_STRING>` (ex: `10.24.0`) - the desired version string will
-  be passed the the install.sh script. Subsequent converges will skip if
-  the installed version and the desired version match.
-* `false` or `nil` - no chef is installed.
-
-The default value is unset, or `nil`.
-
 ### <a name="config-username"></a> username
 
 This is the username used for SSH authentication if you
@@ -280,7 +264,6 @@ Apache 2.0 (see [LICENSE][license])
 [license]:          https://github.com/opscode/kitchen-vagrant/blob/master/LICENSE
 [repo]:             https://github.com/opscode/kitchen-vagrant
 [driver_usage]:     http://docs.kitchen-ci.org/drivers/usage
-[chef_omnibus_dl]:  http://www.opscode.com/chef/install/
 
 [vagrant_dl]:               http://downloads.vagrantup.com/
 [vagrant_machine_settings]: http://docs.vagrantup.com/v2/vagrantfile/machine_settings.html
