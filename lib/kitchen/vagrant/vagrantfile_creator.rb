@@ -88,16 +88,16 @@ module Kitchen
       def chef_block(arr)
         arr << %{  c.vm.provision :chef_solo do |chef|}
         arr << %{    chef.log_level = #{vagrant_logger_level}}
-        arr << %{    chef.run_list = #{instance.run_list.inspect}}
-        arr << %{    chef.json = #{instance.attributes.to_s}}
-        if instance.suite.data_bags_path
-          arr << %{    chef.data_bags_path = "#{instance.suite.data_bags_path}"}
+        arr << %{    chef.run_list = #{run_list.inspect}}
+        arr << %{    chef.json = #{attributes.to_s}}
+        if data_bags_path
+          arr << %{    chef.data_bags_path = "#{data_bags_path}"}
         end
         if key_path
           arr << %{    chef.encrypted_data_bag_secret_key_path = "#{key_path}"}
         end
-        if instance.suite.roles_path
-          arr << %{    chef.roles_path = "#{instance.suite.roles_path}"}
+        if roles_path
+          arr << %{    chef.roles_path = "#{roles_path}"}
         end
         arr << %{  end}
       end
@@ -161,12 +161,52 @@ module Kitchen
       end
 
       def key_path
-        return nil if instance.suite.encrypted_data_bag_secret_key_path.nil?
+        return nil if encrypted_data_bag_secret_key_path.nil?
 
         File.join(
           config[:kitchen_root],
-          instance.suite.encrypted_data_bag_secret_key_path
+          encrypted_data_bag_secret_key_path
         )
+      end
+
+      def run_list
+        if instance.respond_to?(:run_list)
+          instance.run_list
+        else
+          instance.provisioner[:run_list]
+        end
+      end
+
+      def attributes
+        if instance.respond_to?(:attributes)
+          instance.attributes
+        else
+          instance.provisioner[:attributes]
+        end
+      end
+
+      def data_bags_path
+        if instance.suite.respond_to?(:data_bags_path)
+          instance.suite.data_bags_path
+        else
+          instance.provisioner[:data_bags_path]
+        end
+      end
+
+      def roles_path
+        if instance.suite.respond_to?(:roles_path)
+          instance.suite.roles_path
+        else
+          instance.provisioner[:roles_path]
+        end
+      end
+
+      def encrypted_data_bag_secret_key_path
+        if instance.suite.respond_to?(:encrypted_data_bag_secret_key_path)
+          instance.suite.encrypted_data_bag_secret_key_path
+        else
+          instance.provisioner[:encrypted_data_bag_secret_key_path]
+        end
       end
     end
   end
