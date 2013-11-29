@@ -200,7 +200,8 @@ The default is an empty Array, or `[]`. The example:
 
 ```ruby
 driver_config:
-  synced_folders: [["/Users/mray/ws/cookbooks/pxe_dust/.kitchen/kitchen-vagrant/opt/chef", "/opt/chef"]]
+  synced_folders: [["/Users/mray/ws/cookbooks/pxe_dust/.kitchen/kitchen-vagrant/opt/chef", "/opt/chef"],
+                   ["/host_path", "/vm_path", "create: true, disabled: false"]]
 ```
 
 will generate a Vagrantfile configuration similar to:
@@ -210,6 +211,7 @@ Vagrant.configure("2") do |config|
   # ...
 
   c.vm.synced_folder "/Users/mray/ws/cookbooks/pxe_dust/.kitchen/kitchen-vagrant/opt/chef", "/opt/chef"
+  c.vm.synced_folder "/host_path", "/vm_path", create: true, disabled: false
 end
 ```
 
