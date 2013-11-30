@@ -1,3 +1,20 @@
+## 0.12.0 / 2013-11-29
+
+### Breaking changes
+
+* Remove `use_vagrant_provision` configuration option.
+
+### New features
+
+* Major refactor of Vagrantfile generation, to use an ERB template. For more details please consult the `vagrantfile_erb` section of the README. (@fnicho)
+* Add `pre_create_command` option to run optional setup such as Bindler. (@fnichol)
+
+### Improvments
+
+* Pull request #56: Enabled passing options to the synced folders. (@antonio-osorio)
+* Pull request #55: Fix README badges. (@arangamani)
+
+
 ## 0.11.3 / 2013-11-09
 
 ### Bug fixes
