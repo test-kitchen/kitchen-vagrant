@@ -184,6 +184,26 @@ more details.
 
 The default is an empty Array, `[]`.
 
+### <a name="config-pre-create-command"></a> pre\_create\_command
+
+An optional hoook to run a command immediately prior to the
+`vagrant up --no-provisioner` command being executed.
+
+There is an optional token, `{{vagrant_root}}` that can be used in the
+`pre_create_command` string which will be expanded by the driver to be the full
+path to the sandboxed Vagrant root directory containing the Vagrantfile. This
+command will be executed from the directory containing the .kitchen.yml file,
+or the `kitchen_root`.
+
+For example, if your project requires
+[Bindler](https://github.com/fgrehm/bindler), this command could be:
+
+```
+pre_create_command: cp .vagrant_plugins.json {{vagrant_root}}/ && vagrant plugin bundle
+```
+
+The default is unset, or `nil`.
+
 ### <a name="config-synced-folders"></a> synced_folders
 
 Allow the user to specify a collection of synced folders for on each Vagrant

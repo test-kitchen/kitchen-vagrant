@@ -36,6 +36,7 @@ module Kitchen
       default_config :customize, { :memory => '256' }
       default_config :network, []
       default_config :synced_folders, []
+      default_config :pre_create_command, nil
 
       default_config :vagrantfile_erb,
         File.join(File.dirname(__FILE__), "../../../templates/Vagrantfile.erb")
@@ -58,6 +59,7 @@ module Kitchen
 
       def create(state)
         create_vagrantfile
+        run_pre_create_command
         cmd = "vagrant up --no-provision"
         cmd += " --provider=#{config[:provider]}" if config[:provider]
         run cmd
@@ -95,6 +97,11 @@ module Kitchen
         check_vagrant_version
       end
 
+      def instance=(instance)
+        @instance = instance
+        resolve_config!
+      end
+
       protected
 
       WEBSITE = "http://downloads.vagrantup.com/"
@@ -108,6 +115,12 @@ module Kitchen
       def silently_run(cmd)
         run_command(cmd,
           :live_stream => nil, :quiet => logger.debug? ? false : true)
+      end
+
+      def run_pre_create_command
+        if config[:pre_create_command]
+          run(config[:pre_create_command], :cwd => config[:kitchen_root])
+        end
       end
 
       def vagrant_root
@@ -162,6 +175,17 @@ module Kitchen
           debug("------------")
           IO.read(vagrantfile).each_line { |l| debug("#{l.chomp}") }
           debug("------------")
+        end
+      end
+
+      def resolve_config!
+        unless config[:vagrantfile_erb].nil?
+          config[:vagrantfile_erb] =
+            File.expand_path(config[:vagrantfile_erb], config[:kitchen_root])
+        end
+        unless config[:pre_create_command].nil?
+          config[:pre_create_command] =
+            config[:pre_create_command].gsub("{{vagrant_root}}", vagrant_root)
         end
       end
 
