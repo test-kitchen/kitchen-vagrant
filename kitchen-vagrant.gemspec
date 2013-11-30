@@ -11,7 +11,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["fnichol@nichol.ca"]
   gem.description   = "Kitchen::Driver::Vagrant - A Vagrant Driver for Test Kitchen."
   gem.summary       = gem.description
-  gem.homepage      = "https://github.com/opscode/kitchen-vagrant/"
+  gem.homepage      = "https://github.com/test-kitchen/kitchen-vagrant/"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = []
