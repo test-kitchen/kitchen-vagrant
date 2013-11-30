@@ -7,7 +7,7 @@ A Test Kitchen Driver for Vagrant.
 
 This driver works by generating a single Vagrantfile for each instance in a
 sandboxed directory. Since the Vagrantfile is written out on disk, Vagrant
-needs absolutely no knowledge of Test Kitchen. So no Vagrant plugin gem is
+needs absolutely no knowledge of Test Kitchen. So no Vagrant plugins are
 required.
 
 ## <a name="requirements"></a> Requirements
@@ -51,7 +51,8 @@ Please read the [Driver usage][driver_usage] page for more details.
 ## <a name="default-config"></a> Default Configuration
 
 This driver can predict the Vagrant box name and download URL for a select
-number of platforms that have been published by Opscode, such as:
+number of platforms (VirtualBox provider only) that have been published by
+Opscode, such as:
 
 ```ruby
 ---
@@ -93,7 +94,9 @@ platforms:
 details, please read the Vagrant [machine settings][vagrant_machine_settings]
 page.
 
-There is **no** default value set.
+The default will be computed from the platform name of the instance. For
+example, a platform called "fuzzypants-9.000" will produce a default `box`
+value of `"opscode-fuzzypants-9.000"`.
 
 ### <a name="config-box-url"></a> box\_url
 
@@ -101,7 +104,7 @@ The URL that the configured box can be found at. If the box is not installed on
 the system, it will be retrieved from this URL when the virtual machine is
 started.
 
-There is **no** default value set.
+The default will be computed from the platform name of the instance.
 
 ### <a name="config-provider"></a> provider
 
@@ -179,17 +182,7 @@ end
 Please read the Vagrant [networking basic usage][vagrant_networking] page for
 more details.
 
-There is **no** default value set.
-
-### <a name="config-use-vagrant-provision"></a> use_vagrant_provision
-
-Determines whether or not this driver will use a `vagrant provision` shell out
-in the **converge** action. If this value is falsey (`nil`, `false`) the
-behavior from `Kitchen::Driver::SSHBase` will be used, bypassing the Vagrant
-Chef solo provisioner. If this value is truthy, a `vagrant provision` will
-be used.
-
-The default is unset, or `nil`.
+The default is an empty Array, `[]`.
 
 ### <a name="config-synced-folders"></a> synced_folders
 
@@ -222,6 +215,21 @@ would like to connect with a different account than Vagrant default user.
 
 If this value is nil, then Vagrant parameter `config.ssh.default.username`
 will be used (which is usually set to 'vagrant').
+
+### <a name="config-vagrantfile-erb"></a> vagrantfile\_erb
+
+An alternamte Vagrantfile ERB template that will be rendered for use by this
+driver. The binding context for the ERB processing is that of the Driver
+object, which means that methods like `config[:kitchen_root]`, `instance.name`,
+and `instance.provisioner[:run_list]` can be used to compose a custom
+Vagrantfile if necessary.
+
+**Warning:** Be cautious when going down this road as your setup may cease to
+be portable or applicable to other Test Kitchen Drivers such as Ec2 or Docker.
+Using the alternative Vagrantfile template strategy may be a dangerous
+road--be aware.
+
+The default is to use a template which ships with this gem.
 
 ### <a name="config-ssh-key"></a> ssh\_key
 

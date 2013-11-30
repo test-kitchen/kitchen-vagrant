@@ -20,7 +20,6 @@ require 'fileutils'
 require 'rubygems/version'
 
 require 'kitchen'
-require 'kitchen/vagrant/vagrantfile_creator'
 
 module Kitchen
 
@@ -35,10 +34,19 @@ module Kitchen
     class Vagrant < Kitchen::Driver::SSHBase
 
       default_config :customize, { :memory => '256' }
-      default_config :synced_folders, {}
+      default_config :network, []
+      default_config :synced_folders, []
+
+      default_config :vagrantfile_erb,
+        File.join(File.dirname(__FILE__), "../../../templates/Vagrantfile.erb")
+
+      default_config :provider,
+        ENV.fetch('VAGRANT_DEFAULT_PROVIDER', "virtualbox")
+
       default_config :box do |driver|
         "opscode-#{driver.instance.platform.name}"
       end
+
       default_config :box_url do |driver|
         "https://opscode-vm-bento.s3.amazonaws.com/vagrant/" \
           "opscode_#{driver.instance.platform.name}_provisionerless.box"
@@ -51,7 +59,7 @@ module Kitchen
       def create(state)
         create_vagrantfile
         cmd = "vagrant up --no-provision"
-        cmd += " --provider=#{@config[:provider]}" if @config[:provider]
+        cmd += " --provider=#{config[:provider]}" if config[:provider]
         run cmd
         set_ssh_state(state)
         info("Vagrant instance #{instance.to_str} created.")
@@ -114,12 +122,21 @@ module Kitchen
         vagrantfile = File.join(vagrant_root, "Vagrantfile")
         debug("Creating Vagrantfile for #{instance.to_str} (#{vagrantfile})")
         FileUtils.mkdir_p(vagrant_root)
-        File.open(vagrantfile, "wb") { |f| f.write(creator.render) }
+        File.open(vagrantfile, "wb") { |f| f.write(render_template) }
+        debug_vagrantfile(vagrantfile)
         @vagrantfile_created = true
       end
 
-      def creator
-        Kitchen::Vagrant::VagrantfileCreator.new(instance, config)
+      def render_template
+        if File.exists?(template)
+          ERB.new(IO.read(template)).result(binding).gsub(%r{^\s*$\n}, '')
+        else
+          raise ActionFailed, "Could not find Vagrantfile template #{template}"
+        end
+      end
+
+      def template
+        File.expand_path(config[:vagrantfile_erb], config[:kitchen_root])
       end
 
       def set_ssh_state(state)
@@ -138,6 +155,14 @@ module Kitchen
           [tokens.first, tokens.last.gsub(/"/, '')]
         end
         Hash[lines]
+      end
+
+      def debug_vagrantfile(vagrantfile)
+        if logger.debug?
+          debug("------------")
+          IO.read(vagrantfile).each_line { |l| debug("#{l.chomp}") }
+          debug("------------")
+        end
       end
 
       def vagrant_version
