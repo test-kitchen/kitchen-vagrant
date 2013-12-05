@@ -1,3 +1,10 @@
+## 0.13.0 / 2013-12-04
+
+### New features
+
+* Use Opscode's new buckets for Virtual machines, allowing for downloads of VirtualBox and VMware Fusion/Workstation Bento boxes (Vagrant minimal base boxes). ([@sethvargo][])
+
+
 ## 0.12.0 / 2013-11-29
 
 ### Breaking changes
