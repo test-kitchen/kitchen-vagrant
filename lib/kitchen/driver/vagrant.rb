@@ -49,8 +49,7 @@ module Kitchen
       end
 
       default_config :box_url do |driver|
-        "https://opscode-vm-bento.s3.amazonaws.com/vagrant/" \
-          "opscode_#{driver.instance.platform.name}_provisionerless.box"
+        driver.default_box_url
       end
 
       required_config :box
@@ -100,6 +99,14 @@ module Kitchen
       def instance=(instance)
         @instance = instance
         resolve_config!
+      end
+
+      def default_box_url
+        bucket = config[:provider]
+        bucket = 'vmware' if config[:provider] =~ /^vmware_(.+)$/
+
+        "https://opscode-vm-bento.s3.amazonaws.com/vagrant/#{bucket}/" +
+          "opscode_#{instance.platform.name}_chef-provisionerless.box"
       end
 
       protected
