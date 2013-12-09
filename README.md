@@ -260,6 +260,22 @@ road--be aware.
 
 The default is to use a template which ships with this gem.
 
+### <a name="config-vm-hostname"></a> vm\_hostname
+
+Sets the internal hostname for the instance. This is not used when connecting
+to the Vagrant virtual machine.
+
+For more details on this setting please read the
+[config.vm.hostname](http://docs.vagrantup.com/v2/vagrantfile/machine_settings.html)
+section of the Vagrant documentation.
+
+To prevent this value from being rendered in the default Vagrantfile, you can
+set this value to `false`.
+
+The default will be computed from the name of the instance. For
+example, the instance was called "default-fuzz-9" will produce a default
+`vm_hostname` value of `"default-fuzz-9.vagrantup.com"`.
+
 ### <a name="config-ssh-key"></a> ssh\_key
 
 This is the path to the private key file used for SSH authentication if you

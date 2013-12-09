@@ -1,8 +1,10 @@
 Vagrant.configure("2") do |c|
   c.vm.box = "<%= config[:box] %>"
   c.vm.box_url = "<%= config[:box_url] %>"
-  c.vm.hostname = "<%= instance.name %>.vagrantup.com"
 
+<% if config[:vm_hostname] %>
+  c.vm.hostname = "<%= config[:vm_hostname] %>"
+<% end %>
 <% if config[:guest] %>
   c.vm.guest = <%= config[:guest] %>
 <% end %>
