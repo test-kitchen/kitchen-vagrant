@@ -155,6 +155,15 @@ commands will be displayed rather than executed.
 
 The default is unset, or `nil`.
 
+### <a name="config-guest"></a> guest
+
+Set the `config.vm.guest` setting in the default Vagrantfile. For more details
+please read the
+[config.vm.guest](http://docs.vagrantup.com/v2/vagrantfile/machine_settings.html)
+section of the Vagrant documentation.
+
+The default is unset, or `nil`.
+
 ### <a name="config-network"></a> network
 
 An **Array** of network customizations for the virtual machine. Each Array
