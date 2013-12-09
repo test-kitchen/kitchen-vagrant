@@ -1,3 +1,14 @@
+## 0.14.0 / 2013-12-09
+
+### New features
+
+* Add `config[:vm_hostname]` to set config.vm.hostname in Vagrantfile. ([@fnichol][])
+
+### Improvments
+
+* Add `config[:guest]` documentation in README. ([@fnichol][])
+
+
 ## 0.13.0 / 2013-12-04
 
 ### New features
