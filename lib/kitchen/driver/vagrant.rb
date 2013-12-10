@@ -37,6 +37,7 @@ module Kitchen
       default_config :network, []
       default_config :synced_folders, []
       default_config :pre_create_command, nil
+      default_config :create_parallel, false
 
       default_config :vagrantfile_erb,
         File.join(File.dirname(__FILE__), "../../../templates/Vagrantfile.erb")
@@ -59,6 +60,14 @@ module Kitchen
       required_config :box
 
       no_parallel_for :create, :destroy
+
+      def initialize(*args)
+        super
+
+        if vagrant_supports_creating_parallel? && config[:create_parallel]
+          self.class.parallel_for(:create)
+        end
+      end
 
       def create(state)
         create_vagrantfile
@@ -117,6 +126,7 @@ module Kitchen
 
       WEBSITE = "http://downloads.vagrantup.com/"
       MIN_VER = "1.1.0"
+      PARALLEL_CREATE_MIN_VER = "1.4.0"
 
       def run(cmd, options = {})
         cmd = "echo #{cmd}" if config[:dry_run]
@@ -213,6 +223,18 @@ module Kitchen
         if Gem::Version.new(version) < Gem::Version.new(MIN_VER)
           raise UserError, "Detected an old version of Vagrant (#{version})." +
             " Please upgrade to version #{MIN_VER} or higher from #{WEBSITE}."
+        end
+      end
+
+      def vagrant_supports_creating_parallel?
+        version = vagrant_version
+        Gem::Version.new(PARALLEL_CREATE_MIN_VER) <= Gem::Version.new(version)
+      end
+
+      def self.parallel_for(*methods)
+        @serial_actions ||= []
+        methods.each do |method|
+          @serial_actions.delete(method)
         end
       end
     end
