@@ -28,13 +28,19 @@ Vagrant.configure("2") do |c|
   c.vm.synced_folder "<%= l_source %>", "<%= l_destination %>"<%= opt %>
 <% end %>
 
+  
   c.vm.provider :<%= config[:provider] %> do |p|
 <% config[:customize].each do |key, value| %>
   <% case config[:provider]
      when "virtualbox" %>
     p.customize ["modifyvm", :id, "--<%= key %>", "<%= value %>"]
-  <% when "rackspace" %>
+
+  <% when "rackspace","aws" %>
+    <% if(value.kind_of?(Array) || value.kind_of?(Hash)) %> 
+    p.<%= key %> = <%= value %>  
+    <% else %>
     p.<%= key %> = "<%= value%>"
+    <% end %>
   <% when /^vmware_/ %>
     <% if key == :memory %>
       <% unless config[:customize].include?(:memsize) %>
