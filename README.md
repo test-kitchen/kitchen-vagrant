@@ -237,6 +237,35 @@ Vagrant.configure("2") do |config|
 end
 ```
 
+### <a name="config-additional-disk"></a> additional_disk
+
+Allow the user to configure an additional disk for each Vagrant instance.
+
+The default configures no additional disk. This only works for virtualbox.
+
+```ruby
+drive_config
+  additional_disk:
+```
+
+or
+
+```ruby
+driver_config
+  additional_disk:
+    size: 50 # in GB, default is 20GB
+
+will generate a Vagrantfile configuration similar to:
+
+```ruby
+Vagrant.configure("2") do |config|
+    # ...
+
+    vb.customize ['createhd', '--filename', '/tmp/disk2.vdi', '--size', 50 * 1024]
+    vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', '/tmp/disk2.vdi']
+end
+```
+
 ### <a name="config-username"></a> username
 
 This is the username used for SSH authentication if you
