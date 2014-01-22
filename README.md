@@ -167,7 +167,7 @@ The default is unset, or `nil`.
 ### <a name="config-network"></a> network
 
 An **Array** of network customizations for the virtual machine. Each Array
-element is itself an Array of arguments to be passed to the `config.vm.netork`
+element is itself an Array of arguments to be passed to the `config.vm.network`
 method. For example:
 
 ```ruby
