@@ -72,15 +72,15 @@ This will effectively generate a configuration similar to:
 ---
 platforms:
 - name: ubuntu-10.04
-  driver_config:
+  driver:
     box: opscode-ubuntu-10.04
     box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-10.04_provisionerless.box
 - name: ubuntu-12.04
-  driver_config:
+  driver:
     box: opscode-ubuntu-12.04
     box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box
 - name: ubuntu-12.10
-  driver_config:
+  driver:
     box: opscode-ubuntu-12.10
     box_url: ...
 # ...
@@ -123,7 +123,7 @@ pair will be passed to your providers customization block. For example, with
 the default `virtualbox` provider:
 
 ```ruby
-driver_config:
+driver:
   customize:
     memory: 1024
     cpuexecutioncap: 50
@@ -171,7 +171,7 @@ element is itself an Array of arguments to be passed to the `config.vm.network`
 method. For example:
 
 ```ruby
-driver_config:
+driver:
   network:
   - ["forwarded_port", {guest: 80, host: 8080}]
   - ["private_network", {ip: "192.168.33.33"}]
@@ -221,7 +221,7 @@ instance.
 The default is an empty Array, or `[]`. The example:
 
 ```ruby
-driver_config:
+driver:
   synced_folders: [["/Users/mray/ws/cookbooks/pxe_dust/.kitchen/kitchen-vagrant/opt/chef", "/opt/chef"],
                    ["/host_path", "/vm_path", "create: true, disabled: false"]]
 ```
