@@ -167,7 +167,7 @@ The default is unset, or `nil`.
 ### <a name="config-network"></a> network
 
 An **Array** of network customizations for the virtual machine. Each Array
-element is itself an Array of arguments to be passed to the `config.vm.netork`
+element is itself an Array of arguments to be passed to the `config.vm.network`
 method. For example:
 
 ```ruby
@@ -195,7 +195,7 @@ The default is an empty Array, `[]`.
 
 ### <a name="config-pre-create-command"></a> pre\_create\_command
 
-An optional hoook to run a command immediately prior to the
+An optional hook to run a command immediately prior to the
 `vagrant up --no-provisioner` command being executed.
 
 There is an optional token, `{{vagrant_root}}` that can be used in the
@@ -247,7 +247,7 @@ will be used (which is usually set to 'vagrant').
 
 ### <a name="config-vagrantfile-erb"></a> vagrantfile\_erb
 
-An alternamte Vagrantfile ERB template that will be rendered for use by this
+An alternate Vagrantfile ERB template that will be rendered for use by this
 driver. The binding context for the ERB processing is that of the Driver
 object, which means that methods like `config[:kitchen_root]`, `instance.name`,
 and `instance.provisioner[:run_list]` can be used to compose a custom
