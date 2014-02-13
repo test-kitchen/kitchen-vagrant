@@ -143,12 +143,27 @@ module Kitchen
       def create_vagrantfile
         return if @vagrantfile_created
 
+        finalize_synced_folder_config
+
         vagrantfile = File.join(vagrant_root, "Vagrantfile")
         debug("Creating Vagrantfile for #{instance.to_str} (#{vagrantfile})")
         FileUtils.mkdir_p(vagrant_root)
         File.open(vagrantfile, "wb") { |f| f.write(render_template) }
         debug_vagrantfile(vagrantfile)
         @vagrantfile_created = true
+      end
+
+      def finalize_synced_folder_config
+        config[:synced_folders].map! do |source, destination, options|
+          [
+            File.expand_path(
+              source.gsub("%{instance_name}", instance.name),
+              config[:kitchen_root]
+            ),
+            destination.gsub("%{instance_name}", instance.name),
+            options || "nil"
+          ]
+        end
       end
 
       def render_template
