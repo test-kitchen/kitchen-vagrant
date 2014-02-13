@@ -215,15 +215,15 @@ The default is unset, or `nil`.
 
 ### <a name="config-synced-folders"></a> synced_folders
 
-Allow the user to specify a collection of synced folders for on each Vagrant
-instance.
+Allow the user to specify a collection of synced folders on each Vagrant
+instance. Source paths can be relative to the kitchen root.
 
 The default is an empty Array, or `[]`. The example:
 
 ```ruby
 driver:
-  synced_folders: [["/Users/mray/ws/cookbooks/pxe_dust/.kitchen/kitchen-vagrant/opt/chef", "/opt/chef"],
-                   ["/host_path", "/vm_path", "create: true, disabled: false"]]
+  synced_folders: [["data/%{instance_name}", "/opt/instance_data"],
+                   ["/host_path", "/vm_path", "create: true, type: :nfs"]]
 ```
 
 will generate a Vagrantfile configuration similar to:
@@ -232,8 +232,8 @@ will generate a Vagrantfile configuration similar to:
 Vagrant.configure("2") do |config|
   # ...
 
-  c.vm.synced_folder "/Users/mray/ws/cookbooks/pxe_dust/.kitchen/kitchen-vagrant/opt/chef", "/opt/chef"
-  c.vm.synced_folder "/host_path", "/vm_path", create: true, disabled: false
+  c.vm.synced_folder "/Users/mray/cookbooks/pxe_dust/data/default-ubuntu-1204", "/opt/instance_data"
+  c.vm.synced_folder "/host_path", "/vm_path", create: true, type: :nfs
 end
 ```
 
