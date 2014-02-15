@@ -37,6 +37,8 @@ module Kitchen
       default_config :network, []
       default_config :synced_folders, []
       default_config :pre_create_command, nil
+      default_config :ssh, {}
+      default_config :gui, false
 
       default_config :vagrantfile_erb,
         File.join(File.dirname(__FILE__), "../../../templates/Vagrantfile.erb")
