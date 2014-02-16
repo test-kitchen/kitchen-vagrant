@@ -86,6 +86,8 @@ platforms:
 # ...
 ```
 
+Many host wide defaults for Vagrant can be set using `$HOME/.vagrant.d/Vagrantfile`. See the [Vagrantfile documentation][vagrantfile] for more information.
+
 ## <a name="config"></a> Configuration
 
 ### <a name="config-box"></a> box
@@ -142,11 +144,7 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-Please read the [Vagrantfile configuration][vagrantfile] page for
-more details.
-
-By default, each Vagrant virtual machine is configured with 256 MB of RAM. In
-other words the default value for `customize` is `{:memory => '256'}`.
+Please read the "Customizations" sections for [VirtualBox][vagrant_config_vbox] and [VMware][vagrant_config_vmware] for more details.
 
 ### <a name="config-dry-run"></a> dry\_run
 
@@ -323,6 +321,8 @@ Apache 2.0 (see [LICENSE][license])
 [vagrant_networking]:       http://docs.vagrantup.com/v2/networking/basic_usage.html
 [virtualbox_dl]:            https://www.virtualbox.org/wiki/Downloads
 [vagrantfile]:              http://docs.vagrantup.com/v2/vagrantfile/index.html
+[vagrant_config_vbox]:      http://docs.vagrantup.com/v2/virtualbox/configuration.html
+[vagrant_config_vmware]:    http://docs.vagrantup.com/v2/vmware/configuration.html
 [vagrant_providers]:        http://docs.vagrantup.com/v2/providers/index.html
 [vagrant_wrapper]:          https://github.com/org-binbab/gem-vagrant-wrapper
 [vagrant_wrapper_background]: https://github.com/org-binbab/gem-vagrant-wrapper#background---aka-the-vagrant-gem-enigma
