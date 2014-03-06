@@ -72,7 +72,11 @@ module Kitchen
 
       def converge(state)
         create_vagrantfile
-        super
+        if config[:use_vagrant_provision]
+          run "vagrant provision"
+        else
+          super
+        end
       end
 
       def setup(state)
