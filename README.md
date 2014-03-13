@@ -108,13 +108,14 @@ The default will be computed from the platform name of the instance.
 
 ### <a name="config-provider"></a> provider
 
-This determines which Vagrant provider to use when testing and should match
+This determines which Vagrant provider to use. The value should match
 the provider name in Vagrant. For example, to use VMware Fusion the provider
 should be `vmware_fusion`. Please see the docs on [providers][vagrant_providers]
 for further details.
 
 By default the value is unset, or `nil`. In this case the driver will use the
-Vagrant default provider which at this current time is **virtualbox**
+Vagrant [default provider][vagrant_default_provider] which at this current time
+is `virtualbox` unless set by `VAGRANT_DEFAULT_PROVIDER` environment variable.
 
 ### <a name="config-customize"></a> customize
 
@@ -323,6 +324,7 @@ Apache 2.0 (see [LICENSE][license])
 [vagrant_networking]:       http://docs.vagrantup.com/v2/networking/basic_usage.html
 [virtualbox_dl]:            https://www.virtualbox.org/wiki/Downloads
 [vagrantfile]:              http://docs.vagrantup.com/v2/vagrantfile/index.html
+[vagrant_default_provider]: http://docs.vagrantup.com/v2/providers/default.html
 [vagrant_providers]:        http://docs.vagrantup.com/v2/providers/index.html
 [vagrant_wrapper]:          https://github.com/org-binbab/gem-vagrant-wrapper
 [vagrant_wrapper_background]: https://github.com/org-binbab/gem-vagrant-wrapper#background---aka-the-vagrant-gem-enigma
