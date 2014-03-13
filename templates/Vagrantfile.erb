@@ -20,12 +20,8 @@ Vagrant.configure("2") do |c|
 <% end %>
 
   c.vm.synced_folder ".", "/vagrant", disabled: true
-<% config[:synced_folders].each do |source, destination, options|
-     l_source = source.gsub("%{instance_name}", instance.name)
-     l_destination = destination.gsub("%{instance_name}", instance.name)
-     opt = (options.nil? ? '' : ", #{options}")
-%>
-  c.vm.synced_folder "<%= l_source %>", "<%= l_destination %>"<%= opt %>
+<% config[:synced_folders].each do |source, destination, options| %>
+  c.vm.synced_folder "<%= source %>", "<%= destination %>", <%= options %>
 <% end %>
 
   c.vm.provider :<%= config[:provider] %> do |p|
