@@ -68,6 +68,7 @@ module Kitchen
         run cmd
         set_ssh_state(state)
         info("Vagrant instance #{instance.to_str} created.")
+        run_post_create_command
       end
 
       def converge(state)
@@ -131,6 +132,12 @@ module Kitchen
       def run_pre_create_command
         if config[:pre_create_command]
           run(config[:pre_create_command], :cwd => config[:kitchen_root])
+        end
+      end
+
+      def run_post_create_command
+        if config[:post_create_command]
+          run(config[:post_create_command], :cwd => config[:kitchen_root])
         end
       end
 
@@ -212,6 +219,10 @@ module Kitchen
         unless config[:pre_create_command].nil?
           config[:pre_create_command] =
             config[:pre_create_command].gsub("{{vagrant_root}}", vagrant_root)
+        end
+        unless config[:post_create_command].nil?
+          config[:post_create_command] =
+            config[:post_create_command].gsub("{{vagrant_root}}", vagrant_root)
         end
       end
 

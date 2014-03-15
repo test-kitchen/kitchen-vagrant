@@ -212,6 +212,19 @@ pre_create_command: cp .vagrant_plugins.json {{vagrant_root}}/ && vagrant plugin
 
 The default is unset, or `nil`.
 
+### <a name="config-post-create-command"></a> post\_create\_command
+
+An optional hook to run a command immediately after the
+`vagrant up --no-provisioner` command is executed.
+
+There is an optional token, `{{vagrant_root}}` that can be used in the
+`post_create_command` string which will be expanded by the driver to be the full
+path to the sandboxed Vagrant root directory containing the Vagrantfile. This
+command will be executed from the directory containing the .kitchen.yml file,
+or the `kitchen_root`.
+
+The default is unset, or `nil`.
+
 ### <a name="config-synced-folders"></a> synced_folders
 
 Allow the user to specify a collection of synced folders on each Vagrant
