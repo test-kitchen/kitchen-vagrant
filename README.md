@@ -221,8 +221,9 @@ The default is an empty Array, or `[]`. The example:
 
 ```ruby
 driver:
-  synced_folders: [["data/%{instance_name}", "/opt/instance_data"],
-                   ["/host_path", "/vm_path", "create: true, type: :nfs"]]
+  synced_folders: 
+    - ["data/%{instance_name}", "/opt/instance_data"],
+    - ["/host_path", "/vm_path", "create: true, type: :nfs"]
 ```
 
 will generate a Vagrantfile configuration similar to:
