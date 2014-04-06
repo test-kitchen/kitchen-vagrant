@@ -316,7 +316,7 @@ Apache 2.0 (see [LICENSE][license])
 [issues]:           https://github.com/opscode/kitchen-vagrant/issues
 [license]:          https://github.com/opscode/kitchen-vagrant/blob/master/LICENSE
 [repo]:             https://github.com/opscode/kitchen-vagrant
-[driver_usage]:     http://docs.kitchen-ci.org/drivers/usage
+[driver_usage]:     http://kitchen.ci/docs/getting-started/adding-platform
 
 [vagrant_dl]:               http://downloads.vagrantup.com/
 [vagrant_machine_settings]: http://docs.vagrantup.com/v2/vagrantfile/machine_settings.html
