@@ -12,7 +12,10 @@ Vagrant.configure("2") do |c|
   c.ssh.username = "<%= config[:username] %>"
 <% end %>
 <% if config[:ssh_key] %>
-  c.ssh.private_key_path = "<%= config[:ssh_key] %>"
+  c.ssh.private_key_path = <%= Array(config[:ssh_key]) %>
+<% end %>
+<% if config[:ssh_forward_agent] %>
+  c.ssh.forward_agent = <%= config[:ssh_forward_agent] %>
 <% end %>
 
 <% Array(config[:network]).each do |opts| %>
