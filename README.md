@@ -286,7 +286,15 @@ If this value is a relative path, then it will be expanded relative to the
 location of the main Vagrantfile. If this value is nil, then the default
 insecure private key that ships with Vagrant will be used.
 
+You can also specify multiple private keys by setting this to be an array.
+
+For more details please read the [config.ssh](http://docs.vagrantup.com/v2/vagrantfile/ssh_settings.html) section of the Vagrant documentation.
+
 The default value is unset, or `nil`.
+
+### <a name="config-ssh-forward-agent"></a> ssh\_forward\_agent
+
+When set to true agent forwarding over SSH connection is enabled.
 
 ## <a name="development"></a> Development
 
