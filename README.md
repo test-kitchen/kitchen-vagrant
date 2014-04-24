@@ -74,11 +74,11 @@ platforms:
 - name: ubuntu-10.04
   driver:
     box: opscode-ubuntu-10.04
-    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-10.04_provisionerless.box
+    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/bento_ubuntu-10.04_provisionerless.box
 - name: ubuntu-12.04
   driver:
     box: opscode-ubuntu-12.04
-    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box
+    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/bento_ubuntu-12.04_provisionerless.box
 - name: ubuntu-12.10
   driver:
     box: opscode-ubuntu-12.10
