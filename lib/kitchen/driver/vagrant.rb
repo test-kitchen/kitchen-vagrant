@@ -110,7 +110,7 @@ module Kitchen
         bucket = 'vmware' if config[:provider] =~ /^vmware_(.+)$/
 
         "https://opscode-vm-bento.s3.amazonaws.com/vagrant/#{bucket}/" +
-          "opscode_#{instance.platform.name}_chef-provisionerless.box"
+          "bento_#{instance.platform.name}_chef-provisionerless.box"
       end
 
       protected
