@@ -1,3 +1,15 @@
+## 0.15.0 / 2014-04-28
+
+### New features
+
+* Support vagrant-softlayer plugin
+
+### Improvements
+
+* Improved/updated README documentation + typos
+* Remove default memory setting
+* Fix relative paths in synced folders
+
 ## 0.14.0 / 2013-12-09
 
 ### New features
