@@ -185,6 +185,7 @@ module Kitchen
         state[:username] = hash["User"]
         state[:ssh_key] = hash["IdentityFile"]
         state[:port] = hash["Port"]
+        state[:proxy_command] = hash["ProxyCommand"] if hash["ProxyCommand"]
       end
 
       def vagrant_ssh_config
