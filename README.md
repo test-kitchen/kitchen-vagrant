@@ -154,12 +154,19 @@ commands will be displayed rather than executed.
 
 The default is unset, or `nil`.
 
+### <a name="config-boot-timeout"></a> boot\_timeout
+
+Set the `config.vm.boot_timeout` setting, which determines how long
+Vagrant will wait for the machine to boot. See
+[config.vm.boot_timeout][vagrant_machine_settings] for more details.
+
+The default is unset, or `nil`.
+
 ### <a name="config-guest"></a> guest
 
 Set the `config.vm.guest` setting in the default Vagrantfile. For more details
 please read the
-[config.vm.guest](http://docs.vagrantup.com/v2/vagrantfile/machine_settings.html)
-section of the Vagrant documentation.
+[config.vm.guest][vagrant_machine_settings] section of the Vagrant documentation.
 
 The default is unset, or `nil`.
 
