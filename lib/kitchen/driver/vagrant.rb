@@ -56,6 +56,8 @@ module Kitchen
         driver.default_box_url
       end
 
+      default_config :box_version, nil
+
       required_config :box
 
       no_parallel_for :create, :destroy
