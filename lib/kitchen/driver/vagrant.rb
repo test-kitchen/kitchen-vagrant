@@ -21,6 +21,9 @@ require 'rubygems/version'
 
 require 'kitchen'
 
+# Useful VBox Machine Class
+require 'kitchen/provider/machine'
+
 module Kitchen
 
   module Driver
@@ -31,7 +34,7 @@ module Kitchen
     #
     # @todo Vagrant installation check and version will be placed into any
     #   dependency hook checks when feature is released
-    class Vagrant < Kitchen::Driver::SSHBase
+    class Vagrant < Kitchen::Driver::Base
 
       default_config :customize, {}
       default_config :network, []
@@ -73,7 +76,7 @@ module Kitchen
         cmd += " --no-provision" unless config[:provision]
         cmd += " --provider=#{config[:provider]}" if config[:provider]
         run cmd
-        set_ssh_state(state)
+        set_state(state)
         info("Vagrant instance #{instance.to_str} created.")
       end
 
@@ -197,16 +200,6 @@ module Kitchen
         File.expand_path(config[:vagrantfile_erb], config[:kitchen_root])
       end
 
-      def set_ssh_state(state)
-        hash = vagrant_ssh_config
-
-        state[:hostname] = hash["HostName"]
-        state[:username] = hash["User"]
-        state[:ssh_key] = hash["IdentityFile"]
-        state[:port] = hash["Port"]
-        state[:proxy_command] = hash["ProxyCommand"] if hash["ProxyCommand"]
-      end
-
       def vagrant_ssh_config
         output = run("vagrant ssh-config", :live_stream => nil)
         lines = output.split("\n").map do |line|
@@ -248,6 +241,28 @@ module Kitchen
         if Gem::Version.new(version) < Gem::Version.new(MIN_VER)
           raise UserError, "Detected an old version of Vagrant (#{version})." +
             " Please upgrade to version #{MIN_VER} or higher from #{WEBSITE}."
+        end
+      end
+
+      def set_state(state)
+        hash = vagrant_ssh_config
+
+        state[:hostname] = hash["HostName"]
+        state[:username] = hash["User"]
+        state[:ssh_key] = hash["IdentityFile"]
+        state[:port] = hash["Port"]
+        refresh_forwarded_port(state)
+      end
+
+      # Get forwarded_port from Provider
+      #
+      # Working with: VirtualBox
+      def refresh_forwarded_port(state)
+        case config[:provider]
+        when "virtualbox"
+          Provider::VirtualBox::Machine.new(vagrant_root) do |machine|
+            state[:port] = machine.host_port(default_port)
+          end
         end
       end
     end

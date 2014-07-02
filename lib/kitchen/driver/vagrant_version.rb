@@ -21,6 +21,6 @@ module Kitchen
   module Driver
 
     # Version string for Vagrant Kitchen driver
-    VAGRANT_VERSION = "0.15.0"
+    VAGRANT_VERSION = '0.16.0'
   end
 end

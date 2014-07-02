@@ -80,6 +80,12 @@ platforms:
 - name: ubuntu-12.10
   driver:
     box: chef/ubuntu-12.10
+- name: windows-2012R2
+  driver:
+    box: windows-2012R2
+    box_url: https://s3.amazonaws.com/box-cutter-us-east-1-cloudtrail/windows/virtualbox4.3.12/win2012r2-datacenter-chef11.12.8.box
+  transport:
+    name: winrm
 # ...
 ```
 
