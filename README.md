@@ -79,6 +79,12 @@ platforms:
   driver:
     box: opscode-ubuntu-12.04
     box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box
+- name: windows2012r2_cloud
+  driver:
+    box: windows2012r2_cloud
+    box_url: https://s3.amazonaws.com/box-cutter-us-east-1-cloudtrail/windows/virtualbox4.3.12/win2012r2-datacenter-chef11.12.8.box
+  transport:
+    name: winrm
 - name: ubuntu-12.10
   driver:
     box: opscode-ubuntu-12.10
