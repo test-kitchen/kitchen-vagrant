@@ -79,6 +79,11 @@ platforms:
   driver:
     box: opscode-ubuntu-12.04
     box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box
+- name: windows2012r2_cloud
+  driver:
+    box: windows2012r2_cloud
+    box_url: https://s3.amazonaws.com/box-cutter-us-east-1-cloudtrail/windows/virtualbox4.3.12/win2012r2-datacenter-chef11.12.8.box
+    guest: :windows
 - name: ubuntu-12.10
   driver:
     box: opscode-ubuntu-12.10
@@ -156,7 +161,13 @@ The default is unset, or `nil`.
 
 ### <a name="config-guest"></a> guest
 
-Set the `config.vm.guest` setting in the default Vagrantfile. For more details
+If you are using a Windows box you MUST set this to:
+```
+driver:
+  guest: :windows
+```
+This will let test-kitchen know that it need to use WinRM comunication protocol
+instead of SSH. It also set the `config.vm.guest` setting in the default Vagrantfile. For more details
 please read the
 [config.vm.guest](http://docs.vagrantup.com/v2/vagrantfile/machine_settings.html)
 section of the Vagrant documentation.
