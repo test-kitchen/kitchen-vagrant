@@ -16,36 +16,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "mixlib/shellout"
+require 'mixlib/shellout'
 
 module Kitchen
 
   module Provider
-    
+
     module VirtualBox
       # This class will simulate one Virtual Box Machine
       # It will give us the latest Forwarded Ports list
-      # where we can check if the port has changed 
+      # where we can check if the port has changed
       #
-      # Supported Virtual Box 
-      #   => version 4.2.x 
-      #   => version 4.3.x 
+      # Supported Virtual Box
+      #   => version 4.2.x
+      #   => version 4.3.x
       class Machine
-        # The UUID of the virtual machine 
+        # The UUID of the virtual machine
         attr_reader :uuid
 
-        # The forwarded_ports of the virtual machine 
+        # The forwarded_ports of the virtual machine
         attr_reader :forwarded_ports
 
 
         def initialize(root_path, uuid=nil)
           # Did we get the UUID
           @uuid = uuid
-          
-          # The VBoxID that Vagrant spun up  
-          id = File.expand_path(File.join(root_path, %W{.vagrant machines default virtualbox id}))
-            
-          # If UUID was not given but the VBoxID exist. 
+
+          # The VBoxID that Vagrant spun up
+          id = File.expand_path(File.join(root_path,
+            %w{.vagrant machines default virtualbox id}))
+
+          # If UUID was not given but the VBoxID exist.
           @uuid = File.read(id) if File.exists?(id) && @uuid.nil?
 
           # Report that the VM is missing.
@@ -57,9 +58,9 @@ module Kitchen
         def execute(*command)
           # Easy shellout method to execute something! :D
           command.insert(0, vboxmanage)
-          c = Mixlib::ShellOut.new(*command.join(" "), :timeout => 10800)
+          c = Mixlib::ShellOut.new(*command.join(' '), :timeout => 10800)
           c.run_command
-          c.error! 
+          c.error!
           c
         end
 
@@ -70,20 +71,20 @@ module Kitchen
 
         def get_vboxmanage_path
           # Set the path to VBoxManage
-          vboxmanage_path = "VBoxManage"
+          vboxmanage_path = 'VBoxManage'
 
-          if RUBY_PLATFORM =~ /cygwin|mswin|mingw|bccwin|wince|emx/ 
+          if RUBY_PLATFORM =~ /cygwin|mswin|mingw|bccwin|wince|emx/
             # On Windows, search for VBOX_INSTALL_PATH environmental
             # variable to find VBoxManage.
-            if ENV.has_key?("VBOX_INSTALL_PATH")
+            if ENV.has_key?('VBOX_INSTALL_PATH')
               # Get the path.
-              path = ENV["VBOX_INSTALL_PATH"]
+              path = ENV['VBOX_INSTALL_PATH']
 
               # There can actually be multiple paths in here, so we need to
               # split by the separator ";" and see which is a good one.
               path.split(";").each do |single|
                 # Make sure it ends with a \
-                single += "\\" if !single.end_with?("\\")
+                single += '\\' if !single.end_with?('\\')
 
                 # If the executable exists, then set it as the main path
                 # and break out
@@ -103,7 +104,7 @@ module Kitchen
 
           results = []
           current_nic = nil
-          info = execute("showvminfo", uuid, "--machinereadable")
+          info = execute('showvminfo', uuid, '--machinereadable')
           info.stdout.split("\n").each do |line|
             # This is how we find the nic that a FP is attached to,
             # since this comes first.
@@ -135,7 +136,7 @@ module Kitchen
 
         def exists?(uuid=nil)
           uuid ||= @uuid
-          execute("showvminfo", uuid).exitstatus == 0
+          execute('showvminfo', uuid).exitstatus == 0
         end
 
         # Command to manage Virtual Box `vboxmanage`
@@ -149,9 +150,6 @@ module Kitchen
         end
 
       end # => Machine
-
     end # => VirtualBox
-
   end # => Provider
-
 end # => Kitchen

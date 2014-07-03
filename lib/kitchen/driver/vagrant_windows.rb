@@ -196,7 +196,7 @@ module Kitchen
       end
 
       # Getting WinRM forwarded_port from Provider
-      # 
+      #
       # Working with: VirtualBox
       def refresh_winrm_forwarded_port(state)
         case config[:provider]
