@@ -115,7 +115,7 @@ module Kitchen
 
       protected
 
-      WEBSITE = "http://downloads.vagrantup.com/"
+      WEBSITE = "http://www.vagrantup.com/downloads.html"
       MIN_VER = "1.1.0"
 
       def run(cmd, options = {})
