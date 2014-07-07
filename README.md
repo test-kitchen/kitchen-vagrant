@@ -318,7 +318,7 @@ Apache 2.0 (see [LICENSE][license])
 [repo]:             https://github.com/opscode/kitchen-vagrant
 [driver_usage]:     http://kitchen.ci/docs/getting-started/adding-platform
 
-[vagrant_dl]:               http://downloads.vagrantup.com/
+[vagrant_dl]:               http://www.vagrantup.com/downloads.html
 [vagrant_machine_settings]: http://docs.vagrantup.com/v2/vagrantfile/machine_settings.html
 [vagrant_networking]:       http://docs.vagrantup.com/v2/networking/basic_usage.html
 [virtualbox_dl]:            https://www.virtualbox.org/wiki/Downloads
