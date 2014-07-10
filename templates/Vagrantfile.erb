@@ -33,8 +33,10 @@ Vagrant.configure("2") do |c|
   <% case config[:provider]
      when "virtualbox" %>
     p.customize ["modifyvm", :id, "--<%= key %>", "<%= value %>"]
-  <% when "rackspace", "libvirt" %>
+  <% when "rackspace" %>
     p.<%= key %> = "<%= value%>"
+  <% when "libvirt" %>
+    p.<%= key %> = <%= value%>
   <% when /^vmware_/ %>
     <% if key == :memory %>
       <% unless config[:customize].include?(:memsize) %>
