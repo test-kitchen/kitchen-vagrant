@@ -31,7 +31,7 @@ module Kitchen
     #
     # @todo Vagrant installation check and version will be placed into any
     #   dependency hook checks when feature is released
-    class Vagrant < Kitchen::Driver::SSHBase
+    class Vagrant < Kitchen::Driver::CommonBase
 
       default_config :customize, {}
       default_config :network, []
