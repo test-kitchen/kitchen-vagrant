@@ -57,6 +57,7 @@ module Kitchen
       end
 
       default_config :box_version, nil
+      default_config :box_check_update, nil
 
       required_config :box
 

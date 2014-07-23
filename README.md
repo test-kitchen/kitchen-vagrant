@@ -112,6 +112,10 @@ The default will be computed from the platform name of the instance.
 
 The [version][vagrant_versioning] of the configured box.
 
+### <a name="config-box-check-update"></a> box\_check\_update
+
+Whether to check for box updates (enabled by default).
+
 ### <a name="config-provider"></a> provider
 
 This determines which Vagrant provider to use. The value should match
