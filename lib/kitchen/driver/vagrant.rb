@@ -37,6 +37,7 @@ module Kitchen
       default_config :network, []
       default_config :synced_folders, []
       default_config :pre_create_command, nil
+      default_config :extenions, []
 
       default_config :vagrantfile_erb,
         File.join(File.dirname(__FILE__), "../../../templates/Vagrantfile.erb")
@@ -144,6 +145,7 @@ module Kitchen
         return if @vagrantfile_created
 
         finalize_synced_folder_config
+        process_extensions
 
         vagrantfile = File.join(vagrant_root, "Vagrantfile")
         debug("Creating Vagrantfile for #{instance.to_str} (#{vagrantfile})")
@@ -163,6 +165,29 @@ module Kitchen
             destination.gsub("%{instance_name}", instance.name),
             options || "nil"
           ]
+        end
+      end
+
+      def process_extensions
+        config[:extensions].map! do |ext|
+          ext['settings'].each_with_object({}) do |namespace, config, new_ext|
+            new_ext[namespace] = process_extension_config(config)
+          end.merge('plugin' => ext.fetch('plugin') { false })
+        end
+      end
+
+      def process_extension_config(config)
+        config.each_with_object({}) do |key, value, new_config|
+          new_config[key] = case value
+          when Symbol
+            ":#{value}"
+          when Array
+            value.join(', ').prepend('[').concat(']')
+          when Hash
+            process_configuration(value)
+          else
+            value
+          end
         end
       end
 

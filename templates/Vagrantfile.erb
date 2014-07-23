@@ -43,4 +43,19 @@ Vagrant.configure("2") do |c|
 <% end %>
   end
 
+<% config[:extensions].each do |ext| %>
+  <% tab = '' %>
+  <% if ext['plugin'] %>
+  if Vagrant.has_plugin?(<%= ext['plugin'] %>)
+    <% tab = '  ' %>
+  <% end %>
+  <% ext['namespaces'].each do |namespace, config| %>
+    <% config.each do |key, value| %>
+  <%= tab %>c.<%= namespace %>.<%= key %> = <%= value %>
+  <% end %>
+  <% if ext['plugin'] %>
+  end
+  <% end %>
+<% end %>
+
 end
