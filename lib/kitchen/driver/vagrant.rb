@@ -169,25 +169,43 @@ module Kitchen
       end
 
       def process_extensions
-        config[:extensions].map! do |ext|
-          ext['settings'].each_with_object({}) do |namespace, config, new_ext|
-            new_ext[namespace] = process_extension_config(config)
-          end.merge('plugin' => ext.fetch('plugin') { false })
+        if logger.debug?
+          debug("Raw Vagrantfile extensions: #{config[:extensions]}")
+        end
+
+        config[:extensions].each do |ext|
+          settings = ext.fetch(:settings)
+          settings.merge!(settings) do |_namespace, _options, options|
+            options.merge!(options) do |_key, _value, value|
+              literal_ruby_syntax(value)
+            end
+          end
+        end
+
+        if logger.debug?
+          debug("Processed Vagrantfile extensions: #{config[:extensions]}")
         end
       end
 
-      def process_extension_config(config)
-        config.each_with_object({}) do |key, value, new_config|
-          new_config[key] = case value
-          when Symbol
-            ":#{value}"
-          when Array
-            value.join(', ').prepend('[').concat(']')
-          when Hash
-            process_configuration(value)
-          else
-            value
+      def literal_ruby_syntax(value)
+        case value
+        when String
+          return value if value.chr == ':'
+
+          %Q("#{value}")
+        when Array
+          value.map { |x| literal_ruby_syntax(x) }
+            .join(', ').prepend('[').concat(']')
+        when Hash
+          value.merge(value) do |_x, _y, y|
+            if y.kind_of?(String)
+              y.chr == ':' ? y[1..-1].to_sym : y
+            else
+              y
+            end
           end
+        else
+          value
         end
       end
 
