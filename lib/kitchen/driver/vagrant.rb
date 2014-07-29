@@ -230,6 +230,7 @@ module Kitchen
 
         state[:hostname] = hash["HostName"]
         state[:username] = hash["User"]
+        state[:password] = 'vagrant' unless config[:password]
         state[:ssh_key] = hash["IdentityFile"]
         state[:port] = hash["Port"]
         refresh_forwarded_port(state)
