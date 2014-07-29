@@ -174,8 +174,8 @@ module Kitchen
 
       def adjust_vagrantfiles_relativity
         config[:vagrantfiles].map! do |vagrantfile|
-          Pathname.new(vagrantfile).expand_path(config[:kitchen_root])
-            .relative_path_from(Pathname.new(template)).to_s
+          Pathname.new(vagrantfile).expand_path(config[:kitchen_root]).
+            relative_path_from(Pathname.new(template)).to_s
         end
       end
 
