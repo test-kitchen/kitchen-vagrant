@@ -108,6 +108,12 @@ started.
 
 The default will be computed from the platform name of the instance.
 
+### <a name="config-box-download-insecure"></a> box\_download\_insecure
+
+If true, then SSL certificates from the server will not be verified
+when downloading the box from `box_url`. By default, if the URL is
+an HTTPS URL, then SSL certs will be verified.
+
 ### <a name="config-provider"></a> provider
 
 This determines which Vagrant provider to use. The value should match
