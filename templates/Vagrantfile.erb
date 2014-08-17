@@ -1,7 +1,7 @@
 <% config[:vagrantfiles].each do |vagrantfile|
    #REVIEW: should this check for file existance or fail?
 %>
-require_relative '<%= vagrantfile %>'
+require '<%= vagrantfile %>'
 
 <% end %>
 Vagrant.configure("2") do |c|
