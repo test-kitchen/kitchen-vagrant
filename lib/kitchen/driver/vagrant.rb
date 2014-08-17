@@ -149,7 +149,7 @@ module Kitchen
         return if @vagrantfile_created
 
         finalize_synced_folder_config
-        adjust_vagrantfiles_relativity
+        expand_vagrantfile_paths
 
         vagrantfile = File.join(vagrant_root, "Vagrantfile")
         debug("Creating Vagrantfile for #{instance.to_str} (#{vagrantfile})")
@@ -172,10 +172,9 @@ module Kitchen
         end
       end
 
-      def adjust_vagrantfiles_relativity
+      def expand_vagrantfile_paths
         config[:vagrantfiles].map! do |vagrantfile|
-          Pathname.new(vagrantfile).expand_path(config[:kitchen_root]).
-            relative_path_from(Pathname.new(template)).to_s
+          File.absolute_path(vagrantfile)
         end
       end
 
