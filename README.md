@@ -315,6 +315,21 @@ insecure private key that ships with Vagrant will be used.
 
 The default value is unset, or `nil`.
 
+### <a name="config-vagrantfiles"></a> vagrantfiles
+
+An array of paths to other Vagrantfiles to be merged with the default one. The
+paths can be absolute or relative to the .kitchen.yml file.
+
+**Note:** the Vagrantfiles must have a .rb extension to satisfy Ruby's
+Kernel#require.
+
+```ruby
+driver:
+  vagrantfiles:
+    - VagrantfileA.rb
+    - /tmp/VagrantfileB.rb
+```
+
 ## <a name="development"></a> Development
 
 * Source hosted at [GitHub][repo]
