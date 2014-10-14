@@ -17,6 +17,9 @@ Vagrant.configure("2") do |c|
 <% if config[:ssh_key] %>
   c.ssh.private_key_path = "<%= config[:ssh_key] %>"
 <% end %>
+<% if config[:ssh_port] %>
+  c.ssh.port = "<%= config[:ssh_port] %>"
+<% end %>
 
 <% Array(config[:network]).each do |opts| %>
   c.vm.network(:<%= opts[0] %>, <%= opts[1..-1].join(", ") %>)
