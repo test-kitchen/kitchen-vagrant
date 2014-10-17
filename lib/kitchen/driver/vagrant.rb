@@ -50,12 +50,16 @@ module Kitchen
       default_config :provider,
         ENV.fetch('VAGRANT_DEFAULT_PROVIDER', "virtualbox")
 
+      default_config :box do |driver|
+        "opscode-#{driver.instance.platform.name}"
+      end
+
       default_config :vm_hostname do |driver|
         driver.instance.name
       end
 
-      default_config :box do |driver|
-        "opscode-#{driver.instance.platform.name}"
+      default_config :communicator do |driver|
+        driver.instance.transport.class.name.split('::').last.downcase
       end
 
       default_config :box_url do |driver|
@@ -248,11 +252,30 @@ module Kitchen
         hash = vagrant_ssh_config
 
         state[:hostname] = hash["HostName"]
-        state[:username] = hash["User"]
-        state[:password] = 'vagrant' unless config[:password]
+        state[:username] = config[:username] || hash["User"]
+        state[:password] = config[:password] || 'vagrant'
         state[:ssh_key] = hash["IdentityFile"]
-        state[:port] = hash["Port"]
+        state[:port] = port_from_config
+        if config[:communicator] == "ssh"
+          state[:port] =  hash["Port"]
+        end
         refresh_forwarded_port(state)
+      end
+
+      def port_from_config
+        port = config[:port]
+        if port.nil?
+          guest_port = config[:guest_port] || instance.transport.default_port
+          if !config[:network].empty?
+            forwards = config[:network].select do |net|
+              net[0] == "forwarded_port" && net[1][:guest] == guest_port
+            end
+            forwards.each do |forward|
+              port = forward[1][:host]
+            end
+          end
+        end
+        port || instance.transport.default_port
       end
 
       # Get forwarded_port from Provider
