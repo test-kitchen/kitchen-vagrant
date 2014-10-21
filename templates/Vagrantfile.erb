@@ -4,7 +4,9 @@ require '<%= vagrantfile %>'
 
 Vagrant.configure("2") do |c|
   c.vm.box = "<%= config[:box] %>"
+<% if config[:box_url] %>
   c.vm.box_url = "<%= config[:box_url] %>"
+<% end %>
 <% if config[:box_version] %>
   c.vm.box_version = "<%= config[:box_version] %>"
 <% end %>
