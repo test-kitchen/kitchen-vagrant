@@ -36,6 +36,7 @@ module Kitchen
       default_config :customize, {}
       default_config :network, []
       default_config :synced_folders, []
+      default_config :ssh, {} 
       default_config :pre_create_command, nil
       default_config :vagrantfiles, []
 
