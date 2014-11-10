@@ -116,6 +116,25 @@ The [version][vagrant_versioning] of the configured box.
 
 Whether to check for box updates (enabled by default).
 
+### <a name="config-communicator"></a> communicator
+
+For supporting communicating with Windows over WinRM.
+
+For example:
+
+```ruby
+driver:
+  communicator: "winrm"
+```
+
+will generate a Vagrantfile configuration similar to:
+
+```ruby
+  config.vm.communicator = "winrm"
+```
+
+The default is nil assuming ssh will be used.
+
 ### <a name="config-provider"></a> provider
 
 This determines which Vagrant provider to use. The value should match
