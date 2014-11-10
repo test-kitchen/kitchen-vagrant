@@ -102,11 +102,19 @@ value of `"opscode-fuzzypants-9.000"`.
 
 ### <a name="config-box-url"></a> box\_url
 
-The URL that the configured box can be found at. If the box is not installed on
-the system, it will be retrieved from this URL when the virtual machine is
-started.
+The URL that the configured box (or box metadata) can be found at. If the box
+is not installed on the system, it will be retrieved when the virtual machine
+is started.
 
 The default will be computed from the platform name of the instance.
+
+### <a name="config-box-version"></a> box\_version
+
+The [version][vagrant_versioning] of the configured box.
+
+### <a name="config-box-check-update"></a> box\_check\_update
+
+Whether to check for box updates (enabled by default).
 
 ### <a name="config-provider"></a> provider
 
@@ -221,7 +229,7 @@ The default is an empty Array, or `[]`. The example:
 
 ```ruby
 driver:
-  synced_folders: 
+  synced_folders:
     - ["data/%{instance_name}", "/opt/instance_data"]
     - ["/host_path", "/vm_path", "create: true, type: :nfs"]
 ```
@@ -327,6 +335,7 @@ Apache 2.0 (see [LICENSE][license])
 [vagrant_config_vbox]:      http://docs.vagrantup.com/v2/virtualbox/configuration.html
 [vagrant_config_vmware]:    http://docs.vagrantup.com/v2/vmware/configuration.html
 [vagrant_providers]:        http://docs.vagrantup.com/v2/providers/index.html
+[vagrant_versioning]:       https://docs.vagrantup.com/v2/boxes/versioning.html
 [vagrant_wrapper]:          https://github.com/org-binbab/gem-vagrant-wrapper
 [vagrant_wrapper_background]: https://github.com/org-binbab/gem-vagrant-wrapper#background---aka-the-vagrant-gem-enigma
 [vmware_plugin]:            http://www.vagrantup.com/vmware
