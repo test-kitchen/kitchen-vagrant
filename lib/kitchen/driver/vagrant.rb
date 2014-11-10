@@ -46,7 +46,7 @@ module Kitchen
         ENV.fetch('VAGRANT_DEFAULT_PROVIDER', "virtualbox")
 
       default_config :vm_hostname do |driver|
-        "#{driver.instance.name}.vagrantup.com"
+        driver.instance.name
       end
 
       default_config :box do |driver|
