@@ -73,16 +73,13 @@ This will effectively generate a configuration similar to:
 platforms:
 - name: ubuntu-10.04
   driver:
-    box: opscode-ubuntu-10.04
-    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-10.04_provisionerless.box
+    box: chef/ubuntu-10.04
 - name: ubuntu-12.04
   driver:
-    box: opscode-ubuntu-12.04
-    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box
+    box: chef/ubuntu-12.04
 - name: ubuntu-12.10
   driver:
-    box: opscode-ubuntu-12.10
-    box_url: ...
+    box: chef/ubuntu-12.10
 # ...
 ```
 
@@ -96,17 +93,18 @@ Many host wide defaults for Vagrant can be set using `$HOME/.vagrant.d/Vagrantfi
 details, please read the Vagrant [machine settings][vagrant_machine_settings]
 page.
 
+It is recommended to use a short name of a box on Vagrant Cloud and leave
+box_url empty if your box is publically available.
+
 The default will be computed from the platform name of the instance. For
 example, a platform called "fuzzypants-9.000" will produce a default `box`
-value of `"opscode-fuzzypants-9.000"`.
+value of `"chef/fuzzypants-9.000"`.
 
 ### <a name="config-box-url"></a> box\_url
 
-The URL that the configured box can be found at. If the box is not installed on
-the system, it will be retrieved from this URL when the virtual machine is
-started.
-
-The default will be computed from the platform name of the instance.
+The URL that the configured box can be found at if not available on the
+Vagrant Cloud or if on Vagrant < 1.5. If the box is not installed on the
+system, it will be retrieved from this URL when the virtual machine is started.
 
 ### <a name="config-provider"></a> provider
 
