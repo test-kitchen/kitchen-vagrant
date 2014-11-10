@@ -37,6 +37,7 @@ module Kitchen
       default_config :network, []
       default_config :synced_folders, []
       default_config :pre_create_command, nil
+      default_config :vagrantfiles, []
 
       default_config :vagrantfile_erb,
         File.join(File.dirname(__FILE__), "../../../templates/Vagrantfile.erb")
@@ -148,6 +149,7 @@ module Kitchen
         return if @vagrantfile_created
 
         finalize_synced_folder_config
+        expand_vagrantfile_paths
 
         vagrantfile = File.join(vagrant_root, "Vagrantfile")
         debug("Creating Vagrantfile for #{instance.to_str} (#{vagrantfile})")
@@ -167,6 +169,12 @@ module Kitchen
             destination.gsub("%{instance_name}", instance.name),
             options || "nil"
           ]
+        end
+      end
+
+      def expand_vagrantfile_paths
+        config[:vagrantfiles].map! do |vagrantfile|
+          File.absolute_path(vagrantfile)
         end
       end
 
