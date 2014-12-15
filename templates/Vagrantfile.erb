@@ -60,26 +60,29 @@ c.vm.communicator = "<%= config[:communicator] %>"
 <% end %>
 
   c.vm.provider :<%= config[:provider] %> do |p|
-<% config[:customize].each do |key, value| %>
-  <% case config[:provider]
-     when "virtualbox" %>
-    p.customize ["modifyvm", :id, "--<%= key %>", "<%= value %>"]
-  <% when "parallels" %>
-    p.customize ["set", :id, "--<%= key.to_s.gsub('_', '-') %>", "<%= value %>"]
-  <% when "rackspace", "softlayer" %>
-    p.<%= key %> = "<%= value%>"
-  <% when "libvirt" %>
-    p.<%= key %> = <%= value%>
-  <% when /^vmware_/ %>
-    <% if key == :memory %>
-      <% unless config[:customize].include?(:memsize) %>
-    p.vmx["memsize"] = "<%= value %>"
+    <% case config[:provider]
+    when "virtualbox" %>
+      <% if config[:gui] %>
+      p.gui = <%= config[:gui] %>
       <% end %>
-    <% else %>
-    p.vmx["<%= key %>"] = "<%= value %>"
+    <% end %>
+
+  <% config[:customize].each do |key, value| %>
+    <% case config[:provider]
+       when "virtualbox" %>
+      p.customize ["modifyvm", :id, "--<%= key %>", "<%= value %>"]
+    <% when "rackspace", "softlayer" %>
+      p.<%= key %> = "<%= value%>"
+    <% when /^vmware_/ %>
+      <% if key == :memory %>
+        <% unless config[:customize].include?(:memsize) %>
+      p.vmx["memsize"] = "<%= value %>"
+        <% end %>
+      <% else %>
+      p.vmx["<%= key %>"] = "<%= value %>"
+      <% end %>
     <% end %>
   <% end %>
-<% end %>
   end
 
 end
