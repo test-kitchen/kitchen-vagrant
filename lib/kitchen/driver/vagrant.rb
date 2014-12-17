@@ -71,7 +71,7 @@ module Kitchen
         create_vagrantfile
         run_pre_create_command
         cmd = "vagrant up --no-provision"
-        cmd += " --provider=#{config[:provider]}" if config[:provider]
+        cmd += " --provider #{config[:provider]}" if config[:provider]
         run cmd
         set_state(state)
         info("Vagrant instance #{instance.to_str} created.")
