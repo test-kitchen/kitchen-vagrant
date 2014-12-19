@@ -125,6 +125,17 @@ By default the value is unset, or `nil`. In this case the driver will use the
 Vagrant [default provider][vagrant_default_provider] which at this current time
 is `virtualbox` unless set by `VAGRANT_DEFAULT_PROVIDER` environment variable.
 
+### <a name="config-gui"></a> gui
+
+This is the vm console gui configuration and is used to make the console
+visible/hidden following a create action.
+
+If this value is `nil` or `false` then the console will be hidden, if `true`
+the console will be visble.
+
+This is particularly helpful for debugging Virtualbox Windows guests along with
+adding `clipboard: bidirectional` to the customize section.
+
 ### <a name="config-customize"></a> customize
 
 A **Hash** of customizations to a Vagrant virtual machine.  Each key/value
@@ -136,6 +147,7 @@ driver:
   customize:
     memory: 1024
     cpuexecutioncap: 50
+    clipboard: bidirectional
 ```
 
 will generate a Vagrantfile configuration similar to:
