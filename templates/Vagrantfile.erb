@@ -13,6 +13,7 @@ Vagrant.configure("2") do |c|
 <% if config[:box_check_update] %>
   c.vm.box_check_update = "<%= config[:box_check_update] %>"
 <% end %>
+
   if Vagrant.has_plugin?("vagrant-berkshelf")
     c.berkshelf.enabled = <%= config[:vagrant_berkshelf_enabled] %>
   end
