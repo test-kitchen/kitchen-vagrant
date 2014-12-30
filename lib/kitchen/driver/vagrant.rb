@@ -60,6 +60,7 @@ module Kitchen
 
       default_config :box_version, nil
       default_config :box_check_update, nil
+      default_config :vagrant_berkshelf_enabled, false
 
       required_config :box
 
