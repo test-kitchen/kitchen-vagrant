@@ -57,7 +57,9 @@ Vagrant.configure("2") do |c|
   <% when "parallels" %>
     p.customize ["set", :id, "--<%= key.to_s.gsub('_', '-') %>", "<%= value %>"]
   <% when "lxc" %>
-    <% if [:container_name, :backingstore, :backingstore_option].include? key %>
+    <% if key == :container_name %>
+    p.<%= key %> = <%= value == ":machine" ? value : "\"#{value}\"" %>
+    <% elsif key == :backingstore %>
     p.<%= key %> = "<%= value %>"
     <% else %>
     p.customize "<%= key %>", "<%= value %>"
