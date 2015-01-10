@@ -61,8 +61,10 @@ Vagrant.configure("2") do |c|
     p.container_name = <%= value == ":machine" ? value : "\"#{value}\"" %>
     <% elsif key == :backingstore %>
     p.backingstore = "<%= value %>"
-    <% elsif key == :backingstore_option %>
-    p.backingstore_option <%= value %>
+    <% elsif key == :backingstore_options %>
+      <% config[:customize][:backingstore_options].each do |opt, opt_val| %>
+    p.backingstore_option "--<%= opt %>", "<%= opt_val %>"
+      <% end %>
     <% else %>
     p.customize "<%= key %>", "<%= value %>"
     <% end %>
