@@ -39,6 +39,7 @@ module Kitchen
       default_config :ssh, {}
       default_config :pre_create_command, nil
       default_config :vagrantfiles, []
+      default_config :provision, false
 
       default_config :vagrantfile_erb,
         File.join(File.dirname(__FILE__), "../../../templates/Vagrantfile.erb")
@@ -68,7 +69,8 @@ module Kitchen
       def create(state)
         create_vagrantfile
         run_pre_create_command
-        cmd = "vagrant up --no-provision"
+        cmd = "vagrant up"
+        cmd += " --no-provision" unless config[:provision]
         cmd += " --provider=#{config[:provider]}" if config[:provider]
         run cmd
         set_ssh_state(state)
