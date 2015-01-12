@@ -353,6 +353,11 @@ driver:
     - /tmp/VagrantfileB.rb
 ```
 
+### <a name="provision"></a> provision
+
+Set to true if you want to do the provision of vagrant in create.
+Usefull in case of you want to customize the OS in provision phase of vagrant
+
 ## <a name="development"></a> Development
 
 * Source hosted at [GitHub][repo]
