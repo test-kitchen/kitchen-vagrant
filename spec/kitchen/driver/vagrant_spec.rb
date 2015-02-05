@@ -901,6 +901,22 @@ describe Kitchen::Driver::Vagrant do
 
       before { config[:provider] = "softlayer" }
 
+      it "adds a line for disk_capacity" do
+        config[:customize] = {
+          :disk_capacity => {
+            :"0" => 25,
+            :"2" => 100
+          }
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :softlayer do |p|
+            p.disk_capacity = {:"0"=>25, :"2"=>100}
+          end
+        RUBY
+      end
+
       it "adds a line for each element in :customize" do
         config[:customize] = {
           :a_key => "some value",
