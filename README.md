@@ -64,6 +64,10 @@ platforms:
 - name: centos-5.9
 - name: centos-6.4
 - name: debian-7.1.0
+- name: windows-2012R2
+- name: windows-2008R2
+- name: windows-8
+- name: windows-7
 ```
 
 This will effectively generate a configuration similar to:
@@ -82,8 +86,12 @@ platforms:
     box: chef/ubuntu-12.10
 - name: windows-2012R2
   driver:
-    box: windows-2012R2
-    box_url: https://s3.amazonaws.com/box-cutter-us-east-1-cloudtrail/windows/virtualbox4.3.12/win2012r2-datacenter-chef11.12.8.box
+    box: chef/windows-2012R2
+  transport:
+    name: winrm
+- name: windows-2008R2
+  driver:
+    box: chef/windows-2008R2
   transport:
     name: winrm
 # ...
