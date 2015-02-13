@@ -21,6 +21,9 @@ require 'rubygems/version'
 
 require 'kitchen'
 
+# Useful VBox Machine Class
+require 'kitchen/provider/machine'
+
 module Kitchen
 
   module Driver
@@ -31,7 +34,7 @@ module Kitchen
     #
     # @todo Vagrant installation check and version will be placed into any
     #   dependency hook checks when feature is released
-    class Vagrant < Kitchen::Driver::SSHBase
+    class Vagrant < Kitchen::Driver::CommonBase
 
       default_config :customize, {}
       default_config :network, []
@@ -73,7 +76,7 @@ module Kitchen
         cmd += " --no-provision" unless config[:provision]
         cmd += " --provider=#{config[:provider]}" if config[:provider]
         run cmd
-        set_ssh_state(state)
+        set_transport_state(state)
         info("Vagrant instance #{instance.to_str} created.")
       end
 
@@ -197,6 +200,16 @@ module Kitchen
         File.expand_path(config[:vagrantfile_erb], config[:kitchen_root])
       end
 
+      def set_transport_state
+        if config[:transport] = "SSH"
+          set_ssh_state(state)
+        elsif config[:transport] = "WinRM"
+          set_winrm_state(state)
+        else
+          raise "Unknown transport #{config[:transport]}"
+        end
+      end
+
       def set_ssh_state(state)
         hash = vagrant_ssh_config
 
@@ -205,6 +218,25 @@ module Kitchen
         state[:ssh_key] = hash["IdentityFile"]
         state[:port] = hash["Port"]
         state[:proxy_command] = hash["ProxyCommand"] if hash["ProxyCommand"]
+      end
+
+      def set_winrm_state(state)
+        state[:hostname] = "127.0.0.1"
+        state[:username] = config[:username] if config[:username]
+        state[:password] = config[:password] if config[:password]
+        refresh_winrm_forwarded_port(state)
+      end
+
+      # Getting WinRM forwarded_port from Provider
+      #
+      # Working with: VirtualBox
+      def refresh_winrm_forwarded_port(state)
+        case config[:provider]
+        when "virtualbox"
+          Provider::VirtualBox::Machine.new(vagrant_root) do |machine|
+            state[:port] = machine.host_port(5985)
+          end
+        end
       end
 
       def vagrant_ssh_config
