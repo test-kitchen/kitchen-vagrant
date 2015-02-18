@@ -21,6 +21,9 @@ require 'rubygems/version'
 
 require 'kitchen'
 
+# Useful VBox Machine Class
+require 'kitchen/provider/virtualbox/machine'
+
 module Kitchen
 
   module Driver
@@ -31,7 +34,7 @@ module Kitchen
     #
     # @todo Vagrant installation check and version will be placed into any
     #   dependency hook checks when feature is released
-    class Vagrant < Kitchen::Driver::SSHBase
+    class Vagrant < Kitchen::Driver::Base
 
       default_config :customize, {}
       default_config :network, []
@@ -47,12 +50,16 @@ module Kitchen
       default_config :provider,
         ENV.fetch('VAGRANT_DEFAULT_PROVIDER', "virtualbox")
 
+      default_config :box do |driver|
+        "opscode-#{driver.instance.platform.name}"
+      end
+
       default_config :vm_hostname do |driver|
         driver.instance.name
       end
 
-      default_config :box do |driver|
-        "opscode-#{driver.instance.platform.name}"
+      default_config :communicator do |driver|
+        driver.instance.transport.class.name.split('::').last.downcase
       end
 
       default_config :box_url do |driver|
@@ -69,11 +76,10 @@ module Kitchen
       def create(state)
         create_vagrantfile
         run_pre_create_command
-        cmd = "vagrant up"
-        cmd += " --no-provision" unless config[:provision]
-        cmd += " --provider=#{config[:provider]}" if config[:provider]
+        cmd = "vagrant up --no-provision"
+        cmd += " --provider #{config[:provider]}" if config[:provider]
         run cmd
-        set_ssh_state(state)
+        set_state(state)
         info("Vagrant instance #{instance.to_str} created.")
       end
 
@@ -197,16 +203,6 @@ module Kitchen
         File.expand_path(config[:vagrantfile_erb], config[:kitchen_root])
       end
 
-      def set_ssh_state(state)
-        hash = vagrant_ssh_config
-
-        state[:hostname] = hash["HostName"]
-        state[:username] = hash["User"]
-        state[:ssh_key] = hash["IdentityFile"]
-        state[:port] = hash["Port"]
-        state[:proxy_command] = hash["ProxyCommand"] if hash["ProxyCommand"]
-      end
-
       def vagrant_ssh_config
         output = run("vagrant ssh-config", :live_stream => nil)
         lines = output.split("\n").map do |line|
@@ -248,6 +244,48 @@ module Kitchen
         if Gem::Version.new(version) < Gem::Version.new(MIN_VER)
           raise UserError, "Detected an old version of Vagrant (#{version})." +
             " Please upgrade to version #{MIN_VER} or higher from #{WEBSITE}."
+        end
+      end
+
+      def set_state(state)
+        hash = vagrant_ssh_config
+
+        state[:hostname] = hash["HostName"]
+        state[:username] = config[:username] || hash["User"]
+        state[:password] = config[:password] || 'vagrant'
+        state[:ssh_key] = hash["IdentityFile"]
+        state[:port] = port_from_config
+        if config[:communicator] == "ssh"
+          state[:port] =  hash["Port"]
+        end
+        refresh_forwarded_port(state)
+      end
+
+      def port_from_config
+        port = config[:port]
+        if port.nil?
+          guest_port = config[:guest_port] || instance.transport.default_port
+          if !config[:network].empty?
+            forwards = config[:network].select do |net|
+              net[0] == "forwarded_port" && net[1][:guest] == guest_port
+            end
+            forwards.each do |forward|
+              port = forward[1][:host]
+            end
+          end
+        end
+        port || instance.transport.default_port
+      end
+
+      # Get forwarded_port from Provider
+      #
+      # Working with: VirtualBox
+      def refresh_forwarded_port(state)
+        case config[:provider]
+        when "virtualbox"
+          Provider::VirtualBox::Machine.new(vagrant_root) do |machine|
+            state[:port] = machine.host_port(default_port)
+          end
         end
       end
     end

@@ -18,9 +18,11 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency 'test-kitchen', '~> 1.0'
+  # TODO: Bump the version to the windows support release.
+  gem.add_dependency 'test-kitchen', '~> 1.3.1'
 
   gem.add_development_dependency 'cane'
   gem.add_development_dependency 'tailor'
   gem.add_development_dependency 'countloc'
+  gem.add_development_dependency 'rspec'
 end
