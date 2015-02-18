@@ -64,7 +64,7 @@ module Kitchen
           c
         end
 
-        # Conveniente method for executing a method.
+        # Convenient method for executing a method.
         def self.host_port(guest_port, root_path)
           new(root_path).host_port(guest_port)
         end
@@ -136,6 +136,7 @@ module Kitchen
 
         def exists?(uuid=nil)
           uuid ||= @uuid
+          return false unless uuid
           execute('showvminfo', uuid).exitstatus == 0
         end
 
@@ -149,7 +150,8 @@ module Kitchen
           raise 'Missing Virtual Box Machine. Run `kitchen create` and retry.'
         end
 
-      end # => Machine
-    end # => VirtualBox
-  end # => Provider
-end # => Kitchen
+      end
+
+    end
+  end
+end

@@ -22,7 +22,7 @@ require 'rubygems/version'
 require 'kitchen'
 
 # Useful VBox Machine Class
-require 'kitchen/provider/machine'
+require 'kitchen/provider/virtualbox/machine'
 
 module Kitchen
 
