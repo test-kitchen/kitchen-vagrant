@@ -68,6 +68,10 @@ Vagrant.configure("2") do |c|
     <% else %>
     p.vmx["<%= key %>"] = "<%= value %>"
     <% end %>
+  <% when "managed" %>
+    <% if key == :server %>
+    p.server = "<%= value %>"
+    <% end %>
   <% end %>
 <% end %>
   end
