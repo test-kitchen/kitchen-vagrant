@@ -1104,6 +1104,37 @@ describe Kitchen::Driver::Vagrant do
         RUBY
       end
     end
+
+    context "for managed provider" do
+
+      before { config[:provider] = "managed" }
+
+      it "adds a line a server" do
+        config[:customize] = {
+          :server => "my_server"
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :managed do |p|
+            p.server = "my_server"
+          end
+        RUBY
+      end
+
+      it "ignores all other key types than server" do
+        config[:customize] = {
+          :other => "stuff",
+          :is => "ignored"
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :managed do |p|
+          end
+        RUBY
+      end
+    end
   end
 
   def debug_lines
