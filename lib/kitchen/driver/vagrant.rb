@@ -33,36 +33,39 @@ module Kitchen
     #   dependency hook checks when feature is released
     class Vagrant < Kitchen::Driver::SSHBase
 
-      default_config :customize, {}
-      default_config :network, []
-      default_config :synced_folders, []
-      default_config :ssh, {}
-      default_config :pre_create_command, nil
-      default_config :vagrantfiles, []
-      default_config :provision, false
+      default_config :box do |driver|
+        "opscode-#{driver.instance.platform.name}"
+      end
+      required_config :box
 
-      default_config :vagrantfile_erb,
-        File.join(File.dirname(__FILE__), "../../../templates/Vagrantfile.erb")
+      default_config :box_check_update, nil
+
+      default_config(:box_url) { |driver| driver.default_box_url }
+
+      default_config :box_version, nil
+
+      default_config :customize, {}
+
+      default_config :network, []
+
+      default_config :pre_create_command, nil
+
+      default_config :provision, false
 
       default_config :provider,
         ENV.fetch("VAGRANT_DEFAULT_PROVIDER", "virtualbox")
 
-      default_config :vm_hostname do |driver|
-        driver.instance.name
-      end
+      default_config :ssh, {}
 
-      default_config :box do |driver|
-        "opscode-#{driver.instance.platform.name}"
-      end
+      default_config :synced_folders, []
 
-      default_config :box_url do |driver|
-        driver.default_box_url
-      end
+      default_config :vagrantfile_erb,
+        File.join(File.dirname(__FILE__), "../../../templates/Vagrantfile.erb")
+      expand_path_for :vagrantfile_erb
 
-      default_config :box_version, nil
-      default_config :box_check_update, nil
+      default_config :vagrantfiles, []
 
-      required_config :box
+      default_config(:vm_hostname) { |driver| driver.instance.name }
 
       no_parallel_for :create, :destroy
 
