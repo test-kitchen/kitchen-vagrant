@@ -113,7 +113,6 @@ module Kitchen
       end
 
       def default_box_url
-
         # No default neede for 1.5 onwards - Vagrant Cloud only needs a box name
         return if Gem::Version.new(vagrant_version) >= Gem::Version.new(1.5)
 
