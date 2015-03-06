@@ -110,9 +110,10 @@ module Kitchen
         check_vagrant_version
       end
 
-      def instance=(instance)
-        @instance = instance
+      def finalize_config!(instance)
+        super
         resolve_config!
+        self
       end
 
       def default_box_url
