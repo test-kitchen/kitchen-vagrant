@@ -147,7 +147,7 @@ module Kitchen
 
       def vagrant_root
         @vagrant_root ||= File.join(
-          config[:kitchen_root], %w{.kitchen kitchen-vagrant},
+          config[:kitchen_root], %w[.kitchen kitchen-vagrant],
           "kitchen-#{File.basename(config[:kitchen_root])}-#{instance.name}"
         )
       end
