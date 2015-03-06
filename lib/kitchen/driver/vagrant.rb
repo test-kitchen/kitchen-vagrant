@@ -107,7 +107,11 @@ module Kitchen
       end
 
       def verify_dependencies
-        check_vagrant_version
+        if Gem::Version.new(vagrant_version) < Gem::Version.new(MIN_VER)
+          raise UserError, "Detected an old version of Vagrant " \
+            "(#{vagrant_version})." \
+            " Please upgrade to version #{MIN_VER} or higher from #{WEBSITE}."
+        end
       end
 
       def finalize_config!(instance)
@@ -239,18 +243,10 @@ module Kitchen
       end
 
       def vagrant_version
-        silently_run("vagrant --version").chomp.split(" ").last
+        @version ||= silently_run("vagrant --version").chomp.split(" ").last
       rescue Errno::ENOENT
         raise UserError, "Vagrant #{MIN_VER} or higher is not installed." \
           " Please download a package from #{WEBSITE}."
-      end
-
-      def check_vagrant_version
-        version = vagrant_version
-        if Gem::Version.new(version) < Gem::Version.new(MIN_VER)
-          raise UserError, "Detected an old version of Vagrant (#{version})." \
-            " Please upgrade to version #{MIN_VER} or higher from #{WEBSITE}."
-        end
       end
     end
   end
