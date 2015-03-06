@@ -16,10 +16,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'fileutils'
-require 'rubygems/version'
+require "fileutils"
+require "rubygems/version"
 
-require 'kitchen'
+require "kitchen"
 
 module Kitchen
 
@@ -45,7 +45,7 @@ module Kitchen
         File.join(File.dirname(__FILE__), "../../../templates/Vagrantfile.erb")
 
       default_config :provider,
-        ENV.fetch('VAGRANT_DEFAULT_PROVIDER', "virtualbox")
+        ENV.fetch("VAGRANT_DEFAULT_PROVIDER", "virtualbox")
 
       default_config :vm_hostname do |driver|
         driver.instance.name
@@ -117,7 +117,7 @@ module Kitchen
         return if Gem::Version.new(vagrant_version) >= Gem::Version.new(1.5)
 
         bucket = config[:provider]
-        bucket = 'vmware' if config[:provider] =~ /^vmware_(.+)$/
+        bucket = "vmware" if config[:provider] =~ /^vmware_(.+)$/
 
         "https://opscode-vm-bento.s3.amazonaws.com/vagrant/#{bucket}/" \
           "opscode_#{instance.platform.name}_chef-provisionerless.box"
@@ -186,7 +186,7 @@ module Kitchen
 
       def render_template
         if File.exist?(template)
-          ERB.new(IO.read(template)).result(binding).gsub(%r{^\s*$\n}, '')
+          ERB.new(IO.read(template)).result(binding).gsub(%r{^\s*$\n}, "")
         else
           raise ActionFailed, "Could not find Vagrantfile template #{template}"
         end
@@ -210,7 +210,7 @@ module Kitchen
         output = run("vagrant ssh-config", :live_stream => nil)
         lines = output.split("\n").map do |line|
           tokens = line.strip.partition(" ")
-          [tokens.first, tokens.last.gsub(/"/, '')]
+          [tokens.first, tokens.last.gsub(/"/, "")]
         end
         Hash[lines]
       end
