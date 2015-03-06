@@ -43,6 +43,7 @@ module Kitchen
 
       default_config :vagrantfile_erb,
         File.join(File.dirname(__FILE__), "../../../templates/Vagrantfile.erb")
+      expand_path_for :vagrantfile_erb
 
       default_config :provider,
         ENV.fetch("VAGRANT_DEFAULT_PROVIDER", "virtualbox")
