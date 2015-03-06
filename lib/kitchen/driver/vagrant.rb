@@ -185,7 +185,7 @@ module Kitchen
       end
 
       def render_template
-        if File.exists?(template)
+        if File.exist?(template)
           ERB.new(IO.read(template)).result(binding).gsub(%r{^\s*$\n}, '')
         else
           raise ActionFailed, "Could not find Vagrantfile template #{template}"
