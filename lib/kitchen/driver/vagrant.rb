@@ -73,7 +73,7 @@ module Kitchen
         cmd += " --no-provision" unless config[:provision]
         cmd += " --provider=#{config[:provider]}" if config[:provider]
         run cmd
-        set_ssh_state(state)
+        update_ssh_state(state)
         info("Vagrant instance #{instance.to_str} created.")
       end
 
@@ -196,7 +196,7 @@ module Kitchen
         File.expand_path(config[:vagrantfile_erb], config[:kitchen_root])
       end
 
-      def set_ssh_state(state)
+      def update_ssh_state(state)
         hash = vagrant_ssh_config
 
         state[:hostname] = hash["HostName"]
