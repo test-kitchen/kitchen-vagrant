@@ -119,7 +119,7 @@ module Kitchen
         bucket = config[:provider]
         bucket = 'vmware' if config[:provider] =~ /^vmware_(.+)$/
 
-        "https://opscode-vm-bento.s3.amazonaws.com/vagrant/#{bucket}/" +
+        "https://opscode-vm-bento.s3.amazonaws.com/vagrant/#{bucket}/" \
           "opscode_#{instance.platform.name}_chef-provisionerless.box"
       end
 
@@ -237,14 +237,14 @@ module Kitchen
       def vagrant_version
         silently_run("vagrant --version").chomp.split(" ").last
       rescue Errno::ENOENT
-        raise UserError, "Vagrant #{MIN_VER} or higher is not installed." +
+        raise UserError, "Vagrant #{MIN_VER} or higher is not installed." \
           " Please download a package from #{WEBSITE}."
       end
 
       def check_vagrant_version
         version = vagrant_version
         if Gem::Version.new(version) < Gem::Version.new(MIN_VER)
-          raise UserError, "Detected an old version of Vagrant (#{version})." +
+          raise UserError, "Detected an old version of Vagrant (#{version})." \
             " Please upgrade to version #{MIN_VER} or higher from #{WEBSITE}."
         end
       end
