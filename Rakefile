@@ -19,6 +19,6 @@ RuboCop::RakeTask.new(:style) do |task|
 end
 
 desc "Run all quality tasks"
-task :quality => [:cane, :stats]
+task :quality => [:cane, :style, :stats]
 
 task :default => [:quality]
