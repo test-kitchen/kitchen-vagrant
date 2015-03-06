@@ -133,8 +133,8 @@ module Kitchen
 
       protected
 
-      WEBSITE = "http://www.vagrantup.com/downloads.html"
-      MIN_VER = "1.1.0"
+      WEBSITE = "http://www.vagrantup.com/downloads.html".freeze
+      MIN_VER = "1.1.0".freeze
 
       def run(cmd, options = {})
         cmd = "echo #{cmd}" if config[:dry_run]
