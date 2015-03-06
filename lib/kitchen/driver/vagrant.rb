@@ -28,9 +28,6 @@ module Kitchen
     # Vagrant driver for Kitchen. It communicates to Vagrant via the CLI.
     #
     # @author Fletcher Nichol <fnichol@nichol.ca>
-    #
-    # @todo Vagrant installation check and version will be placed into any
-    #   dependency hook checks when feature is released
     class Vagrant < Kitchen::Driver::SSHBase
 
       default_config :box do |driver|
@@ -69,6 +66,19 @@ module Kitchen
 
       no_parallel_for :create, :destroy
 
+      # Converges a running instance.
+      #
+      # @param state [Hash] mutable instance and driver state
+      # @raise [ActionFailed] if the action could not be completed
+      def converge(state)
+        create_vagrantfile
+        super
+      end
+
+      # Creates a Vagrant VM instance.
+      #
+      # @param state [Hash] mutable instance and driver state
+      # @raise [ActionFailed] if the action could not be completed
       def create(state)
         create_vagrantfile
         run_pre_create_command
@@ -80,46 +90,7 @@ module Kitchen
         info("Vagrant instance #{instance.to_str} created.")
       end
 
-      def converge(state)
-        create_vagrantfile
-        super
-      end
-
-      def setup(state)
-        create_vagrantfile
-        super
-      end
-
-      def verify(state)
-        create_vagrantfile
-        super
-      end
-
-      def destroy(state)
-        return if state[:hostname].nil?
-
-        create_vagrantfile
-        @vagrantfile_created = false
-        run "vagrant destroy -f"
-        FileUtils.rm_rf(vagrant_root)
-        info("Vagrant instance #{instance.to_str} destroyed.")
-        state.delete(:hostname)
-      end
-
-      def verify_dependencies
-        if Gem::Version.new(vagrant_version) < Gem::Version.new(MIN_VER)
-          raise UserError, "Detected an old version of Vagrant " \
-            "(#{vagrant_version})." \
-            " Please upgrade to version #{MIN_VER} or higher from #{WEBSITE}."
-        end
-      end
-
-      def finalize_config!(instance)
-        super
-        resolve_config!
-        self
-      end
-
+      # @return [String,nil] the Vagrant box URL for this Instance
       def default_box_url
         # No default neede for 1.5 onwards - Vagrant Cloud only needs a box name
         return if Gem::Version.new(vagrant_version) >= Gem::Version.new(1.5)
@@ -131,33 +102,73 @@ module Kitchen
           "opscode_#{instance.platform.name}_chef-provisionerless.box"
       end
 
+      # Destroys an instance.
+      #
+      # @param state [Hash] mutable instance and driver state
+      # @raise [ActionFailed] if the action could not be completed
+      def destroy(state)
+        return if state[:hostname].nil?
+
+        create_vagrantfile
+        @vagrantfile_created = false
+        run "vagrant destroy -f"
+        FileUtils.rm_rf(vagrant_root)
+        info("Vagrant instance #{instance.to_str} destroyed.")
+        state.delete(:hostname)
+      end
+
+      # A lifecycle method that should be invoked when the object is about
+      # ready to be used. A reference to an Instance is required as
+      # configuration dependant data may be access through an Instance. This
+      # also acts as a hook point where the object may wish to perform other
+      # last minute checks, validations, or configuration expansions.
+      #
+      # @param instance [Instance] an associated instance
+      # @return [self] itself, for use in chaining
+      # @raise [ClientError] if instance parameter is nil
+      def finalize_config!(instance)
+        super
+        resolve_config!
+        self
+      end
+
+      # Sets up an instance.
+      #
+      # @param state [Hash] mutable instance and driver state
+      # @raise [ActionFailed] if the action could not be completed
+      def setup(state)
+        create_vagrantfile
+        super
+      end
+
+      # Verifies a converged instance.
+      #
+      # @param state [Hash] mutable instance and driver state
+      # @raise [ActionFailed] if the action could not be completed
+      def verify(state)
+        create_vagrantfile
+        super
+      end
+
+      # Performs whatever tests that may be required to ensure that this driver
+      # will be able to function in the current environment. This may involve
+      # checking for the presence of certain directories, software installed,
+      # etc.
+      #
+      # @raise [UserError] if the driver will not be able to perform or if a
+      #   documented dependency is missing from the system
+      def verify_dependencies
+        if Gem::Version.new(vagrant_version) < Gem::Version.new(MIN_VER)
+          raise UserError, "Detected an old version of Vagrant " \
+            "(#{vagrant_version})." \
+            " Please upgrade to version #{MIN_VER} or higher from #{WEBSITE}."
+        end
+      end
+
       protected
 
       WEBSITE = "http://www.vagrantup.com/downloads.html".freeze
       MIN_VER = "1.1.0".freeze
-
-      def run(cmd, options = {})
-        cmd = "echo #{cmd}" if config[:dry_run]
-        run_command(cmd, { :cwd => vagrant_root }.merge(options))
-      end
-
-      def silently_run(cmd)
-        run_command(cmd,
-          :live_stream => nil, :quiet => logger.debug? ? false : true)
-      end
-
-      def run_pre_create_command
-        if config[:pre_create_command]
-          run(config[:pre_create_command], :cwd => config[:kitchen_root])
-        end
-      end
-
-      def vagrant_root
-        @vagrant_root ||= File.join(
-          config[:kitchen_root], %w[.kitchen kitchen-vagrant],
-          "kitchen-#{File.basename(config[:kitchen_root])}-#{instance.name}"
-        )
-      end
 
       def create_vagrantfile
         return if @vagrantfile_created
@@ -173,6 +184,20 @@ module Kitchen
         @vagrantfile_created = true
       end
 
+      def debug_vagrantfile(vagrantfile)
+        if logger.debug?
+          debug("------------")
+          IO.read(vagrantfile).each_line { |l| debug("#{l.chomp}") }
+          debug("------------")
+        end
+      end
+
+      def expand_vagrantfile_paths
+        config[:vagrantfiles].map! do |vagrantfile|
+          File.absolute_path(vagrantfile)
+        end
+      end
+
       def finalize_synced_folder_config
         config[:synced_folders].map! do |source, destination, options|
           [
@@ -186,18 +211,39 @@ module Kitchen
         end
       end
 
-      def expand_vagrantfile_paths
-        config[:vagrantfiles].map! do |vagrantfile|
-          File.absolute_path(vagrantfile)
-        end
-      end
-
       def render_template
         if File.exist?(template)
           ERB.new(IO.read(template)).result(binding).gsub(%r{^\s*$\n}, "")
         else
           raise ActionFailed, "Could not find Vagrantfile template #{template}"
         end
+      end
+
+      def resolve_config!
+        unless config[:vagrantfile_erb].nil?
+          config[:vagrantfile_erb] =
+            File.expand_path(config[:vagrantfile_erb], config[:kitchen_root])
+        end
+        unless config[:pre_create_command].nil?
+          config[:pre_create_command] =
+            config[:pre_create_command].gsub("{{vagrant_root}}", vagrant_root)
+        end
+      end
+
+      def run(cmd, options = {})
+        cmd = "echo #{cmd}" if config[:dry_run]
+        run_command(cmd, { :cwd => vagrant_root }.merge(options))
+      end
+
+      def run_pre_create_command
+        if config[:pre_create_command]
+          run(config[:pre_create_command], :cwd => config[:kitchen_root])
+        end
+      end
+
+      def silently_run(cmd)
+        run_command(cmd,
+          :live_stream => nil, :quiet => logger.debug? ? false : true)
       end
 
       def template
@@ -214,6 +260,13 @@ module Kitchen
         state[:proxy_command] = hash["ProxyCommand"] if hash["ProxyCommand"]
       end
 
+      def vagrant_root
+        @vagrant_root ||= File.join(
+          config[:kitchen_root], %w[.kitchen kitchen-vagrant],
+          "kitchen-#{File.basename(config[:kitchen_root])}-#{instance.name}"
+        )
+      end
+
       def vagrant_ssh_config
         output = run("vagrant ssh-config", :live_stream => nil)
         lines = output.split("\n").map do |line|
@@ -221,25 +274,6 @@ module Kitchen
           [tokens.first, tokens.last.gsub(/"/, "")]
         end
         Hash[lines]
-      end
-
-      def debug_vagrantfile(vagrantfile)
-        if logger.debug?
-          debug("------------")
-          IO.read(vagrantfile).each_line { |l| debug("#{l.chomp}") }
-          debug("------------")
-        end
-      end
-
-      def resolve_config!
-        unless config[:vagrantfile_erb].nil?
-          config[:vagrantfile_erb] =
-            File.expand_path(config[:vagrantfile_erb], config[:kitchen_root])
-        end
-        unless config[:pre_create_command].nil?
-          config[:pre_create_command] =
-            config[:pre_create_command].gsub("{{vagrant_root}}", vagrant_root)
-        end
       end
 
       def vagrant_version
