@@ -1,8 +1,6 @@
-source 'https://rubygems.org'
-
-# Specify your gem's dependencies in kitchen-vagrant.gemspec
+source "https://rubygems.org"
 gemspec
 
-group :test do
-  gem 'rake'
+group :guard do
+  gem "guard-rubocop"
 end

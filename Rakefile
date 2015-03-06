@@ -1,12 +1,9 @@
 require "bundler/gem_tasks"
-require 'cane/rake_task'
-require 'tailor/rake_task'
 
+require "cane/rake_task"
 desc "Run cane to check quality metrics"
-Cane::RakeTask.new
-
-Tailor::RakeTask.new do |task|
-  task.file_set('lib/**/*.rb', 'code')
+Cane::RakeTask.new do |cane|
+  cane.canefile = "./.cane"
 end
 
 desc "Display LOC stats"
@@ -15,7 +12,13 @@ task :stats do
   sh "countloc -r lib/kitchen"
 end
 
-desc "Run all quality tasks"
-task :quality => [:cane, :tailor, :stats]
+require "finstyle"
+require "rubocop/rake_task"
+RuboCop::RakeTask.new(:style) do |task|
+  task.options << "--display-cop-names"
+end
 
-task :default => [ :quality ]
+desc "Run all quality tasks"
+task :quality => [:cane, :style, :stats]
+
+task :default => [:quality]

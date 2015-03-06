@@ -16,10 +16,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'fileutils'
-require 'rubygems/version'
+require "fileutils"
+require "rubygems/version"
 
-require 'kitchen'
+require "kitchen"
 
 module Kitchen
 
@@ -45,7 +45,7 @@ module Kitchen
         File.join(File.dirname(__FILE__), "../../../templates/Vagrantfile.erb")
 
       default_config :provider,
-        ENV.fetch('VAGRANT_DEFAULT_PROVIDER', "virtualbox")
+        ENV.fetch("VAGRANT_DEFAULT_PROVIDER", "virtualbox")
 
       default_config :vm_hostname do |driver|
         driver.instance.name
@@ -73,7 +73,7 @@ module Kitchen
         cmd += " --no-provision" unless config[:provision]
         cmd += " --provider=#{config[:provider]}" if config[:provider]
         run cmd
-        set_ssh_state(state)
+        update_ssh_state(state)
         info("Vagrant instance #{instance.to_str} created.")
       end
 
@@ -113,14 +113,13 @@ module Kitchen
       end
 
       def default_box_url
-
         # No default neede for 1.5 onwards - Vagrant Cloud only needs a box name
         return if Gem::Version.new(vagrant_version) >= Gem::Version.new(1.5)
 
         bucket = config[:provider]
-        bucket = 'vmware' if config[:provider] =~ /^vmware_(.+)$/
+        bucket = "vmware" if config[:provider] =~ /^vmware_(.+)$/
 
-        "https://opscode-vm-bento.s3.amazonaws.com/vagrant/#{bucket}/" +
+        "https://opscode-vm-bento.s3.amazonaws.com/vagrant/#{bucket}/" \
           "opscode_#{instance.platform.name}_chef-provisionerless.box"
       end
 
@@ -147,7 +146,7 @@ module Kitchen
 
       def vagrant_root
         @vagrant_root ||= File.join(
-          config[:kitchen_root], %w{.kitchen kitchen-vagrant},
+          config[:kitchen_root], %w[.kitchen kitchen-vagrant],
           "kitchen-#{File.basename(config[:kitchen_root])}-#{instance.name}"
         )
       end
@@ -186,8 +185,8 @@ module Kitchen
       end
 
       def render_template
-        if File.exists?(template)
-          ERB.new(IO.read(template)).result(binding).gsub(%r{^\s*$\n}, '')
+        if File.exist?(template)
+          ERB.new(IO.read(template)).result(binding).gsub(%r{^\s*$\n}, "")
         else
           raise ActionFailed, "Could not find Vagrantfile template #{template}"
         end
@@ -197,7 +196,7 @@ module Kitchen
         File.expand_path(config[:vagrantfile_erb], config[:kitchen_root])
       end
 
-      def set_ssh_state(state)
+      def update_ssh_state(state)
         hash = vagrant_ssh_config
 
         state[:hostname] = hash["HostName"]
@@ -211,7 +210,7 @@ module Kitchen
         output = run("vagrant ssh-config", :live_stream => nil)
         lines = output.split("\n").map do |line|
           tokens = line.strip.partition(" ")
-          [tokens.first, tokens.last.gsub(/"/, '')]
+          [tokens.first, tokens.last.gsub(/"/, "")]
         end
         Hash[lines]
       end
@@ -236,17 +235,16 @@ module Kitchen
       end
 
       def vagrant_version
-        version_string = silently_run("vagrant --version")
-        version_string = version_string.chomp.split(" ").last
+        silently_run("vagrant --version").chomp.split(" ").last
       rescue Errno::ENOENT
-        raise UserError, "Vagrant #{MIN_VER} or higher is not installed." +
+        raise UserError, "Vagrant #{MIN_VER} or higher is not installed." \
           " Please download a package from #{WEBSITE}."
       end
 
       def check_vagrant_version
         version = vagrant_version
         if Gem::Version.new(version) < Gem::Version.new(MIN_VER)
-          raise UserError, "Detected an old version of Vagrant (#{version})." +
+          raise UserError, "Detected an old version of Vagrant (#{version})." \
             " Please upgrade to version #{MIN_VER} or higher from #{WEBSITE}."
         end
       end
