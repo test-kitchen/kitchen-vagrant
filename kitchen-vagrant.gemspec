@@ -20,7 +20,12 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'test-kitchen', '~> 1.0'
 
-  gem.add_development_dependency 'cane'
-  gem.add_development_dependency 'tailor'
-  gem.add_development_dependency 'countloc'
+  gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'countloc', '~> 0.4'
+
+  # style and complexity libraries are tightly version pinned as newer releases
+  # may introduce new and undesireable style choices which would be immediately
+  # enforced in CI
+  gem.add_development_dependency "finstyle",  "1.4.0"
+  gem.add_development_dependency "cane",      "2.6.2"
 end
