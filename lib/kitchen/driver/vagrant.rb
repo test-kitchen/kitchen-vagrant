@@ -40,9 +40,7 @@ module Kitchen
 
       default_config :box_check_update, nil
 
-      default_config :box_url do |driver|
-        driver.default_box_url
-      end
+      default_config(:box_url) { |driver| driver.default_box_url }
 
       default_config :box_version, nil
 
@@ -67,9 +65,7 @@ module Kitchen
 
       default_config :vagrantfiles, []
 
-      default_config :vm_hostname do |driver|
-        driver.instance.name
-      end
+      default_config(:vm_hostname) { |driver| driver.instance.name }
 
       no_parallel_for :create, :destroy
 
