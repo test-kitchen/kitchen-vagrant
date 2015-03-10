@@ -75,7 +75,7 @@ module Kitchen
         create_vagrantfile
         run_pre_create_command
         run_vagrant_up
-        update_ssh_state(state)
+        update_state(state)
         info("Vagrant instance #{instance.to_str} created.")
       end
 
@@ -220,7 +220,7 @@ module Kitchen
         File.expand_path(config[:vagrantfile_erb], config[:kitchen_root])
       end
 
-      def update_ssh_state(state)
+      def update_state(state)
         hash = vagrant_ssh_config
 
         state[:hostname] = hash["HostName"]
