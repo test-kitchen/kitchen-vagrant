@@ -133,6 +133,7 @@ module Kitchen
       # @raise [UserError] if the driver will not be able to perform or if a
       #   documented dependency is missing from the system
       def verify_dependencies
+        super
         if Gem::Version.new(vagrant_version) < Gem::Version.new(MIN_VER)
           raise UserError, "Detected an old version of Vagrant " \
             "(#{vagrant_version})." \
