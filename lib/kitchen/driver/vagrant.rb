@@ -69,7 +69,7 @@ module Kitchen
 
       # Creates a Vagrant VM instance.
       #
-      # @param state [Hash] mutable instance and driver state
+      # @param state [Hash] mutable instance state
       # @raise [ActionFailed] if the action could not be completed
       def create(state)
         create_vagrantfile
@@ -93,14 +93,14 @@ module Kitchen
 
       # Destroys an instance.
       #
-      # @param state [Hash] mutable instance and driver state
+      # @param state [Hash] mutable instance state
       # @raise [ActionFailed] if the action could not be completed
       def destroy(state)
         return if state[:hostname].nil?
 
         create_vagrantfile
         @vagrantfile_created = false
-        run "vagrant destroy -f"
+        run("vagrant destroy -f")
         FileUtils.rm_rf(vagrant_root)
         info("Vagrant instance #{instance.to_str} destroyed.")
         state.delete(:hostname)
@@ -146,6 +146,9 @@ module Kitchen
       WEBSITE = "http://www.vagrantup.com/downloads.html".freeze
       MIN_VER = "1.1.0".freeze
 
+      # Renders and writes out a Vagrantfile dedicated to this instance.
+      #
+      # @api private
       def create_vagrantfile
         return if @vagrantfile_created
 
@@ -157,14 +160,21 @@ module Kitchen
         @vagrantfile_created = true
       end
 
+      # Logs the Vagrantfile's contents to the debug log level.
+      #
+      # @param vagrantfile [String] path to the Vagrantfile
+      # @api private
       def debug_vagrantfile(vagrantfile)
-        if logger.debug?
-          debug("------------")
-          IO.read(vagrantfile).each_line { |l| debug("#{l.chomp}") }
-          debug("------------")
-        end
+        return unless logger.debug?
+
+        debug("------------")
+        IO.read(vagrantfile).each_line { |l| debug("#{l.chomp}") }
+        debug("------------")
       end
 
+      # Replaces any `{{vagrant_root}}` tokens in the pre create command.
+      #
+      # @api private
       def finalize_pre_create_command!
         return if config[:pre_create_command].nil?
 
@@ -172,6 +182,9 @@ module Kitchen
           gsub("{{vagrant_root}}", vagrant_root)
       end
 
+      # Replaces an `%{instance_name}` tokens in the synced folder items.
+      #
+      # @api private
       def finalize_synced_folders!
         config[:synced_folders] = config[:synced_folders].
           map do |source, destination, options|
@@ -186,7 +199,15 @@ module Kitchen
           end
       end
 
+      # Renders the Vagrantfile ERb template.
+      #
+      # @return [String] the contents for a Vagrantfile
+      # @raise [ActionFailed] if the Vagrantfile template was not found
+      # @api private
       def render_template
+        template = File.expand_path(
+          config[:vagrantfile_erb], config[:kitchen_root])
+
         if File.exist?(template)
           ERB.new(IO.read(template)).result(binding).gsub(%r{^\s*$\n}, "")
         else
@@ -194,33 +215,51 @@ module Kitchen
         end
       end
 
+      # Convenience method to run a command locally.
+      #
+      # @param cmd [String] command to run locally
+      # @param options [Hash] options hash
+      # @see Kitchen::ShellOut.run_command
+      # @api private
       def run(cmd, options = {})
         cmd = "echo #{cmd}" if config[:dry_run]
         run_command(cmd, { :cwd => vagrant_root }.merge(options))
       end
 
+      # Runs a local command before `vagrant up` has been called.
+      #
+      # @api private
       def run_pre_create_command
         if config[:pre_create_command]
           run(config[:pre_create_command], :cwd => config[:kitchen_root])
         end
       end
 
+      # Runs a local command without streaming the stdout to the logger.
+      #
+      # @param cmd [String] command to run locally
+      # @api private
+      def run_silently(cmd, options = {})
+        merged = {
+          :live_stream => nil, :quiet => (logger.debug? ? false : true)
+        }.merge(options)
+        run(cmd, merged)
+      end
+
+      # Runs the `vagrant up` command locally.
+      #
+      # @api private
       def run_vagrant_up
         cmd = "vagrant up"
         cmd += " --no-provision" unless config[:provision]
         cmd += " --provider #{config[:provider]}" if config[:provider]
-        run cmd
+        run(cmd)
       end
 
-      def silently_run(cmd)
-        run_command(cmd,
-          :live_stream => nil, :quiet => logger.debug? ? false : true)
-      end
-
-      def template
-        File.expand_path(config[:vagrantfile_erb], config[:kitchen_root])
-      end
-
+      # Updates any state after creation.
+      #
+      # @param state [Hash] mutable instance state
+      # @api private
       def update_state(state)
         hash = vagrant_ssh_config
 
@@ -231,24 +270,33 @@ module Kitchen
         state[:proxy_command] = hash["ProxyCommand"] if hash["ProxyCommand"]
       end
 
+      # @return [String] full local path to the directory containing the
+      #   instance's Vagrantfile
+      # @api private
       def vagrant_root
-        @vagrant_root ||= File.join(
+        @vagrant_root ||= instance.nil? ? nil : File.join(
           config[:kitchen_root], %w[.kitchen kitchen-vagrant],
           "kitchen-#{File.basename(config[:kitchen_root])}-#{instance.name}"
         )
       end
 
+      # @return [Hash] key/value pairs resulting from parsing a
+      #   `vagrant ssh-config` local command invocation
+      # @api private
       def vagrant_ssh_config
-        output = run("vagrant ssh-config", :live_stream => nil)
-        lines = output.split("\n").map do |line|
+        lines = run_silently("vagrant ssh-config").split("\n").map do |line|
           tokens = line.strip.partition(" ")
           [tokens.first, tokens.last.gsub(/"/, "")]
         end
         Hash[lines]
       end
 
+      # @return [String] version of Vagrant
+      # @raise [UserError] if the `vagrant` command can not be found locally
+      # @api private
       def vagrant_version
-        @version ||= silently_run("vagrant --version").chomp.split(" ").last
+        @version ||= run_silently("vagrant --version", :cwd => Dir.pwd).
+          chomp.split(" ").last
       rescue Errno::ENOENT
         raise UserError, "Vagrant #{MIN_VER} or higher is not installed." \
           " Please download a package from #{WEBSITE}."
