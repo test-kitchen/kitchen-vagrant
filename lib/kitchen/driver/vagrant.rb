@@ -74,10 +74,7 @@ module Kitchen
       def create(state)
         create_vagrantfile
         run_pre_create_command
-        cmd = "vagrant up"
-        cmd += " --no-provision" unless config[:provision]
-        cmd += " --provider #{config[:provider]}" if config[:provider]
-        run cmd
+        run_vagrant_up
         update_ssh_state(state)
         info("Vagrant instance #{instance.to_str} created.")
       end
@@ -205,6 +202,13 @@ module Kitchen
         if config[:pre_create_command]
           run(config[:pre_create_command], :cwd => config[:kitchen_root])
         end
+      end
+
+      def run_vagrant_up
+        cmd = "vagrant up"
+        cmd += " --no-provision" unless config[:provision]
+        cmd += " --provider #{config[:provider]}" if config[:provider]
+        run cmd
       end
 
       def silently_run(cmd)
