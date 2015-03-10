@@ -21,8 +21,10 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency "test-kitchen", "~> 1.0"
 
+  gem.add_development_dependency "countloc",  "~> 0.4"
   gem.add_development_dependency "rake"
-  gem.add_development_dependency "countloc", "~> 0.4"
+  gem.add_development_dependency "rspec",     "~> 3.2"
+  gem.add_development_dependency "simplecov", "~> 0.9"
 
   # style and complexity libraries are tightly version pinned as newer releases
   # may introduce new and undesireable style choices which would be immediately
