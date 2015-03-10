@@ -49,8 +49,9 @@ module Kitchen
 
       default_config :provision, false
 
-      default_config :provider,
+      default_config :provider do |_|
         ENV.fetch("VAGRANT_DEFAULT_PROVIDER", "virtualbox")
+      end
 
       default_config :ssh, {}
 
@@ -66,15 +67,6 @@ module Kitchen
 
       no_parallel_for :create, :destroy
 
-      # Converges a running instance.
-      #
-      # @param state [Hash] mutable instance and driver state
-      # @raise [ActionFailed] if the action could not be completed
-      def converge(state)
-        create_vagrantfile
-        super
-      end
-
       # Creates a Vagrant VM instance.
       #
       # @param state [Hash] mutable instance and driver state
@@ -84,7 +76,7 @@ module Kitchen
         run_pre_create_command
         cmd = "vagrant up"
         cmd += " --no-provision" unless config[:provision]
-        cmd += " --provider=#{config[:provider]}" if config[:provider]
+        cmd += " --provider #{config[:provider]}" if config[:provider]
         run cmd
         update_ssh_state(state)
         info("Vagrant instance #{instance.to_str} created.")
@@ -128,26 +120,12 @@ module Kitchen
       # @raise [ClientError] if instance parameter is nil
       def finalize_config!(instance)
         super
-        resolve_config!
+        config[:vagrantfiles] = config[:vagrantfiles].map do |path|
+          File.expand_path(path, config[:kitchen_root])
+        end
+        finalize_pre_create_command!
+        finalize_synced_folders!
         self
-      end
-
-      # Sets up an instance.
-      #
-      # @param state [Hash] mutable instance and driver state
-      # @raise [ActionFailed] if the action could not be completed
-      def setup(state)
-        create_vagrantfile
-        super
-      end
-
-      # Verifies a converged instance.
-      #
-      # @param state [Hash] mutable instance and driver state
-      # @raise [ActionFailed] if the action could not be completed
-      def verify(state)
-        create_vagrantfile
-        super
       end
 
       # Performs whatever tests that may be required to ensure that this driver
@@ -173,9 +151,6 @@ module Kitchen
       def create_vagrantfile
         return if @vagrantfile_created
 
-        finalize_synced_folder_config
-        expand_vagrantfile_paths
-
         vagrantfile = File.join(vagrant_root, "Vagrantfile")
         debug("Creating Vagrantfile for #{instance.to_str} (#{vagrantfile})")
         FileUtils.mkdir_p(vagrant_root)
@@ -192,23 +167,25 @@ module Kitchen
         end
       end
 
-      def expand_vagrantfile_paths
-        config[:vagrantfiles].map! do |vagrantfile|
-          File.absolute_path(vagrantfile)
-        end
+      def finalize_pre_create_command!
+        return if config[:pre_create_command].nil?
+
+        config[:pre_create_command] = config[:pre_create_command].
+          gsub("{{vagrant_root}}", vagrant_root)
       end
 
-      def finalize_synced_folder_config
-        config[:synced_folders].map! do |source, destination, options|
-          [
-            File.expand_path(
-              source.gsub("%{instance_name}", instance.name),
-              config[:kitchen_root]
-            ),
-            destination.gsub("%{instance_name}", instance.name),
-            options || "nil"
-          ]
-        end
+      def finalize_synced_folders!
+        config[:synced_folders] = config[:synced_folders].
+          map do |source, destination, options|
+            [
+              File.expand_path(
+                source.gsub("%{instance_name}", instance.name),
+                config[:kitchen_root]
+              ),
+              destination.gsub("%{instance_name}", instance.name),
+              options || "nil"
+            ]
+          end
       end
 
       def render_template
@@ -216,17 +193,6 @@ module Kitchen
           ERB.new(IO.read(template)).result(binding).gsub(%r{^\s*$\n}, "")
         else
           raise ActionFailed, "Could not find Vagrantfile template #{template}"
-        end
-      end
-
-      def resolve_config!
-        unless config[:vagrantfile_erb].nil?
-          config[:vagrantfile_erb] =
-            File.expand_path(config[:vagrantfile_erb], config[:kitchen_root])
-        end
-        unless config[:pre_create_command].nil?
-          config[:pre_create_command] =
-            config[:pre_create_command].gsub("{{vagrant_root}}", vagrant_root)
         end
       end
 
