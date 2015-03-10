@@ -1,7 +1,9 @@
 # <a name="title"></a> Kitchen::Vagrant
 
-[![Build Status](https://travis-ci.org/test-kitchen/kitchen-vagrant.png)](https://travis-ci.org/test-kitchen/kitchen-vagrant)
-[![Code Climate](https://codeclimate.com/github/test-kitchen/kitchen-vagrant.png)](https://codeclimate.com/github/test-kitchen/kitchen-vagrant)
+[![Gem Version](https://badge.fury.io/rb/test-kitchen.svg)](http://badge.fury.io/rb/test-kitchen)
+[![Build Status](https://secure.travis-ci.org/test-kitchen/test-kitchen.svg?branch=master)](https://travis-ci.org/test-kitchen/test-kitchen)
+[![Code Climate](https://codeclimate.com/github/test-kitchen/test-kitchen.svg)](https://codeclimate.com/github/test-kitchen/test-kitchen)
+[![Test Coverage](https://codeclimate.com/github/test-kitchen/test-kitchen/coverage.svg)](https://codeclimate.com/github/test-kitchen/test-kitchen)
 
 A Test Kitchen Driver for Vagrant.
 
