@@ -172,16 +172,19 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-Please read the "Customizations" sections for [VirtualBox][vagrant_config_vbox] and [VMware][vagrant_config_vmware] for more details.
+Please read the "Customizations" sections for [VirtualBox][vagrant_config_vbox]
+and [VMware][vagrant_config_vmware] for more details.
 
 ### <a name="config-gui"></a> GUI
 
-Allows GUI mode for each defined platform. Default is **false**. Value is passed to the `config.vm.provider`
+Allows GUI mode for each defined platform. Default is **nil**. Value is passed
+to the `config.vm.provider` but only for the VirtualBox and VMware-based
+providers.
 
 ```ruby
 platforms:
-- name: windows-2008R2
-  driver_config:
+- name: ubuntu-14.04
+  driver:
     gui: true
 ```
 
@@ -192,7 +195,7 @@ Vagrant.configure("2") do |config|
   # ...
 
   c.vm.provider :virtualbox do |p|
-      p.gui = true
+    p.gui = true
   end
 end
 ```
