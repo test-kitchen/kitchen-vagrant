@@ -317,8 +317,8 @@ describe Kitchen::Driver::Vagrant do
 
       before { allow(platform).to receive(:os_type).and_return("windows") }
 
-      it "sets :vm_hostname to a truncated 12-char instance name by default" do
-        expect(driver[:vm_hostname]).to eq("suitey-foo-9")
+      it "sets :vm_hostname to nil by default" do
+        expect(driver[:vm_hostname]).to eq(nil)
       end
 
       it "sets :vm_hostname to a custom value, truncated to 12 chars" do
