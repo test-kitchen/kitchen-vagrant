@@ -329,7 +329,9 @@ set this value to `false`.
 
 The default will be computed from the name of the instance. For
 example, the instance was called "default-fuzz-9" will produce a default
-`vm_hostname` value of `"default-fuzz-9.vagrantup.com"`.
+`vm_hostname` value of `"default-fuzz-9.vagrantup.com"`. For Windows-based
+platforms, a default of `nil` is used to save on boot time and potential
+rebooting.
 
 ### <a name="config-ssh-key"></a> ssh\_key
 

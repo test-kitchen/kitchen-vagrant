@@ -77,7 +77,9 @@ module Kitchen
       default_config :vagrantfiles, []
       expand_path_for :vagrantfiles
 
-      default_config(:vm_hostname) { |driver| driver.instance.name }
+      default_config(:vm_hostname) do |driver|
+        driver.windows_os? ? nil : driver.instance.name
+      end
 
       no_parallel_for :create, :destroy
 
