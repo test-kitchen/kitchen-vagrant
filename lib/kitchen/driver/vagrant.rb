@@ -137,7 +137,7 @@ module Kitchen
       #   documented dependency is missing from the system
       def verify_dependencies
         super
-        if Gem::Version.new(vagrant_version) < Gem::Version.new(MIN_VER)
+        if Gem::Version.new(vagrant_version) < Gem::Version.new(MIN_VER.dup)
           raise UserError, "Detected an old version of Vagrant " \
             "(#{vagrant_version})." \
             " Please upgrade to version #{MIN_VER} or higher from #{WEBSITE}."
