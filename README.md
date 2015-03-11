@@ -174,6 +174,31 @@ end
 
 Please read the "Customizations" sections for [VirtualBox][vagrant_config_vbox] and [VMware][vagrant_config_vmware] for more details.
 
+### <a name="config-gui"></a> GUI
+
+Allows GUI mode for each defined platform. Default is **false**. Value is passed to the `config.vm.provider`
+
+```ruby
+platforms:
+- name: windows-2008R2
+  driver_config:
+    gui: true
+```
+
+will generate a Vagrantfile configuration similar to:
+
+```ruby
+Vagrant.configure("2") do |config|
+  # ...
+
+  c.vm.provider :virtualbox do |p|
+      p.gui = true
+  end
+end
+```
+
+For more info about GUI vs. Headless mode please see [vagrant configuration docs][vagrant_config_vbox]
+
 ### <a name="config-dry-run"></a> dry\_run
 
 Useful when debugging Vagrant CLI commands. If set to `true`, all Vagrant CLI
