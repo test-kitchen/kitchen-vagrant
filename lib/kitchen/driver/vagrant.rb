@@ -44,6 +44,8 @@ module Kitchen
 
       default_config :customize, {}
 
+      default_config :gui, nil
+
       default_config :network, []
 
       default_config :pre_create_command, nil

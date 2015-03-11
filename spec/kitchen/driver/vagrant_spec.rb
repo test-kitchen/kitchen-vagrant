@@ -101,6 +101,10 @@ describe Kitchen::Driver::Vagrant do
       expect(driver[:customize]).to eq(:a => "b", :c => { :d => "e" })
     end
 
+    it "sets :gui to nil by default" do
+      expect(driver[:gui]).to eq(nil)
+    end
+
     it "sets :network to an empty array by default" do
       expect(driver[:network]).to eq([])
     end
@@ -813,6 +817,35 @@ describe Kitchen::Driver::Vagrant do
           end
         RUBY
       end
+
+      it "does not set :gui to nil" do
+        config[:gui] = nil
+        cmd
+
+        expect(vagrantfile).to_not match(regexify(%{p.gui = }, :partial))
+      end
+
+      it "sets :gui to false if set" do
+        config[:gui] = false
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :virtualbox do |p|
+            p.gui = false
+          end
+        RUBY
+      end
+
+      it "sets :gui to true if set" do
+        config[:gui] = true
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :virtualbox do |p|
+            p.gui = true
+          end
+        RUBY
+      end
     end
 
     context "for parallels provider" do
@@ -898,6 +931,35 @@ describe Kitchen::Driver::Vagrant do
     context "for vmware_* providers" do
 
       before { config[:provider] = "vmware_desktop" }
+
+      it "does not set :gui to nil" do
+        config[:gui] = nil
+        cmd
+
+        expect(vagrantfile).to_not match(regexify(%{p.gui = }, :partial))
+      end
+
+      it "sets :gui to false if set" do
+        config[:gui] = false
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :vmware_desktop do |p|
+            p.gui = false
+          end
+        RUBY
+      end
+
+      it "sets :gui to true if set" do
+        config[:gui] = true
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :vmware_desktop do |p|
+            p.gui = true
+          end
+        RUBY
+      end
 
       it "adds a line for each element in :customize" do
         config[:customize] = {
