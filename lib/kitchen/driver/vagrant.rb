@@ -29,7 +29,9 @@ module Kitchen
     # Vagrant driver for Kitchen. It communicates to Vagrant via the CLI.
     #
     # @author Fletcher Nichol <fnichol@nichol.ca>
-    class Vagrant < Kitchen::Driver::SSHBase
+    class Vagrant < Kitchen::Driver::Base
+
+      include ShellOut
 
       default_config :box do |driver|
         "opscode-#{driver.instance.platform.name}"
@@ -48,6 +50,10 @@ module Kitchen
 
       default_config :network, []
 
+      default_config :password do |driver|
+        "vagrant" if driver.winrm_transport?
+      end
+
       default_config :pre_create_command, nil
 
       default_config :provision, false
@@ -60,11 +66,16 @@ module Kitchen
 
       default_config :synced_folders, []
 
+      default_config :username do |driver|
+        "vagrant" if driver.winrm_transport?
+      end
+
       default_config :vagrantfile_erb,
         File.join(File.dirname(__FILE__), "../../../templates/Vagrantfile.erb")
       expand_path_for :vagrantfile_erb
 
       default_config :vagrantfiles, []
+      expand_path_for :vagrantfiles
 
       default_config(:vm_hostname) { |driver| driver.instance.name }
 
@@ -79,6 +90,7 @@ module Kitchen
         run_pre_create_command
         run_vagrant_up
         update_state(state)
+        instance.transport.connection(state).wait_until_ready
         info("Vagrant instance #{instance.to_str} created.")
       end
 
@@ -120,9 +132,7 @@ module Kitchen
       # @raise [ClientError] if instance parameter is nil
       def finalize_config!(instance)
         super
-        config[:vagrantfiles] = config[:vagrantfiles].map do |path|
-          File.expand_path(path, config[:kitchen_root])
-        end
+        finalize_vm_hostname!
         finalize_pre_create_command!
         finalize_synced_folders!
         self
@@ -142,6 +152,13 @@ module Kitchen
             "(#{vagrant_version})." \
             " Please upgrade to version #{MIN_VER} or higher from #{WEBSITE}."
         end
+      end
+
+      # @return [TrueClass,FalseClass] whether or not the transport's name
+      #   implies a WinRM-based transport
+      # @api private
+      def winrm_transport?
+        instance.transport.name.downcase =~ /win_?rm/
       end
 
       protected
@@ -202,6 +219,18 @@ module Kitchen
           end
       end
 
+      # Truncates the length of `:vm_hostname` to 12 characters for
+      # Windows-based operating systems.
+      #
+      # @api private
+      def finalize_vm_hostname!
+        string = config[:vm_hostname]
+
+        if windows_os? && string.is_a?(String) && string.size >= 12
+          config[:vm_hostname] = "#{string[0...10]}-#{string[-1]}"
+        end
+      end
+
       # Renders the Vagrantfile ERb template.
       #
       # @return [String] the contents for a Vagrantfile
@@ -227,6 +256,22 @@ module Kitchen
       def run(cmd, options = {})
         cmd = "echo #{cmd}" if config[:dry_run]
         run_command(cmd, { :cwd => vagrant_root }.merge(options))
+      end
+
+      # Delegates to Kitchen::ShellOut.run_command, overriding some default
+      # options:
+      #
+      # * `:use_sudo` defaults to the value of `config[:use_sudo]` in the
+      #   Driver object
+      # * `:log_subject` defaults to a String representation of the Driver's
+      #   class name
+      #
+      # @see Kitchen::ShellOut#run_command
+      def run_command(cmd, options = {})
+        merged = {
+          :use_sudo => config[:use_sudo], :log_subject => name
+        }.merge(options)
+        super(cmd, merged)
       end
 
       # Runs a local command before `vagrant up` has been called.
@@ -267,10 +312,16 @@ module Kitchen
         hash = vagrant_ssh_config
 
         state[:hostname] = hash["HostName"]
-        state[:username] = hash["User"]
-        state[:ssh_key] = hash["IdentityFile"]
-        state[:port] = hash["Port"]
-        state[:proxy_command] = hash["ProxyCommand"] if hash["ProxyCommand"]
+
+        if winrm_transport?
+          state[:username] = config[:username]
+          state[:password] = config[:password]
+        else
+          state[:username] = hash["User"]
+          state[:ssh_key] = hash["IdentityFile"]
+          state[:port] = hash["Port"]
+          state[:proxy_command] = hash["ProxyCommand"] if hash["ProxyCommand"]
+        end
       end
 
       # @return [String] full local path to the directory containing the

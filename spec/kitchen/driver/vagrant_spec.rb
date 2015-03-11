@@ -23,6 +23,7 @@ require "stringio"
 
 require "kitchen/driver/vagrant"
 require "kitchen/provisioner/dummy"
+require "kitchen/transport/dummy"
 
 describe Kitchen::Driver::Vagrant do
 
@@ -33,6 +34,7 @@ describe Kitchen::Driver::Vagrant do
   let(:suite)         { Kitchen::Suite.new(:name => "suitey") }
   let(:busser)        { double("busser") }
   let(:provisioner)   { Kitchen::Provisioner::Dummy.new }
+  let(:transport)     { Kitchen::Transport::Dummy.new }
   let(:state_file)    { double("state_file") }
   let(:state)         { Hash.new }
   let(:env)           { Hash.new }
@@ -53,6 +55,7 @@ describe Kitchen::Driver::Vagrant do
       :suite => suite,
       :platform => platform,
       :provisioner => provisioner,
+      :transport => transport,
       :state_file => state_file
     )
   end
@@ -247,14 +250,60 @@ describe Kitchen::Driver::Vagrant do
       )
     end
 
-    it "sets :vm_hostname to the instance name by default" do
-      expect(driver[:vm_hostname]).to eq("suitey-fooos-99")
+    context "for unix os_types" do
+
+      before { allow(platform).to receive(:os_type).and_return("unix") }
+
+      it "sets :vm_hostname to the instance name by default" do
+        expect(driver[:vm_hostname]).to eq("suitey-fooos-99")
+      end
+
+      it "sets :vm_hostname to a custom value" do
+        config[:vm_hostname] = "okay"
+
+        expect(driver[:vm_hostname]).to eq("okay")
+      end
     end
 
-    it "sets :vm_hostname to a custom value" do
-      config[:vm_hostname] = "okay"
+    context "for windows os_types" do
 
-      expect(driver[:vm_hostname]).to eq("okay")
+      before { allow(platform).to receive(:os_type).and_return("windows") }
+
+      it "sets :vm_hostname to a truncated 12-char instance name by default" do
+        expect(driver[:vm_hostname]).to eq("suitey-foo-9")
+      end
+
+      it "sets :vm_hostname to a custom value, truncated to 12 chars" do
+        config[:vm_hostname] = "this-is-a-pretty-long-name-ya-think"
+
+        expect(driver[:vm_hostname]).to eq("this-is-a--k")
+      end
+    end
+
+    context "for non-WinRM-based transports" do
+
+      before { allow(transport).to receive(:name).and_return("Coolness") }
+
+      it "sets :username to nil by default" do
+        expect(driver[:username]).to eq(nil)
+      end
+
+      it "sets :password to nil by default" do
+        expect(driver[:password]).to eq(nil)
+      end
+    end
+
+    context "for WinRM-based transports" do
+
+      before { allow(transport).to receive(:name).and_return("WinRM") }
+
+      it "sets :username to vagrant by default" do
+        expect(driver[:username]).to eq("vagrant")
+      end
+
+      it "sets :password to vagrant by default" do
+        expect(driver[:password]).to eq("vagrant")
+      end
     end
 
     context "with old versions of Vagrant" do
@@ -360,6 +409,14 @@ describe Kitchen::Driver::Vagrant do
       expect(File.exist?(File.join(vagrant_root, "Vagrantfile"))).to eq(true)
     end
 
+    it "calls Transport's #wait_until_ready" do
+      conn = double("connection")
+      allow(transport).to receive(:connection).with(state).and_return(conn)
+      expect(conn).to receive(:wait_until_ready)
+
+      cmd
+    end
+
     it "logs the Vagrantfile contents on debug level" do
       cmd
 
@@ -439,35 +496,59 @@ describe Kitchen::Driver::Vagrant do
         expect(state).to include(:hostname => "192.168.32.64")
       end
 
-      it "sets :username from ssh-config" do
-        cmd
+      context "for non-WinRM-based transports" do
 
-        expect(state).to include(:username => "vagrant")
+        before { allow(transport).to receive(:name).and_return("Coolness") }
+
+        it "sets :username from ssh-config" do
+          cmd
+
+          expect(state).to include(:username => "vagrant")
+        end
+
+        it "sets :ssh_key from ssh-config" do
+          cmd
+
+          expect(state).to include(:ssh_key => "/path/to/private_key")
+        end
+
+        it "sets :port from ssh-config" do
+          cmd
+
+          expect(state).to include(:port => "2022")
+        end
+
+        it "does not set :proxy_command by default" do
+          cmd
+
+          expect(state.keys).to_not include(:proxy_command)
+        end
+
+        it "sets :proxy_command if ProxyCommand is in ssh-config" do
+          output.concat("  ProxyCommand echo proxy\n")
+          cmd
+
+          expect(state).to include(:proxy_command => "echo proxy")
+        end
       end
 
-      it "sets :ssh_key from ssh-config" do
-        cmd
+      context "for WinRM-based transports" do
 
-        expect(state).to include(:ssh_key => "/path/to/private_key")
-      end
+        before { allow(transport).to receive(:name).and_return("WinRM") }
 
-      it "sets :port from ssh-config" do
-        cmd
+        it "sets :username from config" do
+          config[:username] = "winuser"
+          cmd
 
-        expect(state).to include(:port => "2022")
-      end
+          expect(state).to include(:username => "winuser")
+        end
 
-      it "does not set :proxy_command by default" do
-        cmd
+        it "sets :password from config" do
+          config[:password] = "mysecret"
+          cmd
 
-        expect(state.keys).to_not include(:proxy_command)
-      end
-
-      it "sets :proxy_command if ProxyCommand is in ssh-config" do
-        output.concat("  ProxyCommand echo proxy\n")
-        cmd
-
-        expect(state).to include(:proxy_command => "echo proxy")
+          expect(state).to include(:password => "mysecret")
+        end
       end
     end
 
