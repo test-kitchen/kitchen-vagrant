@@ -24,6 +24,7 @@ require "stringio"
 require "kitchen/driver/vagrant"
 require "kitchen/provisioner/dummy"
 require "kitchen/transport/dummy"
+require "kitchen/verifier/dummy"
 
 describe Kitchen::Driver::Vagrant do
 
@@ -32,7 +33,7 @@ describe Kitchen::Driver::Vagrant do
   let(:config)        { { :kitchen_root => "/kroot" } }
   let(:platform)      { Kitchen::Platform.new(:name => "fooos-99") }
   let(:suite)         { Kitchen::Suite.new(:name => "suitey") }
-  let(:busser)        { double("busser") }
+  let(:verifier)      { Kitchen::Verifier::Dummy.new }
   let(:provisioner)   { Kitchen::Provisioner::Dummy.new }
   let(:transport)     { Kitchen::Transport::Dummy.new }
   let(:state_file)    { double("state_file") }
@@ -49,7 +50,7 @@ describe Kitchen::Driver::Vagrant do
 
   let(:instance) do
     Kitchen::Instance.new(
-      :busser => busser,
+      :verifier => verifier,
       :driver => driver_object,
       :logger => logger,
       :suite => suite,
