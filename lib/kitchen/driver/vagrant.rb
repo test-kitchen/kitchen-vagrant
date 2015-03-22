@@ -44,6 +44,10 @@ module Kitchen
 
       default_config :box_version, nil
 
+      default_config :communicator do |driver|
+        driver.instance.transport.class.name.split('::').last.downcase
+      end
+
       default_config :customize, {}
 
       default_config :gui, nil
