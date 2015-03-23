@@ -75,6 +75,10 @@ Vagrant.configure("2") do |c|
     <% else %>
     p.customize "<%= key %>", "<%= value %>"
     <% end %>
+  <% when "managed" %>
+    <% if key == :server %>
+    p.server = "<%= value %>"
+    <% end %>
   <% when "parallels" %>
     p.customize ["set", :id, "--<%= key.to_s.gsub('_', '-') %>", "<%= value %>"]
   <% when "rackspace" %>
