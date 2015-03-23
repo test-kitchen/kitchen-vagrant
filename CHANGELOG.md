@@ -1,26 +1,37 @@
-## 0.16.0 / TBD
+## 0.16.0 / 2015-03-23
+
+### Bug fixes
+
+* Pull request [#122][], pull request [#151][]: Only set custom `:box` & `:box_url` values for known Bento boxes. ([@ashb][], [@fnichol][])
 
 ### New features
 
-* Add `provision` flag to run provision during `create`, [#129][] [@gouketsu][]
-* Add `ssh` config section to control ssh behavior, [#121][] [@Igorshp][]
-* Add `password` for ssh config, [#118][] [@philcallister][]
-* Add `vagrantfiles` config section, [#112][] [@byggztryng][]
-* Add `libvirt` vagrant target, [#107][] [@bradleyd][]
-* Add `communicator` config to support alternates like `winrm`, [#104][] [@RobertRehberg][]
-* Add `box_version` & `box_check_update` config to support box versioning, [#102][] [@mconigliaro][]
-* Add `proxy_command` to ssh_state control, [#95][] [@bdclark][]
-* Add `parallels` vagrant target, [#84][] [@jhx][]
+* Pull request $84: Add support for Parallels provider. ([@jhx][])
+* Pull request [#107][]: Add support for libvirt provider. ([@bradleyd][])
+* Pull request [#128][]: Add support for LXC provider. ([@tknerr][])
+* Pull request [#142][]: Add support for managed-servers provider. ([@kbruner][])
+* Add `:gui` configuration attribute to override default GUI mode with VirtualBox and VMware-based providers. ([@fnichol][])
+* Pull request [#137][]: Support SoftLayer `:disk_capacity` configuration. ([@hugespoon][])
+* Pull request [#102][]: Add `:box_version` & `:box_check_update` configuration options to support box versioning. ([@mconigliaro][])
+* Pull request [#129][]: Add `:provision` configuration option. ([@gouketsu][])
+* Pull reqwuest [#112][]: Add configuration option for user Vagrantfiles with `:vagrantfiles` configuration option. ([@byggztryng][])
+* Pull request [#95][]: Add SSH ProxyCommand to state if present. ([@bdclark][])
+* Pull request [#121][]: Add `:ssh` configuration hash. ([@Igorshp][])
+* Pull request [#104][]: Add `:communicator` configuration option to support overriding underlying base box's communicator setting. ([@RobertRehberg][])
+* Pull request [#118][]: Vagrant config password (Not Vagrant recommended). ([@philcallister][])
 
 ### Improvements
 
-* Updated README, [#106][] [@alex-slynko-wonga][], [#127][] [@vinyar][]
-* Control behavior of Berkshelf if `vagrant-berkshelf` plugin exists, [#126][] [@tknerr][]
-* Allow `box_url` to be optional, use Atlas if unspecified, [#122][] [@ashb][]
-* Change default hostname to be within limits for Windows guests, [#117][] [@Annih][]
-* Set working directory to suite name, [#101][] [@petere][]
+* Pull request [#148][]: Add full test coverage to the codebase. ([@fnichol][])
+* Pull request [#126][]: Disable vagrant-berkshelf plugin by default (this Driver does not need it and can cause confusing errors). ([@tknerr][])
+* Pull request [#101][]: Qualify VM names with project name. ([@petere][])
+* Pull request [#117][]: Change default hostname to be shorter and friendlier for Windows hosts. ([@Annih][])
+* Pull request [#106][], Use correct URLs to download vagrant in README. ([@alex-slynko-wonga][])
+* Pull request [#146][]: Freshen project quality (TravisCI, Tailor-for-Rubocop, Guard support, etc). ([@fnichol][])
+* Pull request [#147][]: Tidy default configuration attributes. ([@fnichol][])
+* Pull request [#134][]: CHANGELOG Champion, Mr. [@miketheman][]. ([@miketheman][])
+* Pull request [#127][]: README updates. ([@vinyar][], fnichol)
 
-https://github.com/test-kitchen/kitchen-vagrant/compare/v0.15.0...master
 
 ## 0.15.0 / 2014-04-28
 
@@ -221,7 +232,15 @@ The initial release.
 [#122]: https://github.com/test-kitchen/kitchen-vagrant/issues/122
 [#126]: https://github.com/test-kitchen/kitchen-vagrant/issues/126
 [#127]: https://github.com/test-kitchen/kitchen-vagrant/issues/127
+[#128]: https://github.com/test-kitchen/kitchen-vagrant/issues/128
 [#129]: https://github.com/test-kitchen/kitchen-vagrant/issues/129
+[#134]: https://github.com/test-kitchen/kitchen-vagrant/issues/134
+[#137]: https://github.com/test-kitchen/kitchen-vagrant/issues/137
+[#142]: https://github.com/test-kitchen/kitchen-vagrant/issues/142
+[#146]: https://github.com/test-kitchen/kitchen-vagrant/issues/146
+[#147]: https://github.com/test-kitchen/kitchen-vagrant/issues/147
+[#148]: https://github.com/test-kitchen/kitchen-vagrant/issues/148
+[#151]: https://github.com/test-kitchen/kitchen-vagrant/issues/151
 [@Annih]: https://github.com/Annih
 [@Igorshp]: https://github.com/Igorshp
 [@RobertRehberg]: https://github.com/RobertRehberg
@@ -239,13 +258,16 @@ The initial release.
 [@fujin]: https://github.com/fujin
 [@gildegoma]: https://github.com/gildegoma
 [@gouketsu]: https://github.com/gouketsu
+[@hugespoon]: https://github.com/hugespoon
 [@jhx]: https://github.com/jhx
 [@josephholsten]: https://github.com/josephholsten
+[@kbruner]: https://github.com/kbruner
 [@keiths-osc]: https://github.com/keiths-osc
 [@manul]: https://github.com/manul
 [@martinisoft]: https://github.com/martinisoft
 [@mattray]: https://github.com/mattray
 [@mconigliaro]: https://github.com/mconigliaro
+[@miketheman]: https://github.com/miketheman
 [@petejkim]: https://github.com/petejkim
 [@petere]: https://github.com/petere
 [@philcallister]: https://github.com/philcallister
