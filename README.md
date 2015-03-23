@@ -53,36 +53,66 @@ Please read the [Driver usage][driver_usage] page for more details.
 ## <a name="default-config"></a> Default Configuration
 
 This driver can predict the Vagrant box name and download URL for a select
-number of platforms (VirtualBox provider only) that have been published by
-Opscode, such as:
+number of platforms (VirtualBox and VMware providers only) that have been published by
+Chef Software Inc, in the [Bento][bento] project such as:
 
-```ruby
+```yaml
 ---
 platforms:
-- name: ubuntu-10.04
-- name: ubuntu-12.04
-- name: ubuntu-12.10
-- name: ubuntu-13.04
-- name: centos-5.9
-- name: centos-6.4
-- name: debian-7.1.0
+  - name: ubuntu-10.04
+  - name: ubuntu-12.04
+  - name: ubuntu-14.04
+  - name: ubuntu-13.04
+  - name: centos-5.11
+  - name: centos-6.6
+  - name: debian-7.8
+  - name: freebsd-10.1
 ```
 
 This will effectively generate a configuration similar to:
 
-```ruby
+```yaml
 ---
 platforms:
-- name: ubuntu-10.04
-  driver:
-    box: chef/ubuntu-10.04
-- name: ubuntu-12.04
-  driver:
-    box: chef/ubuntu-12.04
-- name: ubuntu-12.10
-  driver:
-    box: chef/ubuntu-12.10
-# ...
+  - name: ubuntu-10.04
+    driver:
+      box: opscode-ubuntu-10.04
+      box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-10.04_chef-provisionerless.box
+  - name: ubuntu-12.04
+    driver:
+      box: opscode-ubuntu-12.04
+      box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-12.04_chef-provisionerless.box
+  - name: ubuntu-14.04
+    driver:
+      box: opscode-ubuntu-14.04
+      box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box
+  # ...
+```
+
+Any other platform names will set a more reasonable default for `box` and leave `box_url` unset. For example:
+
+```yaml
+---
+platforms:
+  - name: slackware-14.1
+  - name: openbsd-5.6
+  - name: windows-2012r2
+```
+
+This will effectively generate a configuration similar to:
+
+```yaml
+---
+platforms:
+  - name: slackware-14.1
+    driver:
+      box: slackware-14.1
+  - name: openbsd-5.6
+    driver:
+      box: openbsd-5.6
+  - name: windows-2012r2
+    driver:
+      box: windows-2012r2
 ```
 
 Many host wide defaults for Vagrant can be set using `$HOME/.vagrant.d/Vagrantfile`. See the [Vagrantfile documentation][vagrantfile] for more information.
@@ -95,56 +125,56 @@ Many host wide defaults for Vagrant can be set using `$HOME/.vagrant.d/Vagrantfi
 details, please read the Vagrant [machine settings][vagrant_machine_settings]
 page.
 
-It is recommended to use a short name of a box on Vagrant Cloud and leave
-box_url empty if your box is publically available.
+The default will be computed from the platform name of the instance. Howver, for a small number of common/known platforms in the [Bento][bento] project, the default will prepend `"opscode-"` to the start to match the downloadable `box_url` (see below).
 
-The default will be computed from the platform name of the instance. For
-example, a platform called "fuzzypants-9.000" will produce a default `box`
-value of `"chef/fuzzypants-9.000"`.
+For example, a platform with a Bento box called "ubuntu-14.04" will produce a
+default `box` value of `"opscode-ubuntu-14.04"`. Alternatively, a box called
+`"slackware-14.1"` will produce a default `box` value of `"slackware-14.1".
+
+### <a name="config-box-check-update"></a> box\_check\_update
+
+Whether to check for box updates (disabled by default).
 
 ### <a name="config-box-url"></a> box\_url
 
-The URL that the configured box can be found at if not available on the
-Vagrant Cloud or if on Vagrant < 1.5. If the box is not installed on the
-system, it will be retrieved from this URL when the virtual machine is started.
+A default URL will be computed only for a small number of common/known
+platforms in the [Bento][bento] project. Additionally, a URL will only be
+computed if the Vagrant provider is VirtualBox or is VMware based (these are
+the only providers with downloadable base boxes).
 
 ### <a name="config-box-version"></a> box\_version
 
 The [version][vagrant_versioning] of the configured box.
 
-### <a name="config-box-check-update"></a> box\_check\_update
-
-Whether to check for box updates (enabled by default).
+The default is `nil`, indicating unset.
 
 ### <a name="config-communicator"></a> communicator
 
-For supporting communicating with Windows over WinRM.
+**Note:** It should largely be the responsibility of the underlying Vagrant
+base box to properly set the `config.vm.communicator` value. For example, if
+the base box is a Windows operating system and does not have an SSH service
+installed and enabled, then Vagrant will be unable to even boot it (using
+`vagrant up`), without a custom Vagrantfile. If you are authoring a base box,
+please take care to set your value for communicator to give your users the best
+possible out-of-the-box experience.
+
+For overriding the default communicator setting of the base box.
 
 For example:
 
-```ruby
+```yaml
+---
 driver:
-  communicator: "winrm"
+  communicator: ssh
 ```
 
 will generate a Vagrantfile configuration similar to:
 
 ```ruby
-  config.vm.communicator = "winrm"
+  config.vm.communicator = "ssh"
 ```
 
-The default is nil assuming ssh will be used.
-
-### <a name="config-provider"></a> provider
-
-This determines which Vagrant provider to use. The value should match
-the provider name in Vagrant. For example, to use VMware Fusion the provider
-should be `vmware_fusion`. Please see the docs on [providers][vagrant_providers]
-for further details.
-
-By default the value is unset, or `nil`. In this case the driver will use the
-Vagrant [default provider][vagrant_default_provider] which at this current time
-is `virtualbox` unless set by `VAGRANT_DEFAULT_PROVIDER` environment variable.
+The default is `nil` assuming ssh will be used.
 
 ### <a name="config-customize"></a> customize
 
@@ -152,7 +182,8 @@ A **Hash** of customizations to a Vagrant virtual machine.  Each key/value
 pair will be passed to your providers customization block. For example, with
 the default `virtualbox` provider:
 
-```ruby
+```yaml
+---
 driver:
   customize:
     memory: 1024
@@ -175,17 +206,31 @@ end
 Please read the "Customizations" sections for [VirtualBox][vagrant_config_vbox]
 and [VMware][vagrant_config_vmware] for more details.
 
-### <a name="config-gui"></a> GUI
+### <a name="config-guest"></a> guest
+
+**Note:** It should largely be the responsibility of the underlying Vagrant
+base box to properly set the `config.vm.guest` value. For example, if the base
+box is a Windows operating system, then Vagrant will be unable to even boot it
+(using `vagrant up`), without a custom Vagrantfile. If you are authoring a base
+box, please take care to set your value for communicator to give your users the
+best possible out-of-the-box experience.
+
+For overriding the default guest setting of the base box.
+
+The default is unset, or `nil`.
+
+### <a name="config-gui"></a> gui
 
 Allows GUI mode for each defined platform. Default is **nil**. Value is passed
 to the `config.vm.provider` but only for the VirtualBox and VMware-based
 providers.
 
-```ruby
+```yaml
+---
 platforms:
-- name: ubuntu-14.04
-  driver:
-    gui: true
+  - name: ubuntu-14.04
+    driver:
+      gui: true
 ```
 
 will generate a Vagrantfile configuration similar to:
@@ -202,33 +247,18 @@ end
 
 For more info about GUI vs. Headless mode please see [vagrant configuration docs][vagrant_config_vbox]
 
-### <a name="config-dry-run"></a> dry\_run
-
-Useful when debugging Vagrant CLI commands. If set to `true`, all Vagrant CLI
-commands will be displayed rather than executed.
-
-The default is unset, or `nil`.
-
-### <a name="config-guest"></a> guest
-
-Set the `config.vm.guest` setting in the default Vagrantfile. For more details
-please read the
-[config.vm.guest](http://docs.vagrantup.com/v2/vagrantfile/machine_settings.html)
-section of the Vagrant documentation.
-
-The default is unset, or `nil`.
-
 ### <a name="config-network"></a> network
 
 An **Array** of network customizations for the virtual machine. Each Array
 element is itself an Array of arguments to be passed to the `config.vm.network`
 method. For example:
 
-```ruby
+```yaml
+---
 driver:
   network:
-  - ["forwarded_port", {guest: 80, host: 8080}]
-  - ["private_network", {ip: "192.168.33.33"}]
+    - ["forwarded_port", {guest: 80, host: 8080}]
+    - ["private_network", {ip: "192.168.33.33"}]
 ```
 
 will generate a Vagrantfile configuration similar to:
@@ -261,11 +291,41 @@ or the `kitchen_root`.
 For example, if your project requires
 [Bindler](https://github.com/fgrehm/bindler), this command could be:
 
-```
-pre_create_command: cp .vagrant_plugins.json {{vagrant_root}}/ && vagrant plugin bundle
+```yaml
+---
+driver
+  pre_create_command: cp .vagrant_plugins.json {{vagrant_root}}/ && vagrant plugin bundle
 ```
 
 The default is unset, or `nil`.
+
+### <a name="config-provider"></a> provider
+
+This determines which Vagrant provider to use. The value should match
+the provider name in Vagrant. For example, to use VMware Fusion the provider
+should be `vmware_fusion`. Please see the docs on [providers][vagrant_providers]
+for further details.
+
+By default the value is unset, or `nil`. In this case the driver will use the
+Vagrant [default provider][vagrant_default_provider] which at this current time
+is `virtualbox` unless set by `VAGRANT_DEFAULT_PROVIDER` environment variable.
+
+### <a name="provision"></a> provision
+
+Set to true if you want to do the provision of vagrant in create.
+Useful in case of you want to customize the OS in provision phase of vagrant
+
+### <a name="config-ssh-key"></a> ssh\_key
+
+This is the path to the private key file used for SSH authentication if you
+would like to use your own private ssh key instead of the default vagrant
+insecure private key.
+
+If this value is a relative path, then it will be expanded relative to the
+location of the main Vagrantfile. If this value is nil, then the default
+insecure private key that ships with Vagrant will be used.
+
+The default value is unset, or `nil`.
 
 ### <a name="config-synced-folders"></a> synced_folders
 
@@ -274,7 +334,8 @@ instance. Source paths can be relative to the kitchen root.
 
 The default is an empty Array, or `[]`. The example:
 
-```ruby
+```yaml
+---
 driver:
   synced_folders:
     - ["data/%{instance_name}", "/opt/instance_data"]
@@ -292,14 +353,6 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-### <a name="config-username"></a> username
-
-This is the username used for SSH authentication if you
-would like to connect with a different account than Vagrant default user.
-
-If this value is nil, then Vagrant parameter `config.ssh.default.username`
-will be used (which is usually set to 'vagrant').
-
 ### <a name="config-vagrantfile-erb"></a> vagrantfile\_erb
 
 An alternate Vagrantfile ERB template that will be rendered for use by this
@@ -314,6 +367,22 @@ Using the alternative Vagrantfile template strategy may be a dangerous
 road--be aware.
 
 The default is to use a template which ships with this gem.
+
+### <a name="config-vagrantfiles"></a> vagrantfiles
+
+An array of paths to other Vagrantfiles to be merged with the default one. The
+paths can be absolute or relative to the .kitchen.yml file.
+
+**Note:** the Vagrantfiles must have a .rb extension to satisfy Ruby's
+Kernel#require.
+
+```yaml
+---
+driver:
+  vagrantfiles:
+    - VagrantfileA.rb
+    - /tmp/VagrantfileB.rb
+```
 
 ### <a name="config-vm-hostname"></a> vm\_hostname
 
@@ -330,38 +399,6 @@ set this value to `false`.
 The default will be computed from the name of the instance. For
 example, the instance was called "default-fuzz-9" will produce a default
 `vm_hostname` value of `"default-fuzz-9.vagrantup.com"`.
-
-### <a name="config-ssh-key"></a> ssh\_key
-
-This is the path to the private key file used for SSH authentication if you
-would like to use your own private ssh key instead of the default vagrant
-insecure private key.
-
-If this value is a relative path, then it will be expanded relative to the
-location of the main Vagrantfile. If this value is nil, then the default
-insecure private key that ships with Vagrant will be used.
-
-The default value is unset, or `nil`.
-
-### <a name="config-vagrantfiles"></a> vagrantfiles
-
-An array of paths to other Vagrantfiles to be merged with the default one. The
-paths can be absolute or relative to the .kitchen.yml file.
-
-**Note:** the Vagrantfiles must have a .rb extension to satisfy Ruby's
-Kernel#require.
-
-```ruby
-driver:
-  vagrantfiles:
-    - VagrantfileA.rb
-    - /tmp/VagrantfileB.rb
-```
-
-### <a name="provision"></a> provision
-
-Set to true if you want to do the provision of vagrant in create.
-Usefull in case of you want to customize the OS in provision phase of vagrant
 
 ## <a name="development"></a> Development
 
@@ -393,6 +430,7 @@ Apache 2.0 (see [LICENSE][license])
 [repo]:             https://github.com/opscode/kitchen-vagrant
 [driver_usage]:     http://kitchen.ci/docs/getting-started/adding-platform
 
+[bento]:                    https://github.com/chef/bento
 [vagrant_dl]:               http://www.vagrantup.com/downloads.html
 [vagrant_machine_settings]: http://docs.vagrantup.com/v2/vagrantfile/machine_settings.html
 [vagrant_networking]:       http://docs.vagrantup.com/v2/networking/basic_usage.html
