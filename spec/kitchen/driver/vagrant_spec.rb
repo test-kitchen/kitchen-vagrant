@@ -937,6 +937,82 @@ describe Kitchen::Driver::Vagrant do
       end
     end
 
+    context "for lxc provider" do
+
+      before { config[:provider] = "lxc" }
+
+      it "sets container_name to :machine if set" do
+        config[:customize] = {
+          :container_name => ":machine"
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :lxc do |p|
+            p.container_name = :machine
+          end
+        RUBY
+      end
+
+      it "sets container_name to another value in quotes if set" do
+        config[:customize] = {
+          :container_name => "beans"
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :lxc do |p|
+            p.container_name = "beans"
+          end
+        RUBY
+      end
+
+      it "sets backingstore if set" do
+        config[:customize] = {
+          :backingstore => "lvm"
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :lxc do |p|
+            p.backingstore = "lvm"
+          end
+        RUBY
+      end
+
+      it "sets backingstore_option line for each backingstore_options" do
+        config[:customize] = {
+          :backingstore_options => {
+            :vgname => "schroots",
+            :fstype => "xfs"
+          }
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :lxc do |p|
+            p.backingstore_option "--vgname", "schroots"
+            p.backingstore_option "--fstype", "xfs"
+          end
+        RUBY
+      end
+
+      it "sets all other options to customize lines" do
+        config[:customize] = {
+          :cookies => "cream",
+          :salt => "vinegar"
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :lxc do |p|
+            p.customize "cookies", "cream"
+            p.customize "salt", "vinegar"
+          end
+        RUBY
+      end
+    end
+
     context "for vmware_* providers" do
 
       before { config[:provider] = "vmware_desktop" }
