@@ -61,14 +61,62 @@ describe Kitchen::Driver::Vagrant do
 
   describe "configuration" do
 
-    it "sets :box based on the platform name by default" do
-      expect(driver[:box]).to eq("opscode-fooos-99")
+    context "for known bento platform names" do
+
+      before { allow(platform).to receive(:name) { "ubuntu-14.04" } }
+
+      it "sets :box based on the platform name by default" do
+        expect(driver[:box]).to eq("opscode-ubuntu-14.04")
+      end
+
+      it "sets :box to a custom value" do
+        config[:box] = "booya"
+
+        expect(driver[:box]).to eq("booya")
+      end
+
+      it "sets :box_url to a bento box URL for a virtualbox provider" do
+        config[:provider] = "virtualbox"
+
+        expect(driver[:box_url]).to eq(
+          "https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/" \
+          "opscode_ubuntu-14.04_chef-provisionerless.box"
+        )
+      end
+
+      it "sets :box_url to a bento box URL for a vmware-based provider" do
+        config[:provider] = "vmware_awesometown"
+
+        expect(driver[:box_url]).to eq(
+          "https://opscode-vm-bento.s3.amazonaws.com/vagrant/vmware/" \
+          "opscode_ubuntu-14.04_chef-provisionerless.box"
+        )
+      end
+
+      it "sets :box_url to nil for any other provider" do
+        config[:provider] = "the-next-coolness"
+
+        expect(driver[:box_url]).to eq(nil)
+      end
     end
 
-    it "sets :box to a custom value" do
-      config[:box] = "booya"
+    context "for unknown bento platform names" do
 
-      expect(driver[:box]).to eq("booya")
+      before { allow(platform).to receive(:name) { "slackware-14.1" } }
+
+      it "sets :box based on the platform name by default" do
+        expect(driver[:box]).to eq("slackware-14.1")
+      end
+
+      it "sets :box to a custom value" do
+        config[:box] = "booya"
+
+        expect(driver[:box]).to eq("booya")
+      end
+
+      it "sets :box_url to nil" do
+        expect(driver[:box_url]).to eq(nil)
+      end
     end
 
     it "sets :box_check_update to nil by default" do
@@ -255,45 +303,6 @@ describe Kitchen::Driver::Vagrant do
       config[:vm_hostname] = "okay"
 
       expect(driver[:vm_hostname]).to eq("okay")
-    end
-
-    context "with old versions of Vagrant" do
-
-      before { with_old_vagrant }
-
-      it "sets :box_url to a default based platform" do
-        expect(driver[:box_url]).to eq(
-          "https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/" \
-          "opscode_fooos-99_chef-provisionerless.box"
-        )
-      end
-
-      it "sets :box_url to a default based on provider" do
-        config[:provider] = "vcool"
-
-        expect(driver[:box_url]).to eq(
-          "https://opscode-vm-bento.s3.amazonaws.com/vagrant/vcool/" \
-          "opscode_fooos-99_chef-provisionerless.box"
-        )
-      end
-
-      it "sets :box_url to a default for vmware-based providers" do
-        config[:provider] = "vmware_awesometown"
-
-        expect(driver[:box_url]).to eq(
-          "https://opscode-vm-bento.s3.amazonaws.com/vagrant/vmware/" \
-          "opscode_fooos-99_chef-provisionerless.box"
-        )
-      end
-    end
-
-    context "with modern versions of Vagrant" do
-
-      before { with_modern_vagrant }
-
-      it "sets :box_url to nil" do
-        expect(driver[:box_url]).to eq(nil)
-      end
     end
   end
 
@@ -597,7 +606,7 @@ describe Kitchen::Driver::Vagrant do
     it "sets the vm.box" do
       cmd
 
-      expect(vagrantfile).to match(regexify(%{c.vm.box = "opscode-fooos-99"}))
+      expect(vagrantfile).to match(regexify(%{c.vm.box = "fooos-99"}))
     end
 
     it "sets the vm.hostname" do
@@ -1014,11 +1023,6 @@ describe Kitchen::Driver::Vagrant do
   def with_modern_vagrant
     allow(driver).to receive(:run_command).
       with("vagrant --version", any_args).and_return("Vagrant 1.7.2")
-  end
-
-  def with_old_vagrant
-    allow(driver).to receive(:run_command).
-      with("vagrant --version", any_args).and_return("Vagrant 1.4.5")
   end
 
   def with_unsupported_vagrant

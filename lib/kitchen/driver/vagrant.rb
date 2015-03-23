@@ -31,9 +31,7 @@ module Kitchen
     # @author Fletcher Nichol <fnichol@nichol.ca>
     class Vagrant < Kitchen::Driver::SSHBase
 
-      default_config :box do |driver|
-        "opscode-#{driver.instance.platform.name}"
-      end
+      default_config(:box) { |driver| driver.default_box }
       required_config :box
 
       default_config :box_check_update, nil
@@ -82,16 +80,26 @@ module Kitchen
         info("Vagrant instance #{instance.to_str} created.")
       end
 
+      # @return [String,nil] the Vagrant box for this Instance
+      def default_box
+        if bento_boxes.include?(instance.platform.name)
+          "opscode-#{instance.platform.name}"
+        else
+          instance.platform.name
+        end
+      end
+
       # @return [String,nil] the Vagrant box URL for this Instance
       def default_box_url
-        # No default neede for 1.5 onwards - Vagrant Cloud only needs a box name
-        return if Gem::Version.new(vagrant_version) >= Gem::Version.new(1.5)
+        return unless bento_boxes.include?(instance.platform.name)
 
-        bucket = config[:provider]
-        bucket = "vmware" if config[:provider] =~ /^vmware_(.+)$/
+        provider = config[:provider]
+        provider = "vmware" if config[:provider] =~ /^vmware_(.+)$/
 
-        "https://opscode-vm-bento.s3.amazonaws.com/vagrant/#{bucket}/" \
-          "opscode_#{instance.platform.name}_chef-provisionerless.box"
+        if %w[virtualbox vmware].include?(provider)
+          "https://opscode-vm-bento.s3.amazonaws.com/vagrant/#{provider}/" \
+            "opscode_#{instance.platform.name}_chef-provisionerless.box"
+        end
       end
 
       # Destroys an instance.
@@ -148,6 +156,19 @@ module Kitchen
 
       WEBSITE = "http://www.vagrantup.com/downloads.html".freeze
       MIN_VER = "1.1.0".freeze
+
+      # Retuns a list of Vagrant base boxes produced by the Bento project
+      # (https://github.com/chef/bento).
+      #
+      # @return [Arrau<String>] list of Bento box names
+      # @api private
+      def bento_boxes
+        %W[
+          centos-5.11 centos-6.6 centos-7.0 debian-6.0.10 debian-7.8 fedora-20
+          fedora-21 freebsd-9.3 freebsd-10.1 opensuse-13.1 ubuntu-10.04
+          ubuntu-12.04 ubuntu-14.04 ubuntu-14.10
+        ].map { |name| [name, "#{name}-i386"] }.flatten
+      end
 
       # Renders and writes out a Vagrantfile dedicated to this instance.
       #
