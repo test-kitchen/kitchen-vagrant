@@ -96,6 +96,10 @@ Vagrant.configure("2") do |c|
       <% unless config[:customize].include?(:memsize) %>
     p.vmx["memsize"] = "<%= value %>"
       <% end %>
+    <% elsif key == :cpus %>
+      <% unless config[:customize].include?(:numvcpus) %>
+    p.vmx["numvcpus"] = "<%= value %>"
+      <% end %>
     <% else %>
     p.vmx["<%= key %>"] = "<%= value %>"
     <% end %>
