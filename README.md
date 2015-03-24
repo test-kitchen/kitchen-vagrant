@@ -396,9 +396,10 @@ section of the Vagrant documentation.
 To prevent this value from being rendered in the default Vagrantfile, you can
 set this value to `false`.
 
-The default will be computed from the name of the instance. For
-example, the instance was called "default-fuzz-9" will produce a default
-`vm_hostname` value of `"default-fuzz-9.vagrantup.com"`.
+The default will be computed from the name of the instance. For example, the
+instance was called "default-fuzz-9" will produce a default `vm_hostname` value
+of `"default-fuzz-9"`. For Windows-based platforms, a default of `nil` is used
+to save on boot time and potential rebooting.
 
 ## <a name="development"></a> Development
 
