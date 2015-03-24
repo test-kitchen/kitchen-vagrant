@@ -1,3 +1,8 @@
+## 0.17.0.beta.1 / 2015-03-24
+
+* Pull request [#154][]: Support for WinRM Transport and Windows-based instances. ([@fnichol][])
+
+
 ## 0.16.0 / 2015-03-23
 
 ### Bug fixes
@@ -241,6 +246,7 @@ The initial release.
 [#147]: https://github.com/test-kitchen/kitchen-vagrant/issues/147
 [#148]: https://github.com/test-kitchen/kitchen-vagrant/issues/148
 [#151]: https://github.com/test-kitchen/kitchen-vagrant/issues/151
+[#154]: https://github.com/test-kitchen/kitchen-vagrant/issues/154
 [@Annih]: https://github.com/Annih
 [@Igorshp]: https://github.com/Igorshp
 [@RobertRehberg]: https://github.com/RobertRehberg
