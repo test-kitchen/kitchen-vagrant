@@ -1,3 +1,8 @@
+## 0.17.0.beta.2 / 2015-03-25
+
+* Relax version constraint on Test Kitchen. ([@fnichol][])
+
+
 ## 0.17.0.beta.1 / 2015-03-24
 
 * Pull request [#154][]: Support for WinRM Transport and Windows-based instances. ([@fnichol][])
