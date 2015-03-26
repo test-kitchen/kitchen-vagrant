@@ -357,6 +357,7 @@ module Kitchen
         state[:password] = hash["Password"] if hash["Password"]
         state[:ssh_key] = hash["IdentityFile"] if hash["IdentityFile"]
         state[:proxy_command] = hash["ProxyCommand"] if hash["ProxyCommand"]
+        state[:rdp_port] = hash["RDPPort"] if hash["RDPPort"]
       end
 
       # @return [String] full local path to the directory containing the

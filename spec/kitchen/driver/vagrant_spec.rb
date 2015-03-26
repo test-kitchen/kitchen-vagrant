@@ -605,6 +605,7 @@ describe Kitchen::Driver::Vagrant do
               User vagrant
               Password yep
               Port 9999
+              RDPPort 5555
           OUTPUT
         end
 
@@ -636,6 +637,12 @@ describe Kitchen::Driver::Vagrant do
           cmd
 
           expect(state).to include(:password => "yep")
+        end
+
+        it "sets :rdp_port from winrm-config" do
+          cmd
+
+          expect(state).to include(:rdp_port => "5555")
         end
       end
     end
