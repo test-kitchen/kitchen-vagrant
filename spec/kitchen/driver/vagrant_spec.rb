@@ -63,6 +63,11 @@ describe Kitchen::Driver::Vagrant do
 
   before { stub_const("ENV", env) }
 
+  after do
+    driver_object.class.send(:winrm_plugin_passed=, nil)
+    driver_object.class.send(:vagrant_version=, nil)
+  end
+
   describe "configuration" do
 
     context "for known bento platform names" do
@@ -328,32 +333,6 @@ describe Kitchen::Driver::Vagrant do
         expect(driver[:vm_hostname]).to eq("this-is-a--k")
       end
     end
-
-    context "for non-WinRM-based transports" do
-
-      before { allow(transport).to receive(:name).and_return("Coolness") }
-
-      it "sets :username to nil by default" do
-        expect(driver[:username]).to eq(nil)
-      end
-
-      it "sets :password to nil by default" do
-        expect(driver[:password]).to eq(nil)
-      end
-    end
-
-    context "for WinRM-based transports" do
-
-      before { allow(transport).to receive(:name).and_return("WinRM") }
-
-      it "sets :username to vagrant by default" do
-        expect(driver[:username]).to eq("vagrant")
-      end
-
-      it "sets :password to vagrant by default" do
-        expect(driver[:password]).to eq("vagrant")
-      end
-    end
   end
 
   describe "#verify_dependencies" do
@@ -373,12 +352,75 @@ describe Kitchen::Driver::Vagrant do
     end
 
     it "raises a UserError for a missing Vagrant command" do
-      allow(driver).to receive(:run_command).
+      allow(driver_object).to receive(:run_command).
         with("vagrant --version", any_args).and_raise(Errno::ENOENT)
 
       expect { driver.verify_dependencies }.to raise_error(
         Kitchen::UserError, /Vagrant 1.1.0 or higher is not installed/
       )
+    end
+  end
+
+  describe "#load_needed_dependencies!" do
+
+    describe "with winrm transport" do
+
+      before { allow(transport).to receive(:name).and_return("WinRM") }
+
+      it "old version of Vagrant raises UserError" do
+        with_vagrant("1.5.0")
+
+        expect { instance }.to raise_error(
+          Kitchen::Error, /Please upgrade to version 1.6 or higher/
+        )
+      end
+
+      it "modern vagrant without plugin installed raises UserError" do
+        with_modern_vagrant
+        allow(driver_object).to receive(:run_command).
+          with("vagrant plugin list", any_args).and_return("nope (1.2.3)")
+
+        expect { instance }.to raise_error(
+          Kitchen::Error, /vagrant plugin install vagrant-winrm/
+        )
+      end
+
+      it "modern vagrant with plugin installed succeeds" do
+        with_modern_vagrant
+        allow(driver_object).to receive(:run_command).
+          with("vagrant plugin list", any_args).
+          and_return("vagrant-winrm (1.2.3)")
+
+        instance
+      end
+    end
+
+    describe "without winrm transport" do
+
+      before { allow(transport).to receive(:name).and_return("Anything") }
+
+      it "old version of Vagrant succeeds" do
+        with_vagrant("1.5.0")
+
+        instance
+      end
+
+      it "modern vagrant without plugin installed succeeds" do
+        with_modern_vagrant
+        allow(driver_object).to receive(:run_command).
+          with("vagrant plugin list", any_args).and_return("nope (1.2.3)")
+
+        instance
+      end
+
+      it "modern vagrant with plugin installed succeeds" do
+        with_modern_vagrant
+        allow(driver_object).to receive(:run_command).
+          with("vagrant plugin list", any_args).
+          and_return("vagrant-winrm (1.2.3)")
+
+        instance
+      end
     end
   end
 
@@ -480,35 +522,40 @@ describe Kitchen::Driver::Vagrant do
 
     describe "for state" do
 
-      let(:output) do
-        <<-OUTPUT.gsub(/^ {10}/, "")
-          Host hehe
-            HostName 192.168.32.64
-            User vagrant
-            Port 2022
-            UserKnownHostsFile /dev/null
-            StrictHostKeyChecking no
-            PasswordAuthentication no
-            IdentityFile /path/to/private_key
-            IdentitiesOnly yes
-            LogLevel FATAL
-        OUTPUT
-      end
-
-      before do
-        allow(driver).to receive(:run_command).
-          with("vagrant ssh-config", any_args).and_return(output)
-      end
-
-      it "sets :hostname from ssh-config" do
-        cmd
-
-        expect(state).to include(:hostname => "192.168.32.64")
-      end
-
       context "for non-WinRM-based transports" do
 
-        before { allow(transport).to receive(:name).and_return("Coolness") }
+        let(:output) do
+          <<-OUTPUT.gsub(/^ {10}/, "")
+            Host hehe
+              HostName 192.168.32.64
+              User vagrant
+              Port 2022
+              UserKnownHostsFile /dev/null
+              StrictHostKeyChecking no
+              PasswordAuthentication no
+              IdentityFile /path/to/private_key
+              IdentitiesOnly yes
+              LogLevel FATAL
+          OUTPUT
+        end
+
+        before do
+          allow(transport).to receive(:name).and_return("Coolness")
+          allow(driver).to receive(:run_command).
+            with("vagrant ssh-config", any_args).and_return(output)
+        end
+
+        it "sets :hostname from ssh-config" do
+          cmd
+
+          expect(state).to include(:hostname => "192.168.32.64")
+        end
+
+        it "sets :port from ssh-config" do
+          cmd
+
+          expect(state).to include(:port => "2022")
+        end
 
         it "sets :username from ssh-config" do
           cmd
@@ -516,16 +563,23 @@ describe Kitchen::Driver::Vagrant do
           expect(state).to include(:username => "vagrant")
         end
 
+        it "does not set :password by default" do
+          cmd
+
+          expect(state.keys).to_not include(:password)
+        end
+
+        it "sets :password if Password is in ssh-config" do
+          output.concat("  Password yep\n")
+          cmd
+
+          expect(state).to include(:password => "yep")
+        end
+
         it "sets :ssh_key from ssh-config" do
           cmd
 
           expect(state).to include(:ssh_key => "/path/to/private_key")
-        end
-
-        it "sets :port from ssh-config" do
-          cmd
-
-          expect(state).to include(:port => "2022")
         end
 
         it "does not set :proxy_command by default" do
@@ -544,20 +598,44 @@ describe Kitchen::Driver::Vagrant do
 
       context "for WinRM-based transports" do
 
-        before { allow(transport).to receive(:name).and_return("WinRM") }
-
-        it "sets :username from config" do
-          config[:username] = "winuser"
-          cmd
-
-          expect(state).to include(:username => "winuser")
+        let(:output) do
+          <<-OUTPUT.gsub(/^ {10}/, "")
+            Host hehe
+              HostName 192.168.32.64
+              User vagrant
+              Password yep
+              Port 9999
+          OUTPUT
         end
 
-        it "sets :password from config" do
-          config[:password] = "mysecret"
+        before do
+          allow(transport).to receive(:name).and_return("WinRM")
+          allow(driver).to receive(:run_command).
+            with("vagrant winrm-config", any_args).and_return(output)
+        end
+
+        it "sets :hostname from winrm-config" do
           cmd
 
-          expect(state).to include(:password => "mysecret")
+          expect(state).to include(:hostname => "192.168.32.64")
+        end
+
+        it "sets :port from winrm-config" do
+          cmd
+
+          expect(state).to include(:port => "9999")
+        end
+
+        it "sets :username from winrm-config" do
+          cmd
+
+          expect(state).to include(:username => "vagrant")
+        end
+
+        it "sets :password from winrm-config" do
+          cmd
+
+          expect(state).to include(:password => "yep")
         end
       end
     end
@@ -1226,13 +1304,16 @@ describe Kitchen::Driver::Vagrant do
   end
 
   def with_modern_vagrant
-    allow(driver).to receive(:run_command).
-      with("vagrant --version", any_args).and_return("Vagrant 1.7.2")
+    with_vagrant("1.7.2")
   end
 
   def with_unsupported_vagrant
-    allow(driver).to receive(:run_command).
-      with("vagrant --version", any_args).and_return("Vagrant 1.0.5")
+    with_vagrant("1.0.5")
+  end
+
+  def with_vagrant(version)
+    allow(driver_object).to receive(:run_command).
+      with("vagrant --version", any_args).and_return("Vagrant #{version}")
   end
 
   def regexify(str, line = :whole_line)
