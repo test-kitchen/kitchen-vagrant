@@ -1,4 +1,17 @@
+## 0.17.0.beta.4 / 2015-03-26
+
+### Bug fixes
+
+* Pull request [#156][]: Use RDPPort value from `vagrant winrm-config` for WinRM Transports. ([@fnichol][])
+
+### Improvements
+
+* Pull request [#152][]: Translate CPU count for VMWare provider. ([@whiteley][])
+
+
 ## 0.17.0.beta.3 / 2015-03-25
+
+### Bug fixes
 
 * Pull request [#155][]: Use the vagrant-winrm Vagrant plugin to resolve VM IP address. See PR for details. ([@fnichol][])
 
@@ -256,8 +269,10 @@ The initial release.
 [#147]: https://github.com/test-kitchen/kitchen-vagrant/issues/147
 [#148]: https://github.com/test-kitchen/kitchen-vagrant/issues/148
 [#151]: https://github.com/test-kitchen/kitchen-vagrant/issues/151
+[#152]: https://github.com/test-kitchen/kitchen-vagrant/issues/152
 [#154]: https://github.com/test-kitchen/kitchen-vagrant/issues/154
 [#155]: https://github.com/test-kitchen/kitchen-vagrant/issues/155
+[#156]: https://github.com/test-kitchen/kitchen-vagrant/issues/156
 [@Annih]: https://github.com/Annih
 [@Igorshp]: https://github.com/Igorshp
 [@RobertRehberg]: https://github.com/RobertRehberg
@@ -293,3 +308,4 @@ The initial release.
 [@tknerr]: https://github.com/tknerr
 [@tmatilai]: https://github.com/tmatilai
 [@vinyar]: https://github.com/vinyar
+[@whiteley]: https://github.com/whiteley
