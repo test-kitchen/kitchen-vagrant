@@ -48,10 +48,6 @@ module Kitchen
 
       default_config :network, []
 
-      default_config :password do |driver|
-        "vagrant" if driver.winrm_transport?
-      end
-
       default_config :pre_create_command, nil
 
       default_config :provision, false
@@ -63,10 +59,6 @@ module Kitchen
       default_config :ssh, {}
 
       default_config :synced_folders, []
-
-      default_config :username do |driver|
-        "vagrant" if driver.winrm_transport?
-      end
 
       default_config :vagrantfile_erb,
         File.join(File.dirname(__FILE__), "../../../templates/Vagrantfile.erb")
@@ -176,6 +168,18 @@ module Kitchen
       WEBSITE = "http://www.vagrantup.com/downloads.html".freeze
       MIN_VER = "1.1.0".freeze
 
+      class << self
+
+        # @return [true,false] whether or not the vagrant-winrm plugin is
+        #   installed
+        # @api private
+        attr_accessor :winrm_plugin_passed
+
+        # @return [String] the version of Vagrant installed on the workstation
+        # @api private
+        attr_accessor :vagrant_version
+      end
+
       # Retuns a list of Vagrant base boxes produced by the Bento project
       # (https://github.com/chef/bento).
       #
@@ -252,6 +256,19 @@ module Kitchen
         if windows_os? && string.is_a?(String) && string.size >= 12
           config[:vm_hostname] = "#{string[0...10]}-#{string[-1]}"
         end
+      end
+
+      # Loads any required third party Ruby libraries or runs any shell out
+      # commands to prepare the plugin. This method will be called in the
+      # context of the main thread of execution and so does not necessarily
+      # have to be thread safe.
+      #
+      # @raise [ClientError] if any library loading fails or any of the
+      #   dependency requirements cannot be satisfied
+      # @api private
+      def load_needed_dependencies!
+        super
+        verify_winrm_plugin if winrm_transport?
       end
 
       # Renders the Vagrantfile ERb template.
@@ -332,19 +349,14 @@ module Kitchen
       # @param state [Hash] mutable instance state
       # @api private
       def update_state(state)
-        hash = vagrant_ssh_config
+        hash = winrm_transport? ? vagrant_config(:winrm) : vagrant_config(:ssh)
 
         state[:hostname] = hash["HostName"]
-
-        if winrm_transport?
-          state[:username] = config[:username]
-          state[:password] = config[:password]
-        else
-          state[:username] = hash["User"]
-          state[:ssh_key] = hash["IdentityFile"]
-          state[:port] = hash["Port"]
-          state[:proxy_command] = hash["ProxyCommand"] if hash["ProxyCommand"]
-        end
+        state[:port] = hash["Port"]
+        state[:username] = hash["User"]
+        state[:password] = hash["Password"] if hash["Password"]
+        state[:ssh_key] = hash["IdentityFile"] if hash["IdentityFile"]
+        state[:proxy_command] = hash["ProxyCommand"] if hash["ProxyCommand"]
       end
 
       # @return [String] full local path to the directory containing the
@@ -357,11 +369,13 @@ module Kitchen
         )
       end
 
+      # @param type [Symbol] either `:ssh` or `:winrm`
       # @return [Hash] key/value pairs resulting from parsing a
-      #   `vagrant ssh-config` local command invocation
+      #   `vagrant ssh-config` or `vagrant winrm-config` local command
+      #   invocation
       # @api private
-      def vagrant_ssh_config
-        lines = run_silently("vagrant ssh-config").split("\n").map do |line|
+      def vagrant_config(type)
+        lines = run_silently("vagrant #{type}-config").split("\n").map do |line|
           tokens = line.strip.partition(" ")
           [tokens.first, tokens.last.gsub(/"/, "")]
         end
@@ -372,11 +386,42 @@ module Kitchen
       # @raise [UserError] if the `vagrant` command can not be found locally
       # @api private
       def vagrant_version
-        @version ||= run_silently("vagrant --version", :cwd => Dir.pwd).
-          chomp.split(" ").last
+        self.class.vagrant_version ||= run_silently(
+          "vagrant --version", :cwd => Dir.pwd).chomp.split(" ").last
       rescue Errno::ENOENT
         raise UserError, "Vagrant #{MIN_VER} or higher is not installed." \
           " Please download a package from #{WEBSITE}."
+      end
+
+      # Verify that the vagrant-winrm plugin is installed and a suitable
+      #   version of Vagrant is installed
+      #
+      # @api private
+      def verify_winrm_plugin
+        if Gem::Version.new(vagrant_version) < Gem::Version.new("1.6")
+          raise UserError, "Detected an old version of Vagrant " \
+            "(#{vagrant_version}) that cannot support the vagrant-winrm " \
+            "Vagrant plugin." \
+            " Please upgrade to version 1.6 or higher from #{WEBSITE}."
+        end
+
+        if !winrm_plugin_installed?
+          raise UserError, "WinRM Transport requires the vagrant-winrm " \
+            "Vagrant plugin to properly communicate with this Vagrant VM. " \
+            "Please install this plugin with: " \
+            "`vagrant plugin install vagrant-winrm' and try again."
+        end
+      end
+
+      # @return [true,false] whether or not the vagrant-winrm plugin is
+      #   installed
+      # @api private
+      def winrm_plugin_installed?
+        return true if self.class.winrm_plugin_passed
+
+        self.class.winrm_plugin_passed = run_silently(
+          "vagrant plugin list", :cwd => Dir.pwd).
+          split("\n").find { |line| line =~ /^vagrant-winrm\s+/ }
       end
     end
   end

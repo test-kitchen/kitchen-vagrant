@@ -29,6 +29,10 @@ consider the [vagrant-wrapper][vagrant_wrapper] gem which helps manage both
 styles of Vagrant installations
 ([background details][vagrant_wrapper_background]).
 
+If you are creating Windows VMs over a WinRM Transport, then the
+[vagrant-winrm][vagrant_winrm] Vagrant plugin must be installed. As a
+consequence, the minimum version of Vagrant required is 1.6 or higher.
+
 ### <a name="dependencies-virtualization"></a> Virtualbox and/or VMware Fusion/Workstation
 
 Currently this driver supports VirtualBox and VMware Fusion/Workstation.
@@ -442,6 +446,7 @@ Apache 2.0 (see [LICENSE][license])
 [vagrant_config_vmware]:    http://docs.vagrantup.com/v2/vmware/configuration.html
 [vagrant_providers]:        http://docs.vagrantup.com/v2/providers/index.html
 [vagrant_versioning]:       https://docs.vagrantup.com/v2/boxes/versioning.html
+[vagrant_winrm]:            https://github.com/criteo/vagrant-winrm
 [vagrant_wrapper]:          https://github.com/org-binbab/gem-vagrant-wrapper
 [vagrant_wrapper_background]: https://github.com/org-binbab/gem-vagrant-wrapper#background---aka-the-vagrant-gem-enigma
 [vmware_plugin]:            http://www.vagrantup.com/vmware
