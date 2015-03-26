@@ -1263,6 +1263,33 @@ describe Kitchen::Driver::Vagrant do
           end
         RUBY
       end
+
+      it "converts :cpus into :numvcpus" do
+        config[:customize] = {
+          :cpus => "2"
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :vmware_desktop do |p|
+            p.vmx["numvcpus"] = "2"
+          end
+        RUBY
+      end
+
+      it "skips :cpus if key :numvcpus exists" do
+        config[:customize] = {
+          :cpus => "2",
+          :numvcpus => "4"
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :vmware_desktop do |p|
+            p.vmx["numvcpus"] = "4"
+          end
+        RUBY
+      end
     end
 
     context "for managed provider" do
