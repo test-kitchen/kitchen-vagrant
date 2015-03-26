@@ -1,3 +1,8 @@
+## 0.17.0.beta.3 / 2015-03-25
+
+* Pull request [#155][]: Use the vagrant-winrm Vagrant plugin to resolve VM IP address. See PR for details. ([@fnichol][])
+
+
 ## 0.17.0.beta.2 / 2015-03-25
 
 * Relax version constraint on Test Kitchen. ([@fnichol][])
@@ -252,6 +257,7 @@ The initial release.
 [#148]: https://github.com/test-kitchen/kitchen-vagrant/issues/148
 [#151]: https://github.com/test-kitchen/kitchen-vagrant/issues/151
 [#154]: https://github.com/test-kitchen/kitchen-vagrant/issues/154
+[#155]: https://github.com/test-kitchen/kitchen-vagrant/issues/155
 [@Annih]: https://github.com/Annih
 [@Igorshp]: https://github.com/Igorshp
 [@RobertRehberg]: https://github.com/RobertRehberg
