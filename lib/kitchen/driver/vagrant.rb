@@ -117,6 +117,7 @@ module Kitchen
 
         create_vagrantfile
         @vagrantfile_created = false
+        instance.transport.connection(state).close
         run("vagrant destroy -f")
         FileUtils.rm_rf(vagrant_root)
         info("Vagrant instance #{instance.to_str} destroyed.")
