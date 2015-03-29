@@ -1,3 +1,11 @@
+## 0.17.0.rc.1 / 2015-03-29
+
+### Improvements
+
+* Pull request [#157][]: Close Transport connection in #destroy. ([@fnichol][])
+* Pull request [#158][]: Add plugin metadata to the Driver. ([@fnichol][])
+
+
 ## 0.17.0.beta.4 / 2015-03-26
 
 ### Bug fixes
@@ -273,6 +281,8 @@ The initial release.
 [#154]: https://github.com/test-kitchen/kitchen-vagrant/issues/154
 [#155]: https://github.com/test-kitchen/kitchen-vagrant/issues/155
 [#156]: https://github.com/test-kitchen/kitchen-vagrant/issues/156
+[#157]: https://github.com/test-kitchen/kitchen-vagrant/issues/157
+[#158]: https://github.com/test-kitchen/kitchen-vagrant/issues/158
 [@Annih]: https://github.com/Annih
 [@Igorshp]: https://github.com/Igorshp
 [@RobertRehberg]: https://github.com/RobertRehberg
