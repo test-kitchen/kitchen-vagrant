@@ -710,6 +710,14 @@ describe Kitchen::Driver::Vagrant do
       cmd
     end
 
+    it "closes the transport connection" do
+      connection = double(Kitchen::Transport::Base::Connection)
+      allow(transport).to receive(:connection).with(state) { connection }
+      expect(connection).to receive(:close)
+
+      cmd
+    end
+
     it "runs vagrant destroy" do
       expect(driver).to receive(:run_command).
         with("vagrant destroy -f", any_args)
