@@ -21,6 +21,7 @@ require "fileutils"
 require "rubygems/version"
 
 require "kitchen"
+require "kitchen/driver/vagrant_version"
 
 module Kitchen
 
@@ -32,6 +33,10 @@ module Kitchen
     class Vagrant < Kitchen::Driver::Base
 
       include ShellOut
+
+      kitchen_driver_api_version 2
+
+      plugin_version Kitchen::Driver::VAGRANT_VERSION
 
       default_config(:box) { |driver| driver.default_box }
       required_config :box
