@@ -68,6 +68,15 @@ describe Kitchen::Driver::Vagrant do
     driver_object.class.send(:vagrant_version=, nil)
   end
 
+  it "driver api_version is 2" do
+    expect(driver.diagnose_plugin[:api_version]).to eq(2)
+  end
+
+  it "plugin_version is set to Kitchen::Vagrant::VERSION" do
+    expect(driver.diagnose_plugin[:version]).to eq(
+      Kitchen::Driver::VAGRANT_VERSION)
+  end
+
   describe "configuration" do
 
     context "for known bento platform names" do
