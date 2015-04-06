@@ -7,6 +7,10 @@
 
 A Test Kitchen Driver for Vagrant.
 
+**Documentation for v0.15.0, which is included in ChefDK v1.3.1 can be
+found
+[here](https://github.com/test-kitchen/kitchen-vagrant/tree/v0.15.0)**
+
 This driver works by generating a single Vagrantfile for each instance in a
 sandboxed directory. Since the Vagrantfile is written out on disk, Vagrant
 needs absolutely no knowledge of Test Kitchen. So no Vagrant plugins are
