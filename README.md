@@ -7,7 +7,7 @@
 
 A Test Kitchen Driver for Vagrant.
 
-**Documentation for v0.15.0, which is included in ChefDK v1.3.1 can be
+**Documentation for v0.15.0, which is included in test kitchen v1.3.1 can be
 found
 [here](https://github.com/test-kitchen/kitchen-vagrant/tree/v0.15.0)**
 
