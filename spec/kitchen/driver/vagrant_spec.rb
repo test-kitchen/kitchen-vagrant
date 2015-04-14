@@ -935,6 +935,22 @@ describe Kitchen::Driver::Vagrant do
       expect(vagrantfile).to match(regexify(%{c.ssh.password = "okay"}))
     end
 
+    it "sets communicator.username if :communicator and :username are set" do
+      config[:communicator] = "wat"
+      config[:username] = "jdoe"
+      cmd
+
+      expect(vagrantfile).to match(regexify(%{c.wat.username = "jdoe"}))
+    end 
+
+    it "sets communicator.password if :communicator and :password are set" do
+      config[:communicator] = "wat"
+      config[:password] = "okay"
+      cmd
+
+      expect(vagrantfile).to match(regexify(%{c.wat.password = "okay"}))
+    end 
+
     it "sets no ssh.private_key_path if missing" do
       config[:ssh_key] = nil
       cmd
