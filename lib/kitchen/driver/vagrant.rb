@@ -193,7 +193,7 @@ module Kitchen
       # @api private
       def bento_boxes
         %W[
-          centos-5.11 centos-6.6 centos-7.0 debian-6.0.10 debian-7.8 fedora-20
+          centos-5.11 centos-6.6 centos-7.1 debian-6.0.10 debian-7.8 fedora-20
           fedora-21 freebsd-9.3 freebsd-10.1 opensuse-13.1 ubuntu-10.04
           ubuntu-12.04 ubuntu-14.04 ubuntu-14.10
         ].map { |name| [name, "#{name}-i386"] }.flatten
