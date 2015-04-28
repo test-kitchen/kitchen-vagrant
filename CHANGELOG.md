@@ -1,3 +1,22 @@
+## 0.17.0 / 2015-04-28
+
+(*A selected roll-up of 0.17.0 pre-release changelogs*)
+
+### Bug fixes
+
+* Pull request [#156][]: Use RDPPort value from `vagrant winrm-config` for WinRM Transports. ([@fnichol][])
+
+### New features
+
+* Pull request [#154][]: Support for WinRM Transport and Windows-based instances. ([@fnichol][])
+
+### Improvements
+
+* Pull request [#152][]: Translate CPU count for VMWare provider. ([@whiteley][])
+* Pull request [#157][]: Close Transport connection in #destroy. ([@fnichol][])
+* Pull request [#158][]: Add plugin metadata to the Driver. ([@fnichol][])
+
+
 ## 0.17.0.rc.1 / 2015-03-29
 
 ### Improvements
