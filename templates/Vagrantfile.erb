@@ -30,17 +30,32 @@ Vagrant.configure("2") do |c|
   c.vm.guest = "<%= config[:guest] %>"
 <% end %>
 
-<% if config[:username] %>
-  c.ssh.username = "<%= config[:username] %>"
+<% if config[:communicator] %>
+  <% if config[:username] %>
+    c.<%= config[:communicator] %>.username = "<%= config[:username] %>"
+  <% end %>
+  <% if config[:password] %>
+    c.<%= config[:communicator] %>.password = "<%= config[:password] %>"
+  <% end %>
+<% else %>
+  <% if config[:username] %>
+    c.ssh.username = "<%= config[:username] %>"
+  <% end %>
+  <% if config[:password] %>
+    c.ssh.password = "<%= config[:password] %>"
+  <% end %>
 <% end %>
-<% if config[:password] %>
-  c.ssh.password = "<%= config[:password] %>"
-<% end %>
+
 <% if config[:ssh_key] %>
   c.ssh.private_key_path = "<%= config[:ssh_key] %>"
 <% end %>
 <% config[:ssh].each do |key, value| %>
   c.ssh.<%= key %> = <%= value %>
+<% end %>
+<% if config[:winrm] %>
+  <% config[:winrm].each do |key, value| %>
+    c.winrm.<%= key %> = <%= value %>
+  <% end %>
 <% end %>
 
 <% Array(config[:network]).each do |opts| %>
