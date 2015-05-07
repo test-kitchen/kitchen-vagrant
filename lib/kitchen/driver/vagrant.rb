@@ -93,7 +93,7 @@ module Kitchen
 
       # @return [String,nil] the Vagrant box for this Instance
       def default_box
-        if bento_boxes.include?(instance.platform.name)
+        if bento_box?(instance.platform.name)
           "opscode-#{instance.platform.name}"
         else
           instance.platform.name
@@ -102,7 +102,7 @@ module Kitchen
 
       # @return [String,nil] the Vagrant box URL for this Instance
       def default_box_url
-        return unless bento_boxes.include?(instance.platform.name)
+        return unless bento_box?(instance.platform.name)
 
         provider = config[:provider]
         provider = "vmware" if config[:provider] =~ /^vmware_(.+)$/
@@ -186,17 +186,15 @@ module Kitchen
         attr_accessor :vagrant_version
       end
 
-      # Retuns a list of Vagrant base boxes produced by the Bento project
+      # Retuns whether or not a platform name could have a correcponding Bento
+      # box produced by the Bento project.
       # (https://github.com/chef/bento).
       #
-      # @return [Arrau<String>] list of Bento box names
+      # @return [TrueClass,FalseClass] whether or not the name could be a Bento
+      #   box
       # @api private
-      def bento_boxes
-        %W[
-          centos-5.11 centos-6.6 centos-7.0 debian-6.0.10 debian-7.8 fedora-20
-          fedora-21 freebsd-9.3 freebsd-10.1 opensuse-13.1 ubuntu-10.04
-          ubuntu-12.04 ubuntu-14.04 ubuntu-14.10
-        ].map { |name| [name, "#{name}-i386"] }.flatten
+      def bento_box?(name)
+        name =~ /^(centos|debian|fedora|freebsd|opensuse|ubuntu)-/
       end
 
       # Renders and writes out a Vagrantfile dedicated to this instance.
