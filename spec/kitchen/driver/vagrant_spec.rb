@@ -79,42 +79,45 @@ describe Kitchen::Driver::Vagrant do
 
   describe "configuration" do
 
-    context "for known bento platform names" do
+    %W[centos debian fedora opensuse ubuntu].each do |name|
 
-      before { allow(platform).to receive(:name) { "ubuntu-14.04" } }
+      context "for known bento platform names starting with #{name}" do
 
-      it "sets :box based on the platform name by default" do
-        expect(driver[:box]).to eq("opscode-ubuntu-14.04")
-      end
+        before { allow(platform).to receive(:name) { "#{name}-99.04" } }
 
-      it "sets :box to a custom value" do
-        config[:box] = "booya"
+        it "sets :box based on the platform name by default" do
+          expect(driver[:box]).to eq("opscode-#{name}-99.04")
+        end
 
-        expect(driver[:box]).to eq("booya")
-      end
+        it "sets :box to a custom value" do
+          config[:box] = "booya"
 
-      it "sets :box_url to a bento box URL for a virtualbox provider" do
-        config[:provider] = "virtualbox"
+          expect(driver[:box]).to eq("booya")
+        end
 
-        expect(driver[:box_url]).to eq(
-          "https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/" \
-          "opscode_ubuntu-14.04_chef-provisionerless.box"
-        )
-      end
+        it "sets :box_url to a bento box URL for a virtualbox provider" do
+          config[:provider] = "virtualbox"
 
-      it "sets :box_url to a bento box URL for a vmware-based provider" do
-        config[:provider] = "vmware_awesometown"
+          expect(driver[:box_url]).to eq(
+            "https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/" \
+            "opscode_#{name}-99.04_chef-provisionerless.box"
+          )
+        end
 
-        expect(driver[:box_url]).to eq(
-          "https://opscode-vm-bento.s3.amazonaws.com/vagrant/vmware/" \
-          "opscode_ubuntu-14.04_chef-provisionerless.box"
-        )
-      end
+        it "sets :box_url to a bento box URL for a vmware-based provider" do
+          config[:provider] = "vmware_awesometown"
 
-      it "sets :box_url to nil for any other provider" do
-        config[:provider] = "the-next-coolness"
+          expect(driver[:box_url]).to eq(
+            "https://opscode-vm-bento.s3.amazonaws.com/vagrant/vmware/" \
+            "opscode_#{name}-99.04_chef-provisionerless.box"
+          )
+        end
 
-        expect(driver[:box_url]).to eq(nil)
+        it "sets :box_url to nil for any other provider" do
+          config[:provider] = "the-next-coolness"
+
+          expect(driver[:box_url]).to eq(nil)
+        end
       end
     end
 
