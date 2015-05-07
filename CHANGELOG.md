@@ -1,3 +1,14 @@
+## 0.18.0 / 2015-05-07
+
+### Bug fixes
+
+* Pull request [#161][]: Add handling for winrm communicator in username & password handling. ([@atiniir][])
+
+### Improvements
+
+* Pull request [#166][]: Allow a fuzzier match for known Bento box names. ([@fnichol][])
+
+
 ## 0.17.0 / 2015-04-28
 
 (*A selected roll-up of 0.17.0 pre-release changelogs*)
@@ -302,6 +313,8 @@ The initial release.
 [#156]: https://github.com/test-kitchen/kitchen-vagrant/issues/156
 [#157]: https://github.com/test-kitchen/kitchen-vagrant/issues/157
 [#158]: https://github.com/test-kitchen/kitchen-vagrant/issues/158
+[#161]: https://github.com/test-kitchen/kitchen-vagrant/issues/161
+[#166]: https://github.com/test-kitchen/kitchen-vagrant/issues/166
 [@Annih]: https://github.com/Annih
 [@Igorshp]: https://github.com/Igorshp
 [@RobertRehberg]: https://github.com/RobertRehberg
@@ -311,6 +324,7 @@ The initial release.
 [@antonio-osorio]: https://github.com/antonio-osorio
 [@arangamani]: https://github.com/arangamani
 [@ashb]: https://github.com/ashb
+[@atiniir]: https://github.com/atiniir
 [@bdclark]: https://github.com/bdclark
 [@bradleyd]: https://github.com/bradleyd
 [@byggztryng]: https://github.com/byggztryng
