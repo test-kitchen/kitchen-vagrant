@@ -321,7 +321,7 @@ describe Kitchen::Driver::Vagrant do
       before { allow(platform).to receive(:os_type).and_return("unix") }
 
       it "sets :vm_hostname to the instance name by default" do
-        expect(driver[:vm_hostname]).to eq("suitey-fooos-99")
+        expect(driver[:vm_hostname]).to eq("suitey-fooos-99.vagrantup.com")
       end
 
       it "sets :vm_hostname to a custom value" do
