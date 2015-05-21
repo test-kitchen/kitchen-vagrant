@@ -76,6 +76,8 @@ module Kitchen
         driver.windows_os? ? nil : driver.instance.name
       end
 
+      default_config :instance_name, nil
+
       no_parallel_for :create, :destroy
 
       # Creates a Vagrant VM instance.
