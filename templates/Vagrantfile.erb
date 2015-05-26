@@ -2,77 +2,84 @@
 require "<%= vagrantfile %>"
 <% end %>
 
+<% set_hostname = (config[:vm_hostname] != false) %>
+<% if set_hostname %>
 Vagrant.configure("2") do |c|
   c.berkshelf.enabled = false if Vagrant.has_plugin?("vagrant-berkshelf")
-<% if config[:instance_name] %>
-  c.vm.define "<%= config[:instance_name] %>", primary: true do |instance|
 <% else %>
-  c.vm.define "kt-<%= File.basename(config[:kitchen_root]) %>-<%= instance.name%>", primary: true do |instance|
+Vagrant.configure("2") do |vm_instance|
+  vm_instance.berkshelf.enabled = false if Vagrant.has_plugin?("vagrant-berkshelf")
 <% end %>
-    instance.vm.box = "<%= config[:box] %>"
+<% if (set_hostname and config[:vm_name]) %>
+  c.vm.define "<%= config[:vm_name] %>", primary: true do |vm_instance|
+<% elsif set_hostname %>
+  c.vm.define "kt-<%= File.basename(config[:kitchen_root]) %>-<%= instance.name%>", primary: true do |vm_instance|
+<% else # nothing %>
+<% end %>
+    vm_instance.vm.box = "<%= config[:box] %>"
 
 <% if config[:box_url] %>
-    instance.vm.box_url = "<%= config[:box_url] %>"
+    vm_instance.vm.box_url = "<%= config[:box_url] %>"
 <% end %>
 
 <% if config[:box_version] %>
-    instance.vm.box_version = "<%= config[:box_version] %>"
+    vm_instance.vm.box_version = "<%= config[:box_version] %>"
 <% end %>
 
 <% if config[:box_check_update] %>
-    instance.vm.box_check_update = "<%= config[:box_check_update] %>"
+    vm_instance.vm.box_check_update = "<%= config[:box_check_update] %>"
 <% end %>
 
 <% if config[:vm_hostname] %>
-    instance.vm.hostname = "<%= config[:vm_hostname] %>"
+    vm_instance.vm.hostname = "<%= config[:vm_hostname] %>"
 <% end %>
 
 <% if config[:communicator] %>
-    instance.vm.communicator = "<%= config[:communicator] %>"
+    vm_instance.vm.communicator = "<%= config[:communicator] %>"
 <% end %>
 
 <% if config[:guest] %>
-    instance.vm.guest = "<%= config[:guest] %>"
+    vm_instance.vm.guest = "<%= config[:guest] %>"
 <% end %>
 
 <% if config[:communicator] %>
   <% if config[:username] %>
-      instance.<%= config[:communicator] %>.username = "<%= config[:username] %>"
+      vm_instance.<%= config[:communicator] %>.username = "<%= config[:username] %>"
   <% end %>
   <% if config[:password] %>
-      instance.<%= config[:communicator] %>.password = "<%= config[:password] %>"
+      vm_instance.<%= config[:communicator] %>.password = "<%= config[:password] %>"
   <% end %>
 <% else %>
   <% if config[:username] %>
-      instance.ssh.username = "<%= config[:username] %>"
+      vm_instance.ssh.username = "<%= config[:username] %>"
   <% end %>
   <% if config[:password] %>
-      instance.ssh.password = "<%= config[:password] %>"
+      vm_instance.ssh.password = "<%= config[:password] %>"
   <% end %>
 <% end %>
 
 <% if config[:ssh_key] %>
-    instance.ssh.private_key_path = "<%= config[:ssh_key] %>"
+    vm_instance.ssh.private_key_path = "<%= config[:ssh_key] %>"
 <% end %>
 <% config[:ssh].each do |key, value| %>
-    intance.ssh.<%= key %> = <%= value %>
+    vm_intance.ssh.<%= key %> = <%= value %>
 <% end %>
 <% if config[:winrm] %>
   <% config[:winrm].each do |key, value| %>
-      instance.winrm.<%= key %> = <%= value %>
+      vm_instance.winrm.<%= key %> = <%= value %>
   <% end %>
 <% end %>
 
 <% Array(config[:network]).each do |opts| %>
-    instance.vm.network(:<%= opts[0] %>, <%= opts[1..-1].join(", ") %>)
+    vm_instance.vm.network(:<%= opts[0] %>, <%= opts[1..-1].join(", ") %>)
 <% end %>
 
-    instance.vm.synced_folder ".", "/vagrant", disabled: true
+    vm_instance.vm.synced_folder ".", "/vagrant", disabled: true
 <% config[:synced_folders].each do |source, destination, options| %>
-    instance.vm.synced_folder "<%= source %>", "<%= destination %>", <%= options %>
+    vm_instance.vm.synced_folder "<%= source %>", "<%= destination %>", <%= options %>
 <% end %>
 
-    instance.vm.provider :<%= config[:provider] %> do |p|
+    vm_instance.vm.provider :<%= config[:provider] %> do |p|
 <% case config[:provider]
    when "virtualbox", /^vmware_/
      if config[:gui] == true || config[:gui] == false %>
@@ -127,5 +134,7 @@ Vagrant.configure("2") do |c|
 <% end %>
     end
 
+<% if set_hostname %>
   end
+<% end %>
 end

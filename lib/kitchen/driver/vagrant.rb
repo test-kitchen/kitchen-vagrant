@@ -76,7 +76,7 @@ module Kitchen
         driver.windows_os? ? nil : driver.instance.name
       end
 
-      default_config :instance_name, nil
+      default_config :vm_name, nil
 
       no_parallel_for :create, :destroy
 
