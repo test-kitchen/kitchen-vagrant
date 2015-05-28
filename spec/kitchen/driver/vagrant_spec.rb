@@ -972,9 +972,9 @@ describe Kitchen::Driver::Vagrant do
 
     it "adds a vm.ssh line for each key/value pair in :ssh" do
       config[:ssh] = {
-        :username => %{"jdoe"},
-        :password => %{"secret"},
-        :private_key_path => %{"/key"}
+        :username => %{jdoe},
+        :password => %{secret},
+        :private_key_path => %{/key}
       }
       cmd
 
