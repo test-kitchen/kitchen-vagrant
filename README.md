@@ -129,7 +129,7 @@ Many host wide defaults for Vagrant can be set using `$HOME/.vagrant.d/Vagrantfi
 details, please read the Vagrant [machine settings][vagrant_machine_settings]
 page.
 
-The default will be computed from the platform name of the instance. Howver, for a small number of common/known platforms in the [Bento][bento] project, the default will prepend `"opscode-"` to the start to match the downloadable `box_url` (see below).
+The default will be computed from the platform name of the instance. However, for a small number of common/known platforms in the [Bento][bento] project, the default will prepend `"opscode-"` to the start to match the downloadable `box_url` (see below).
 
 For example, a platform with a Bento box called "ubuntu-14.04" will produce a
 default `box` value of `"opscode-ubuntu-14.04"`. Alternatively, a box called
