@@ -1385,7 +1385,7 @@ describe Kitchen::Driver::Vagrant do
             p.key3 = false
           end
         RUBY
-        end
+      end
     end
   end
 
