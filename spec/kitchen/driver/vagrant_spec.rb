@@ -875,7 +875,7 @@ describe Kitchen::Driver::Vagrant do
       )
     end
 
-    it "sets vm.box_check_update to false if :box_check_update is set to false" do
+    it "sets vm.box_check_update to false if :box_check_update is false" do
       config[:box_check_update] = false
       cmd
 
