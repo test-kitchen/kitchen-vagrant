@@ -252,7 +252,7 @@ describe Kitchen::Driver::Vagrant do
       ]
 
       expect(driver[:synced_folders]).to eq([
-        ["/host_path", "/vm_path", "create: true, type: :nfs"]
+        [File.expand_path("/host_path"), "/vm_path", "create: true, type: :nfs"]
       ])
     end
 
@@ -262,7 +262,7 @@ describe Kitchen::Driver::Vagrant do
       ]
 
       expect(driver[:synced_folders]).to eq([
-        ["/root/suitey-fooos-99", "/vm_path", "stuff"]
+        [File.expand_path("/root/suitey-fooos-99"), "/vm_path", "stuff"]
       ])
     end
 
@@ -272,7 +272,7 @@ describe Kitchen::Driver::Vagrant do
       ]
 
       expect(driver[:synced_folders]).to eq([
-        ["/kroot/a", "/vm_path", "stuff"]
+        [File.expand_path("/kroot/a"), "/vm_path", "stuff"]
       ])
     end
 
@@ -282,7 +282,7 @@ describe Kitchen::Driver::Vagrant do
       ]
 
       expect(driver[:synced_folders]).to eq([
-        ["/host_path", "/vm_path", "nil"]
+        [File.expand_path("/host_path"), "/vm_path", "nil"]
       ])
     end
 
@@ -295,13 +295,15 @@ describe Kitchen::Driver::Vagrant do
     it "sets :vagrantfile_erb to a default value" do
       config[:vagrantfile_erb] = "/a/Vagrantfile.erb"
 
-      expect(driver[:vagrantfile_erb]).to eq("/a/Vagrantfile.erb")
+      expect(driver[:vagrantfile_erb]).to eq(
+        File.expand_path("/a/Vagrantfile.erb"))
     end
 
     it "expands path for :vagrantfile_erb" do
       config[:vagrantfile_erb] = "Yep.erb"
 
-      expect(driver[:vagrantfile_erb]).to eq("/kroot/Yep.erb")
+      expect(driver[:vagrantfile_erb]).to eq(
+        File.expand_path("/kroot/Yep.erb"))
     end
 
     it "sets :vagrantfiles to an empty array by default" do
@@ -312,7 +314,7 @@ describe Kitchen::Driver::Vagrant do
       config[:vagrantfiles] = %W[one two three]
 
       expect(driver[:vagrantfiles]).to eq(
-        %W[/kroot/one /kroot/two /kroot/three]
+        %W[/kroot/one /kroot/two /kroot/three].map { |f| File.expand_path(f) }
       )
     end
 
