@@ -310,12 +310,20 @@ module Kitchen
       # * `:log_subject` defaults to a String representation of the Driver's
       #   class name
       #
+      # Since vagrant does not support being run through bundler, we escape
+      # any bundler environment should we detect one.  Otherwise, subcommands
+      # will inherit our bundled environment.
+      # @see https://github.com/test-kitchen/kitchen-vagrant/issues/190
       # @see Kitchen::ShellOut#run_command
       def run_command(cmd, options = {})
         merged = {
           :use_sudo => config[:use_sudo], :log_subject => name
         }.merge(options)
-        super(cmd, merged)
+        if Object.const_defined?("Bundler")
+          Bundler.with_clean_env { super(cmd, merged) }
+        else
+          super(cmd, merged)
+        end
       end
 
       # Runs a local command before `vagrant up` has been called.
