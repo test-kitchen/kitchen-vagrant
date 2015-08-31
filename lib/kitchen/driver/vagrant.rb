@@ -317,13 +317,30 @@ module Kitchen
       # @see Kitchen::ShellOut#run_command
       def run_command(cmd, options = {})
         merged = {
-          :use_sudo => config[:use_sudo], :log_subject => name
+          :use_sudo => config[:use_sudo],
+          :log_subject => name,
+          :environment => {}
         }.merge(options)
-        if Object.const_defined?("Bundler")
-          Bundler.with_clean_env { super(cmd, merged) }
-        else
-          super(cmd, merged)
+
+        # Attempt to extract bundler and associated GEM related values.
+        # TODO: To this accurately, we'd need to create a test-kitchen
+        # launch wrapper that serializes the existing environment before
+        # bundler touches it so that we can go back to it. Since that is
+        # "A Hard Problem"(TM), we simply blow away all known bundler
+        # related changes.
+        env = merged[:environment]
+        %w[BUNDLE_BIN_PATH BUNDLE_GEMFILE GEM_HOME GEM_PATH GEM_ROOT RUBY_LIB
+           RUBY_OPT _ORIGINAL_GEM_PATH].each do |var|
+          env[var] = nil
         end
+        gem_home = ENV["GEM_HOME"]
+        if gem_home
+          env["PATH"] = ENV["PATH"].dup
+          path_separator = RUBY_PLATFORM =~ /mswin|mingw|windows/ ? ";" : ":"
+          env["PATH"][File.join(gem_home, "bin") + path_separator] = ""
+        end
+
+        super(cmd, merged)
       end
 
       # Runs a local command before `vagrant up` has been called.
