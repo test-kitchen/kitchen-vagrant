@@ -61,7 +61,17 @@ describe Kitchen::Driver::Vagrant do
     )
   end
 
-  before { stub_const("ENV", env) }
+  module RunCommandStub
+    def run_command(_cmd, options = {})
+      options
+    end
+  end
+
+  before(:all) do
+    Kitchen::Driver::Vagrant.instance_eval { include RunCommandStub }
+  end
+
+  before(:each) { stub_const("ENV", env) }
 
   after do
     driver_object.class.send(:winrm_plugin_passed=, nil)
@@ -75,6 +85,66 @@ describe Kitchen::Driver::Vagrant do
   it "plugin_version is set to Kitchen::Vagrant::VERSION" do
     expect(driver.diagnose_plugin[:version]).to eq(
       Kitchen::Driver::VAGRANT_VERSION)
+  end
+
+  describe "#run_command" do
+    before(:each) do
+      allow(driver_object).to receive(:path_elem_separator).and_return(":")
+    end
+
+    context "when invoked from a clean environment" do
+
+      it "passes through environment variables" do
+        options = driver.send(
+          :run_command,
+          "cmd",
+          :environment => { "EV1" => "Val1", "EV2" => "Val2" })
+        expect(options[:environment]["EV1"]).to eq("Val1")
+        expect(options[:environment]["EV2"]).to eq("Val2")
+      end
+
+      it "leaves path alone" do
+        options = driver.send(
+          :run_command,
+          "cmd",
+          :environment => { "PATH" => "/foo/:/bar" })
+        expect(options[:environment]["PATH"]).to eq("/foo/:/bar")
+      end
+
+    end
+
+    context "when invoked from a bundler[:environment]" do
+
+      let(:bundler_env) do
+        {
+          "BUNDLE_BIN_PATH" => "bundle_bin_path",
+          "BUNDLE_GEMFILE" => "bundle_gem_file",
+          "GEM_HOME" => "gem_home",
+          "GEM_PATH" => "gem_path",
+          "GEM_ROOT" => "gem_root",
+          "RUBY_LIB" => "ruby_lib",
+          "RUBY_OPT" => "ruby_opt",
+          "_ORIGINAL_GEM_PATH" => "original_gem_path"
+        }
+      end
+
+      it "removes all bundler related variables" do
+        env.merge!(bundler_env)
+        options = driver.send(:run_command, "cmd")
+        bundler_env.each do |k, _v|
+          expect(options[:environment]).to include(k)
+          expect(options[:environment][k]).to eq(nil)
+        end
+      end
+
+      it "fixes path if it notices gem_home in it" do
+        env.merge!(bundler_env)
+        env["PATH"] = "gem_home/bin:/something/else"
+        options = driver.send(:run_command, "cmd")
+        puts(options)
+        expect(options[:environment]["PATH"]).to eq("/something/else")
+      end
+    end
   end
 
   describe "configuration" do
