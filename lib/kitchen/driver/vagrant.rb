@@ -291,15 +291,6 @@ module Kitchen
         end
       end
 
-      # Gets the character that separates elements of the PATH
-      # environment variable for this platform.
-      #
-      # @return [String] ":" on POSIX and ";" on Windows
-      # @api private
-      def path_elem_separator
-        RUBY_PLATFORM =~ /mswin|mingw|windows/ ? ";" : ":"
-      end
-
       # Convenience method to run a command locally.
       #
       # @param cmd [String] command to run locally
@@ -345,7 +336,7 @@ module Kitchen
         gem_home = ENV["GEM_HOME"]
         if gem_home && (env["PATH"] || ENV["PATH"])
           env["PATH"] ||= ENV["PATH"].dup if ENV["PATH"]
-          gem_bin = File.join(gem_home, "bin") + path_elem_separator
+          gem_bin = File.join(gem_home, "bin") + File::PATH_SEPARATOR
           env["PATH"][gem_bin] = "" if env["PATH"].include?(gem_bin)
         end
 

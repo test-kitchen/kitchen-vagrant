@@ -88,9 +88,6 @@ describe Kitchen::Driver::Vagrant do
   end
 
   describe "#run_command" do
-    before(:each) do
-      allow(driver_object).to receive(:path_elem_separator).and_return(":")
-    end
 
     context "when invoked from a clean environment" do
 
@@ -104,11 +101,12 @@ describe Kitchen::Driver::Vagrant do
       end
 
       it "leaves path alone" do
+        path = "/foo/#{File::PATH_SEPARATOR}/bar"
         options = driver.send(
           :run_command,
           "cmd",
-          :environment => { "PATH" => "/foo/:/bar" })
-        expect(options[:environment]["PATH"]).to eq("/foo/:/bar")
+          :environment => { "PATH" => path })
+        expect(options[:environment]["PATH"]).to eq(path)
       end
 
     end
@@ -139,7 +137,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "fixes path if it notices gem_home in it" do
         env.merge!(bundler_env)
-        env["PATH"] = "gem_home/bin:/something/else"
+        env["PATH"] = "gem_home/bin#{File::PATH_SEPARATOR}/something/else"
         options = driver.send(:run_command, "cmd")
         puts(options)
         expect(options[:environment]["PATH"]).to eq("/something/else")
