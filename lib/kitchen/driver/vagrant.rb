@@ -310,11 +310,36 @@ module Kitchen
       # * `:log_subject` defaults to a String representation of the Driver's
       #   class name
       #
+      # Since vagrant does not support being run through bundler, we escape
+      # any bundler environment should we detect one.  Otherwise, subcommands
+      # will inherit our bundled environment.
+      # @see https://github.com/test-kitchen/kitchen-vagrant/issues/190
       # @see Kitchen::ShellOut#run_command
       def run_command(cmd, options = {})
         merged = {
-          :use_sudo => config[:use_sudo], :log_subject => name
+          :use_sudo => config[:use_sudo],
+          :log_subject => name,
+          :environment => {}
         }.merge(options)
+
+        # Attempt to extract bundler and associated GEM related values.
+        # TODO: To this accurately, we'd need to create a test-kitchen
+        # launch wrapper that serializes the existing environment before
+        # bundler touches it so that we can go back to it. Since that is
+        # "A Hard Problem"(TM), we simply blow away all known bundler
+        # related changes.
+        env = merged[:environment]
+        %w[BUNDLE_BIN_PATH BUNDLE_GEMFILE GEM_HOME GEM_PATH GEM_ROOT RUBY_LIB
+           RUBY_OPT _ORIGINAL_GEM_PATH].each do |var|
+          env[var] = nil
+        end
+        gem_home = ENV["GEM_HOME"]
+        if gem_home && (env["PATH"] || ENV["PATH"])
+          env["PATH"] ||= ENV["PATH"].dup if ENV["PATH"]
+          gem_bin = File.join(gem_home, "bin") + File::PATH_SEPARATOR
+          env["PATH"][gem_bin] = "" if env["PATH"].include?(gem_bin)
+        end
+
         super(cmd, merged)
       end
 

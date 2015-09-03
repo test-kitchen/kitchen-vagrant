@@ -61,7 +61,17 @@ describe Kitchen::Driver::Vagrant do
     )
   end
 
-  before { stub_const("ENV", env) }
+  module RunCommandStub
+    def run_command(_cmd, options = {})
+      options
+    end
+  end
+
+  before(:all) do
+    Kitchen::Driver::Vagrant.instance_eval { include RunCommandStub }
+  end
+
+  before(:each) { stub_const("ENV", env) }
 
   after do
     driver_object.class.send(:winrm_plugin_passed=, nil)
@@ -75,6 +85,64 @@ describe Kitchen::Driver::Vagrant do
   it "plugin_version is set to Kitchen::Vagrant::VERSION" do
     expect(driver.diagnose_plugin[:version]).to eq(
       Kitchen::Driver::VAGRANT_VERSION)
+  end
+
+  describe "#run_command" do
+
+    context "when invoked from a clean environment" do
+
+      it "passes through environment variables" do
+        options = driver.send(
+          :run_command,
+          "cmd",
+          :environment => { "EV1" => "Val1", "EV2" => "Val2" })
+        expect(options[:environment]["EV1"]).to eq("Val1")
+        expect(options[:environment]["EV2"]).to eq("Val2")
+      end
+
+      it "leaves path alone" do
+        path = "/foo/#{File::PATH_SEPARATOR}/bar"
+        options = driver.send(
+          :run_command,
+          "cmd",
+          :environment => { "PATH" => path })
+        expect(options[:environment]["PATH"]).to eq(path)
+      end
+
+    end
+
+    context "when invoked from a bundler[:environment]" do
+
+      let(:bundler_env) do
+        {
+          "BUNDLE_BIN_PATH" => "bundle_bin_path",
+          "BUNDLE_GEMFILE" => "bundle_gem_file",
+          "GEM_HOME" => "gem_home",
+          "GEM_PATH" => "gem_path",
+          "GEM_ROOT" => "gem_root",
+          "RUBY_LIB" => "ruby_lib",
+          "RUBY_OPT" => "ruby_opt",
+          "_ORIGINAL_GEM_PATH" => "original_gem_path"
+        }
+      end
+
+      it "removes all bundler related variables" do
+        env.merge!(bundler_env)
+        options = driver.send(:run_command, "cmd")
+        bundler_env.each do |k, _v|
+          expect(options[:environment]).to include(k)
+          expect(options[:environment][k]).to eq(nil)
+        end
+      end
+
+      it "fixes path if it notices gem_home in it" do
+        env.merge!(bundler_env)
+        env["PATH"] = "gem_home/bin#{File::PATH_SEPARATOR}/something/else"
+        options = driver.send(:run_command, "cmd")
+        puts(options)
+        expect(options[:environment]["PATH"]).to eq("/something/else")
+      end
+    end
   end
 
   describe "configuration" do
@@ -252,7 +320,7 @@ describe Kitchen::Driver::Vagrant do
       ]
 
       expect(driver[:synced_folders]).to eq([
-        ["/host_path", "/vm_path", "create: true, type: :nfs"]
+        [File.expand_path("/host_path"), "/vm_path", "create: true, type: :nfs"]
       ])
     end
 
@@ -262,7 +330,7 @@ describe Kitchen::Driver::Vagrant do
       ]
 
       expect(driver[:synced_folders]).to eq([
-        ["/root/suitey-fooos-99", "/vm_path", "stuff"]
+        [File.expand_path("/root/suitey-fooos-99"), "/vm_path", "stuff"]
       ])
     end
 
@@ -272,7 +340,7 @@ describe Kitchen::Driver::Vagrant do
       ]
 
       expect(driver[:synced_folders]).to eq([
-        ["/kroot/a", "/vm_path", "stuff"]
+        [File.expand_path("/kroot/a"), "/vm_path", "stuff"]
       ])
     end
 
@@ -282,7 +350,7 @@ describe Kitchen::Driver::Vagrant do
       ]
 
       expect(driver[:synced_folders]).to eq([
-        ["/host_path", "/vm_path", "nil"]
+        [File.expand_path("/host_path"), "/vm_path", "nil"]
       ])
     end
 
@@ -295,13 +363,15 @@ describe Kitchen::Driver::Vagrant do
     it "sets :vagrantfile_erb to a default value" do
       config[:vagrantfile_erb] = "/a/Vagrantfile.erb"
 
-      expect(driver[:vagrantfile_erb]).to eq("/a/Vagrantfile.erb")
+      expect(driver[:vagrantfile_erb]).to eq(
+        File.expand_path("/a/Vagrantfile.erb"))
     end
 
     it "expands path for :vagrantfile_erb" do
       config[:vagrantfile_erb] = "Yep.erb"
 
-      expect(driver[:vagrantfile_erb]).to eq("/kroot/Yep.erb")
+      expect(driver[:vagrantfile_erb]).to eq(
+        File.expand_path("/kroot/Yep.erb"))
     end
 
     it "sets :vagrantfiles to an empty array by default" do
@@ -312,7 +382,7 @@ describe Kitchen::Driver::Vagrant do
       config[:vagrantfiles] = %W[one two three]
 
       expect(driver[:vagrantfiles]).to eq(
-        %W[/kroot/one /kroot/two /kroot/three]
+        %W[/kroot/one /kroot/two /kroot/three].map { |f| File.expand_path(f) }
       )
     end
 
