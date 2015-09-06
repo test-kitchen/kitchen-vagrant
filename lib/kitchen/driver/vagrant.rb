@@ -94,7 +94,7 @@ module Kitchen
       # @return [String,nil] the Vagrant box for this Instance
       def default_box
         if bento_box?(instance.platform.name)
-          "opscode-#{instance.platform.name}"
+          "bento/#{instance.platform.name}"
         else
           instance.platform.name
         end
@@ -102,15 +102,7 @@ module Kitchen
 
       # @return [String,nil] the Vagrant box URL for this Instance
       def default_box_url
-        return unless bento_box?(instance.platform.name)
-
-        provider = config[:provider]
-        provider = "vmware" if config[:provider] =~ /^vmware_(.+)$/
-
-        if %w[virtualbox vmware].include?(provider)
-          "https://opscode-vm-bento.s3.amazonaws.com/vagrant/#{provider}/" \
-            "opscode_#{instance.platform.name}_chef-provisionerless.box"
-        end
+        nil
       end
 
       # Destroys an instance.
