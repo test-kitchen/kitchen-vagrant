@@ -107,7 +107,7 @@ module Kitchen
         provider = config[:provider]
         provider = "vmware" if config[:provider] =~ /^vmware_(.+)$/
 
-        if %w[virtualbox vmware].include?(provider)
+        if %w[virtualbox vmware parallels].include?(provider)
           "https://opscode-vm-bento.s3.amazonaws.com/vagrant/#{provider}/" \
             "opscode_#{instance.platform.name}_chef-provisionerless.box"
         end
