@@ -120,8 +120,8 @@ describe Kitchen::Driver::Vagrant do
           "GEM_HOME" => "gem_home",
           "GEM_PATH" => "gem_path",
           "GEM_ROOT" => "gem_root",
-          "RUBY_LIB" => "ruby_lib",
-          "RUBY_OPT" => "ruby_opt",
+          "RUBYLIB" => "ruby_lib",
+          "RUBYOPT" => "ruby_opt",
           "_ORIGINAL_GEM_PATH" => "original_gem_path"
         }
       end

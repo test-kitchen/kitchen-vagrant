@@ -329,8 +329,8 @@ module Kitchen
         # "A Hard Problem"(TM), we simply blow away all known bundler
         # related changes.
         env = merged[:environment]
-        %w[BUNDLE_BIN_PATH BUNDLE_GEMFILE GEM_HOME GEM_PATH GEM_ROOT RUBY_LIB
-           RUBY_OPT _ORIGINAL_GEM_PATH].each do |var|
+        %w[BUNDLE_BIN_PATH BUNDLE_GEMFILE GEM_HOME GEM_PATH GEM_ROOT RUBYLIB
+           RUBYOPT _ORIGINAL_GEM_PATH].each do |var|
           env[var] = nil
         end
         gem_home = ENV["GEM_HOME"]
