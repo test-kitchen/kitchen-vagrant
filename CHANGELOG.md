@@ -1,3 +1,20 @@
+## 0.19.0 / 2015-09-18
+
+### Bug fixes
+
+* Pull request [#163][]: Properly quote `config[:ssh]` values. ([@zuazo][])
+* Pull request [#191][], pull request [#197][], issue [#190][]: Escape Bundler environment when shelling out to `vagrant` command. ([@ksubrama][], [@tknerr][])
+
+### New features
+
+* Pull request 172, issue [#171][]: Add support for OpenStack provider. ([@xmik][])
+
+### Improvements
+
+* Pull request [#174][]: Correct grammer error in README. ([@albsOps][])
+* Support running unit test suite on Windows ([@ksubrama][])
+
+
 ## 0.18.0 / 2015-05-07
 
 ### Bug fixes
@@ -72,7 +89,7 @@
 
 ### New features
 
-* Pull request $84: Add support for Parallels provider. ([@jhx][])
+* Pull request [#84][]: Add support for Parallels provider. ([@jhx][])
 * Pull request [#107][]: Add support for libvirt provider. ([@bradleyd][])
 * Pull request [#128][]: Add support for LXC provider. ([@tknerr][])
 * Pull request [#142][]: Add support for managed-servers provider. ([@kbruner][])
@@ -314,12 +331,19 @@ The initial release.
 [#157]: https://github.com/test-kitchen/kitchen-vagrant/issues/157
 [#158]: https://github.com/test-kitchen/kitchen-vagrant/issues/158
 [#161]: https://github.com/test-kitchen/kitchen-vagrant/issues/161
+[#163]: https://github.com/test-kitchen/kitchen-vagrant/issues/163
 [#166]: https://github.com/test-kitchen/kitchen-vagrant/issues/166
+[#171]: https://github.com/test-kitchen/kitchen-vagrant/issues/171
+[#174]: https://github.com/test-kitchen/kitchen-vagrant/issues/174
+[#190]: https://github.com/test-kitchen/kitchen-vagrant/issues/190
+[#191]: https://github.com/test-kitchen/kitchen-vagrant/issues/191
+[#197]: https://github.com/test-kitchen/kitchen-vagrant/issues/197
 [@Annih]: https://github.com/Annih
 [@Igorshp]: https://github.com/Igorshp
 [@RobertRehberg]: https://github.com/RobertRehberg
 [@TheDude05]: https://github.com/TheDude05
 [@albertsj1]: https://github.com/albertsj1
+[@albsOps]: https://github.com/albsOps
 [@alex-slynko-wonga]: https://github.com/alex-slynko-wonga
 [@antonio-osorio]: https://github.com/antonio-osorio
 [@arangamani]: https://github.com/arangamani
@@ -338,6 +362,7 @@ The initial release.
 [@josephholsten]: https://github.com/josephholsten
 [@kbruner]: https://github.com/kbruner
 [@keiths-osc]: https://github.com/keiths-osc
+[@ksubrama]: https://github.com/ksubrama
 [@manul]: https://github.com/manul
 [@martinisoft]: https://github.com/martinisoft
 [@mattray]: https://github.com/mattray
@@ -352,3 +377,5 @@ The initial release.
 [@tmatilai]: https://github.com/tmatilai
 [@vinyar]: https://github.com/vinyar
 [@whiteley]: https://github.com/whiteley
+[@xmik]: https://github.com/xmik
+[@zuazo]: https://github.com/zuazo
