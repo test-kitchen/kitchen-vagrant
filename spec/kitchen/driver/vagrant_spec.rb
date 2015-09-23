@@ -1457,6 +1457,180 @@ describe Kitchen::Driver::Vagrant do
         RUBY
       end
     end
+
+    context "for cloudstack provider" do
+
+      before { config[:provider] = "cloudstack" }
+
+      it "adds a line for each element in :customize" do
+        config[:customize] = {
+          :a_key => "some value",
+          :something => "else"
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :cloudstack do |p|
+            p.a_key = "some value"
+            p.something = "else"
+          end
+        RUBY
+      end
+
+      it "builds an array of hashes for firewall rules in :customize" do
+        config[:customize] = {
+          :firewall_rules => [
+            {
+              :ipaddress => "A.A.A.A",
+              :cidrlist  => "B.B.B.B/24",
+              :protocol  => "tcp",
+              :startport => 2222,
+              :endport   => 2222
+            },
+            {
+              :ipaddress => "C.C.C.C",
+              :cidrlist  => "D.D.D.D/32",
+              :protocol  => "tcp",
+              :startport => 80,
+              :endport   => 81
+            }
+          ]
+        }
+        cmd
+
+        expectation = <<-RUBY.gsub(/^ {8}/, "").gsub(/,\n     /, ",").chomp
+          c.vm.provider :cloudstack do |p|
+            p.firewall_rules = [{:ipaddress=>"A.A.A.A", :cidrlist=>"B.B.B.B/24",
+              :protocol=>"tcp", :startport=>2222,
+              :endport=>2222}, {:ipaddress=>"C.C.C.C", :cidrlist=>"D.D.D.D/32",
+              :protocol=>"tcp", :startport=>80, :endport=>81}]
+          end
+        RUBY
+
+        expect(vagrantfile).to match(regexify(expectation))
+      end
+
+      it "builds an array for security group ids in :customize" do
+        config[:customize] = {
+          :security_group_ids => ["aaaa-bbbb-cccc-dddd",
+                                  "1111-2222-3333-4444"]
+        }
+        cmd
+
+        expectation = <<-RUBY.gsub(/^ {8}/, "").gsub(/,\n     /, ",").chomp
+          c.vm.provider :cloudstack do |p|
+            p.security_group_ids = ["aaaa-bbbb-cccc-dddd",
+              "1111-2222-3333-4444"]
+          end
+        RUBY
+
+        expect(vagrantfile).to match(regexify(expectation))
+      end
+
+      it "builds an array for security group names in :customize" do
+        config[:customize] = {
+          :security_group_names => %w[min_fantastiska_security_group
+                                      another_security_group]
+        }
+        cmd
+
+        expectation = <<-RUBY.gsub(/^ {8}/, "").gsub(/,\n     /, ",").chomp
+          c.vm.provider :cloudstack do |p|
+            p.security_group_names = ["min_fantastiska_security_group",
+              "another_security_group"]
+          end
+        RUBY
+
+        expect(vagrantfile).to match(regexify(expectation))
+      end
+
+      it "builds an array of hashes for security groups in :customize" do
+        config[:customize] = {
+          :security_groups => [
+            {
+              :name        => "Awesome_security_group",
+              :description => "Created from the Vagrantfile",
+              :rules => [
+                {
+                  :type => "ingress",
+                  :protocol => "TCP",
+                  :startport => 22,
+                  :endport => 22,
+                  :cidrlist => "0.0.0.0/0"
+                },
+                {
+                  :type => "egress",
+                  :protocol => "TCP",
+                  :startport => 81,
+                  :endport => 82,
+                  :cidrlist => "1.2.3.4/24"
+                }
+              ]
+            }
+          ]
+        }
+        cmd
+
+        expectation = <<-RUBY.gsub(/^ {8}/, "").gsub(/,\n     /, ",").chomp
+          c.vm.provider :cloudstack do |p|
+            p.security_groups = [{:name=>"Awesome_security_group",
+              :description=>"Created from the Vagrantfile",
+              :rules=>[{:type=>"ingress", :protocol=>"TCP", :startport=>22,
+              :endport=>22, :cidrlist=>"0.0.0.0/0"}, {:type=>"egress",
+              :protocol=>"TCP", :startport=>81, :endport=>82,
+              :cidrlist=>"1.2.3.4/24"}]}]
+          end
+        RUBY
+
+        expect(vagrantfile).to match(regexify(expectation))
+      end
+
+      it "builds an array of hashes for static nat in :customize" do
+        config[:customize] = {
+          :static_nat => [{ :idaddress => "A.A.A.A" }]
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :cloudstack do |p|
+            p.static_nat = [{:idaddress=>"A.A.A.A"}]
+          end
+        RUBY
+      end
+
+      it "builds an array of hashes for port forwarding rules in :customize" do
+        config[:customize] = {
+          :port_forwarding_rules => [
+            {
+              :ipaddress => "X.X.X.X",
+              :protocol => "tcp",
+              :publicport => 22,
+              :privateport => 22,
+              :openfirewall => false
+            },
+            {
+              :ipaddress => "X.X.X.X",
+              :protocol => "tcp",
+              :publicport => 80,
+              :privateport => 80,
+              :openfirewall => false
+            }
+          ]
+        }
+        cmd
+
+        expectation = <<-RUBY.gsub(/^ {8}/, "").gsub(/,\n     /, ",").chomp
+          c.vm.provider :cloudstack do |p|
+            p.port_forwarding_rules = [{:ipaddress=>"X.X.X.X",
+              :protocol=>"tcp", :publicport=>22, :privateport=>22,
+              :openfirewall=>false}, {:ipaddress=>"X.X.X.X", :protocol=>"tcp",
+              :publicport=>80, :privateport=>80, :openfirewall=>false}]
+          end
+        RUBY
+
+        expect(vagrantfile).to match(regexify(expectation))
+      end
+    end
   end
 
   def debug_lines
