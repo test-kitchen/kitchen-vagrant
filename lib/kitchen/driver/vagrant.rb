@@ -53,6 +53,8 @@ module Kitchen
 
       default_config :gui, nil
 
+      default_config :linked_clone, nil
+
       default_config :network, []
 
       default_config :pre_create_command, nil

@@ -251,6 +251,30 @@ end
 
 For more info about GUI vs. Headless mode please see [vagrant configuration docs][vagrant_config_vbox]
 
+### <a name="config-linked_clone"></a> linked_clone
+
+Allows to use linked clones to import boxes for VirtualBox and VMware. Default is **nil**.
+
+```yaml
+---
+platforms:
+  - name: ubuntu-14.04
+    driver:
+      linked_clone: true
+```
+
+will generate a Vagrantfile configuration similar to:
+
+```ruby
+Vagrant.configure("2") do |config|
+  # ...
+
+  c.vm.provider :virtualbox do |p|
+    p.linked_clone = true
+  end
+end
+```
+
 ### <a name="config-network"></a> network
 
 An **Array** of network customizations for the virtual machine. Each Array
