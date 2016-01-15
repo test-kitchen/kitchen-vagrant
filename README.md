@@ -137,7 +137,7 @@ default `box` value of `"opscode-ubuntu-14.04"`. Alternatively, a box called
 
 ### <a name="config-box-check-update"></a> box\_check\_update
 
-Whether to check for box updates (disabled by default).
+Whether to check for box updates (enabled by default).
 
 ### <a name="config-box-url"></a> box\_url
 

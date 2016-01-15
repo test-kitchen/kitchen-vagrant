@@ -14,7 +14,7 @@ Vagrant.configure("2") do |c|
   c.vm.box_version = "<%= config[:box_version] %>"
 <% end %>
 
-<% if config[:box_check_update] %>
+<% if !config[:box_check_update].nil? %>
   c.vm.box_check_update = "<%= config[:box_check_update] %>"
 <% end %>
 
