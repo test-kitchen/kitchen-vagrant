@@ -1213,14 +1213,16 @@ describe Kitchen::Driver::Vagrant do
       it "adds a line for each element in :customize" do
         config[:customize] = {
           :a_key => "some value",
-          :something => "else"
+          :something => "else",
+          :a_number_key => 1024,
         }
         cmd
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :libvirt do |p|
-            p.a_key = some value
-            p.something = else
+            p.a_key = "some value"
+            p.something = "else"
+            p.a_number_key = 1024
           end
         RUBY
       end
