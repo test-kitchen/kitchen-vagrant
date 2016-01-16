@@ -210,6 +210,16 @@ describe Kitchen::Driver::Vagrant do
       expect(driver[:box_version]).to eq("1.2.3")
     end
 
+    it "sets :boot_timeout to nil by default" do
+      expect(driver[:boot_timeout]).to eq(nil)
+    end
+
+    it "sets :boot_timeout to a custom value" do
+      config[:boot_timeout] = 600
+
+      expect(driver[:boot_timeout]).to eq(600)
+    end
+
     it "sets :customize to an empty hash by default" do
       expect(driver[:customize]).to eq({})
     end
@@ -916,6 +926,22 @@ describe Kitchen::Driver::Vagrant do
       cmd
 
       expect(vagrantfile).to match(regexify(%{c.vm.box_version = "a.b.c"}))
+    end
+
+    it "sets no vm.boot_timeout if missing" do
+      config[:boot_timeout] = nil
+      cmd
+
+      expect(vagrantfile).to_not match(regexify(%{c.vm.boot_timeout}, :partial))
+    end
+
+    it "sets no vm.boot_timeout if :boot_timeout is set" do
+      config[:boot_timeout] = 600
+      cmd
+
+      expect(vagrantfile).to match(
+        regexify(%{c.vm.boot_timeout = 600}, :partial)
+      )
     end
 
     it "sets no vm.box_check_update if missing" do

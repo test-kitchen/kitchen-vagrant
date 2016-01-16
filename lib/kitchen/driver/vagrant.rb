@@ -47,6 +47,8 @@ module Kitchen
 
       default_config :box_version, nil
 
+      default_config :boot_timeout, nil
+
       default_config :customize, {}
 
       default_config :gui, nil
