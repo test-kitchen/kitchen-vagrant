@@ -1163,6 +1163,21 @@ describe Kitchen::Driver::Vagrant do
           end
         RUBY
       end
+
+      it "adds a short form of :memory and :cpus elements in :customize" do
+        config[:customize] = {
+          :memory => 2048,
+          :cpus => 4
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :parallels do |p|
+            p.memory = 2048
+            p.cpus = 4
+          end
+        RUBY
+      end
     end
 
     context "for rackspace provider" do
