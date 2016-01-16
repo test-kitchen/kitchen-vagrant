@@ -1214,7 +1214,7 @@ describe Kitchen::Driver::Vagrant do
         config[:customize] = {
           :a_key => "some value",
           :something => "else",
-          :a_number_key => 1024,
+          :a_number_key => 1024
         }
         cmd
 
