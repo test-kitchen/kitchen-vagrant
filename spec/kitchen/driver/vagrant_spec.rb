@@ -986,18 +986,24 @@ describe Kitchen::Driver::Vagrant do
       )
     end
 
-    it "sets vm.box_download_insecure to false if :box_download_insecure is false" do
+    it "sets vm.box_download_insecure to false
+          if :box_download_insecure is false" do
+
       config[:box_download_insecure] = false
       cmd
 
-      expect(vagrantfile).to match(regexify(%{c.vm.box_download_insecure = "false"}))
+      expect(
+        vagrantfile).to match(regexify(%{c.vm.box_download_insecure = "false"})
+      )
     end
 
     it "sets vm.box_download_insecure if :box_download_insecure is set" do
       config[:box_download_insecure] = "um"
       cmd
 
-      expect(vagrantfile).to match(regexify(%{c.vm.box_download_insecure = "um"}))
+      expect(
+        vagrantfile).to match(regexify(%{c.vm.box_download_insecure = "um"})
+      )
     end
 
     it "sets no vm.communicator if missing" do
