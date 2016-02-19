@@ -43,6 +43,8 @@ module Kitchen
 
       default_config :box_check_update, nil
 
+      default_config :box_download_insecure, nil
+
       default_config(:box_url) { |driver| driver.default_box_url }
 
       default_config :box_version, nil

@@ -200,6 +200,16 @@ describe Kitchen::Driver::Vagrant do
       expect(driver[:box_check_update]).to eq(true)
     end
 
+    it "sets :box_download_insecure to nil by default" do
+      expect(driver[:box_download_insecure]).to eq(nil)
+    end
+
+    it "sets :box_download_insecure to a custom value" do
+      config[:box_download_insecure] = true
+
+      expect(driver[:box_download_insecure]).to eq(true)
+    end
+
     it "sets :box_version to nil by default" do
       expect(driver[:box_version]).to eq(nil)
     end
@@ -965,6 +975,35 @@ describe Kitchen::Driver::Vagrant do
       cmd
 
       expect(vagrantfile).to match(regexify(%{c.vm.box_check_update = "um"}))
+    end
+
+    it "sets no vm.box_download_insecure if missing" do
+      config[:box_download_insecure] = nil
+      cmd
+
+      expect(vagrantfile).to_not match(
+        regexify(%{c.vm.box_download_insecure}, :partial)
+      )
+    end
+
+    it "sets vm.box_download_insecure to false
+          if :box_download_insecure is false" do
+
+      config[:box_download_insecure] = false
+      cmd
+
+      expect(
+        vagrantfile).to match(regexify(%{c.vm.box_download_insecure = "false"})
+      )
+    end
+
+    it "sets vm.box_download_insecure if :box_download_insecure is set" do
+      config[:box_download_insecure] = "um"
+      cmd
+
+      expect(
+        vagrantfile).to match(regexify(%{c.vm.box_download_insecure = "um"})
+      )
     end
 
     it "sets no vm.communicator if missing" do
