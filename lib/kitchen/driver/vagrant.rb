@@ -16,6 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "zlib"
+
 require "erb"
 require "fileutils"
 require "rubygems/version"
@@ -391,7 +393,7 @@ module Kitchen
       def vagrant_root
         @vagrant_root ||= instance.nil? ? nil : File.join(
           config[:kitchen_root], %w[.kitchen kitchen-vagrant],
-          "kitchen-#{File.basename(config[:kitchen_root])}-#{instance.name}"
+          "kitchen-#{Zlib.crc32(config[:kitchen_root]).to_s(36).upcase.rjust(8, '0')}-#{instance.name}"
         )
       end
 
