@@ -272,7 +272,7 @@ describe Kitchen::Driver::Vagrant do
       config[:pre_create_command] = "{{vagrant_root}}/candy"
 
       expect(driver[:pre_create_command]).to eq(
-        "/kroot/.kitchen/kitchen-vagrant/kitchen-kroot-suitey-fooos-99/candy"
+        "/kroot/.kitchen/kitchen-vagrant/kitchen-017YDE1N-suitey-fooos-99/candy"
       )
     end
 
