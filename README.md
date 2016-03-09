@@ -253,7 +253,7 @@ For more info about GUI vs. Headless mode please see [vagrant configuration docs
 
 ### <a name="config-linked_clone"></a> linked_clone
 
-Allows to use linked clones to import boxes for VirtualBox and VMware. Default is **nil**.
+Allows to use linked clones to import boxes for VirtualBox, VMware and Parallels Desktop. Default is **nil**.
 
 ```yaml
 ---

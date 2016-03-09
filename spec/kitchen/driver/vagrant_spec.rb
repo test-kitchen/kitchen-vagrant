@@ -1212,6 +1212,36 @@ describe Kitchen::Driver::Vagrant do
           end
         RUBY
       end
+
+      it "does not set :linked_clone to nil" do
+        config[:linked_clone] = nil
+        cmd
+
+        expect(vagrantfile).to_not match(
+          regexify(%{p.linked_clone = }, :partial))
+      end
+
+      it "sets :linked_clone to false if set" do
+        config[:linked_clone] = false
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :parallels do |p|
+            p.linked_clone = false
+          end
+        RUBY
+      end
+
+      it "sets :linked_clone to true if set" do
+        config[:linked_clone] = true
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :parallels do |p|
+            p.linked_clone = true
+          end
+        RUBY
+      end
     end
 
     context "for rackspace provider" do
