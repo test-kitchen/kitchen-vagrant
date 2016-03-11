@@ -244,6 +244,10 @@ describe Kitchen::Driver::Vagrant do
       expect(driver[:gui]).to eq(nil)
     end
 
+    it "sets :linked_clone to nil by default" do
+      expect(driver[:linked_clone]).to eq(nil)
+    end
+
     it "sets :network to an empty array by default" do
       expect(driver[:network]).to eq([])
     end
@@ -1182,6 +1186,36 @@ describe Kitchen::Driver::Vagrant do
           end
         RUBY
       end
+
+      it "does not set :linked_clone to nil" do
+        config[:linked_clone] = nil
+        cmd
+
+        expect(vagrantfile).to_not match(
+            regexify(%{p.linked_clone = }, :partial))
+      end
+
+      it "sets :linked_clone to false if set" do
+        config[:linked_clone] = false
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :virtualbox do |p|
+            p.linked_clone = false
+          end
+        RUBY
+      end
+
+      it "sets :linked_clone to true if set" do
+        config[:linked_clone] = true
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :virtualbox do |p|
+            p.linked_clone = true
+          end
+        RUBY
+      end
     end
 
     context "for parallels provider" do
@@ -1214,6 +1248,36 @@ describe Kitchen::Driver::Vagrant do
           c.vm.provider :parallels do |p|
             p.memory = 2048
             p.cpus = 4
+          end
+        RUBY
+      end
+
+      it "does not set :linked_clone to nil" do
+        config[:linked_clone] = nil
+        cmd
+
+        expect(vagrantfile).to_not match(
+          regexify(%{p.linked_clone = }, :partial))
+      end
+
+      it "sets :linked_clone to false if set" do
+        config[:linked_clone] = false
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :parallels do |p|
+            p.linked_clone = false
+          end
+        RUBY
+      end
+
+      it "sets :linked_clone to true if set" do
+        config[:linked_clone] = true
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :parallels do |p|
+            p.linked_clone = true
           end
         RUBY
       end

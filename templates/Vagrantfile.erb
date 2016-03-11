@@ -81,7 +81,15 @@ Vagrant.configure("2") do |c|
      if config[:gui] == true || config[:gui] == false %>
     p.gui = <%= config[:gui] %>
 <%   end
+   end
+
+   case config[:provider]
+   when "virtualbox", /^vmware_/, "parallels"
+     if config[:linked_clone] == true || config[:linked_clone] == false %>
+    p.linked_clone = <%= config[:linked_clone] %>
+<%   end
    end %>
+
 <% config[:customize].each do |key, value| %>
   <% case config[:provider]
      when "libvirt" %>
