@@ -56,21 +56,24 @@ Please read the [Driver usage][driver_usage] page for more details.
 
 ## <a name="default-config"></a> Default Configuration
 
-This driver can predict the Vagrant box name and download URL for a select
-number of platforms (VirtualBox and VMware providers only) that have been published by
-Chef Software Inc, in the [Bento][bento] project such as:
+For a select number of platforms and a select number of hypervisors (VirtualBox, VMware,
+and Parallels) default boxes are published under the [Bento organization][bento_org]
+on [Atlas][atlas] such as:
 
 ```yaml
 ---
 platforms:
-  - name: ubuntu-10.04
   - name: ubuntu-12.04
   - name: ubuntu-14.04
-  - name: ubuntu-13.04
   - name: centos-5.11
-  - name: centos-6.6
-  - name: debian-7.8
-  - name: freebsd-10.1
+  - name: centos-6.7
+  - name: centos-7.2
+  - name: debian-7.9
+  - name: debian-8.3
+  - name: fedora-22
+  - name: fedora-23
+  - name: freebsd-9.3
+  - name: freebsd-10.2
 ```
 
 This will effectively generate a configuration similar to:
@@ -78,18 +81,21 @@ This will effectively generate a configuration similar to:
 ```yaml
 ---
 platforms:
-  - name: ubuntu-10.04
-    driver:
-      box: opscode-ubuntu-10.04
-      box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-10.04_chef-provisionerless.box
   - name: ubuntu-12.04
     driver:
-      box: opscode-ubuntu-12.04
-      box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-12.04_chef-provisionerless.box
+      box: bento/ubuntu-12.04
   - name: ubuntu-14.04
     driver:
-      box: opscode-ubuntu-14.04
-      box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box
+      box: bento/ubuntu-14.04
+  - name: centos-5.11
+    driver:
+      box: bento/centos-5.11
+  - name: centos-6.7
+    driver:
+      box: bento/centos-6.7
+  - name: centos-7.2
+    driver:
+      box: bento/centos-7.2
   # ...
 ```
 
@@ -476,3 +482,5 @@ Apache 2.0 (see [LICENSE][license])
 [vmware_plugin]:            http://www.vagrantup.com/vmware
 [fusion_dl]:                http://www.vmware.com/products/fusion/overview.html
 [workstation_dl]:           http://www.vmware.com/products/workstation/
+[bento_org]:                https://atlas.hashicorp.com/bento
+[atlas]:                    https://atlas.hashicorp.com/
