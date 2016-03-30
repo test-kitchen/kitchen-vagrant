@@ -360,6 +360,15 @@ describe Kitchen::Driver::Vagrant do
       ])
     end
 
+    it "sets :vagrant_binary to 'vagrant' by default" do
+      expect(driver[:vagrant_binary]).to eq("vagrant")
+    end
+
+    it "sets :vagrant_binary to a custom value" do
+      config[:vagrant_binary] = "vagrant.cmd"
+      expect(driver[:vagrant_binary]).to eq("vagrant.cmd")
+    end
+
     it "sets :vagrantfile_erb to a default" do
       expect(driver[:vagrantfile_erb]).to match(
         %r{/kitchen-vagrant/templates/Vagrantfile\.erb$}

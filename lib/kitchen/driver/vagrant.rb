@@ -71,6 +71,8 @@ module Kitchen
 
       default_config :synced_folders, []
 
+      default_config :vagrant_binary, "vagrant"
+
       default_config :vagrantfile_erb,
         File.join(File.dirname(__FILE__), "../../../templates/Vagrantfile.erb")
       expand_path_for :vagrantfile_erb
@@ -121,7 +123,7 @@ module Kitchen
         create_vagrantfile
         @vagrantfile_created = false
         instance.transport.connection(state).close
-        run("vagrant destroy -f")
+        run("#{config[:vagrant_binary]} destroy -f")
         FileUtils.rm_rf(vagrant_root)
         info("Vagrant instance #{instance.to_str} destroyed.")
         state.delete(:hostname)
@@ -365,7 +367,7 @@ module Kitchen
       #
       # @api private
       def run_vagrant_up
-        cmd = "vagrant up"
+        cmd = "#{config[:vagrant_binary]} up"
         cmd += " --no-provision" unless config[:provision]
         cmd += " --provider #{config[:provider]}" if config[:provider]
         run(cmd)
@@ -403,7 +405,8 @@ module Kitchen
       #   invocation
       # @api private
       def vagrant_config(type)
-        lines = run_silently("vagrant #{type}-config").split("\n").map do |line|
+        lines = run_silently("#{config[:vagrant_binary]} #{type}-config").
+          split("\n").map do |line|
           tokens = line.strip.partition(" ")
           [tokens.first, tokens.last.gsub(/"/, "")]
         end
@@ -415,7 +418,8 @@ module Kitchen
       # @api private
       def vagrant_version
         self.class.vagrant_version ||= run_silently(
-          "vagrant --version", :cwd => Dir.pwd).chomp.split(" ").last
+          "#{config[:vagrant_binary]} --version", :cwd => Dir.pwd).
+          chomp.split(" ").last
       rescue Errno::ENOENT
         raise UserError, "Vagrant #{MIN_VER} or higher is not installed." \
           " Please download a package from #{WEBSITE}."
@@ -448,7 +452,7 @@ module Kitchen
         return true if self.class.winrm_plugin_passed
 
         self.class.winrm_plugin_passed = run_silently(
-          "vagrant plugin list", :cwd => Dir.pwd).
+          "#{config[:vagrant_binary]} plugin list", :cwd => Dir.pwd).
           split("\n").find { |line| line =~ /^vagrant-winrm\s+/ }
       end
     end
