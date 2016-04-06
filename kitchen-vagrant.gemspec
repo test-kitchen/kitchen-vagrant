@@ -25,10 +25,11 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec",     "~> 3.2"
   gem.add_development_dependency "simplecov", "~> 0.9"
+  gem.add_development_dependency "github_changelog_generator", "1.11.3"
 
   # style and complexity libraries are tightly version pinned as newer releases
   # may introduce new and undesireable style choices which would be immediately
   # enforced in CI
-  gem.add_development_dependency "finstyle",  "1.4.0"
+  gem.add_development_dependency "finstyle",  "1.5.0"
   gem.add_development_dependency "cane",      "2.6.2"
 end
