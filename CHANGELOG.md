@@ -1,3 +1,37 @@
+## [0.20.0](https://github.com/test-kitchen/kitchen-vagrant/tree/v0.20.0) (2016-04-07)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.19.0...v0.20.0)
+
+**Implemented enhancements:**
+
+- Make Vagrant binary a parameter [\#218](https://github.com/test-kitchen/kitchen-vagrant/issues/218)
+- WARN: Child with name 'dna.json' found in multiple directories: /tmp/kitchen/dna.json and /tmp/kitchen/dna.json [\#198](https://github.com/test-kitchen/kitchen-vagrant/issues/198)
+- Default bento boxes should be pulled from Atlas [\#193](https://github.com/test-kitchen/kitchen-vagrant/issues/193)
+- Easily override instance name [\#169](https://github.com/test-kitchen/kitchen-vagrant/issues/169)
+- Easily override instance name [\#169](https://github.com/test-kitchen/kitchen-vagrant/issues/169)
+- Make vagrant binary a parameter [\#219](https://github.com/test-kitchen/kitchen-vagrant/pull/219) ([bheuvel](https://github.com/bheuvel))
+- HyperV acts as OpenStack, CloudStack [\#217](https://github.com/test-kitchen/kitchen-vagrant/pull/217) ([bheuvel](https://github.com/bheuvel))
+- Add support for hyperv customize [\#212](https://github.com/test-kitchen/kitchen-vagrant/pull/212) ([giseongeom](https://github.com/giseongeom))
+- Add option for box\_download\_insecure to be passed to Vagrantfile [\#208](https://github.com/test-kitchen/kitchen-vagrant/pull/208) ([drrk](https://github.com/drrk))
+- fix libvirt customize [\#204](https://github.com/test-kitchen/kitchen-vagrant/pull/204) ([akissa](https://github.com/akissa))
+- Add linked\_clone config option [\#203](https://github.com/test-kitchen/kitchen-vagrant/pull/203) ([bborysenko](https://github.com/bborysenko))
+- Use Bento's Atlas boxes by default if detected [\#195](https://github.com/test-kitchen/kitchen-vagrant/pull/195) ([andytson](https://github.com/andytson))
+- Parallels: Use "memory" and "cpus" customization shortcuts [\#194](https://github.com/test-kitchen/kitchen-vagrant/pull/194) ([legal90](https://github.com/legal90))
+- Add support for boot\_timeout driver setting [\#184](https://github.com/test-kitchen/kitchen-vagrant/pull/184) ([gh2k](https://github.com/gh2k))
+- Fixes box check update bug [\#182](https://github.com/test-kitchen/kitchen-vagrant/pull/182) ([roderickrandolph](https://github.com/roderickrandolph))
+- Add cloudstack support [\#167](https://github.com/test-kitchen/kitchen-vagrant/pull/167) ([miguelaferreira](https://github.com/miguelaferreira))
+
+**Fixed bugs:**
+
+- setting box\_check\_update to false does not disable box update checking [\#181](https://github.com/test-kitchen/kitchen-vagrant/issues/181)
+
+**Merged pull requests:**
+
+- Updating readme for Parallels [\#221](https://github.com/test-kitchen/kitchen-vagrant/pull/221) ([cheeseplus](https://github.com/cheeseplus))
+- Adding changelog generator [\#220](https://github.com/test-kitchen/kitchen-vagrant/pull/220) ([cheeseplus](https://github.com/cheeseplus))
+- Updating Readme to reflect changes to default boxes [\#215](https://github.com/test-kitchen/kitchen-vagrant/pull/215) ([cheeseplus](https://github.com/cheeseplus))
+- Ruby 1.9.3 is no longer supported [\#209](https://github.com/test-kitchen/kitchen-vagrant/pull/209) ([drrk](https://github.com/drrk))
+
+
 ## 0.19.0 / 2015-09-18
 
 ### Bug fixes
