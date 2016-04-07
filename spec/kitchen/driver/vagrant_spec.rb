@@ -1201,7 +1201,7 @@ describe Kitchen::Driver::Vagrant do
         cmd
 
         expect(vagrantfile).to_not match(
-            regexify(%{p.linked_clone = }, :partial))
+          regexify(%{p.linked_clone = }, :partial))
       end
 
       it "sets :linked_clone to false if set" do

@@ -35,3 +35,12 @@ desc "Run all quality tasks"
 task :quality => [:cane, :style, :stats]
 
 task :default => [:test, :quality]
+
+require "github_changelog_generator/task"
+
+GitHubChangelogGenerator::RakeTask.new :changelog do |config|
+  config.future_release = Kitchen::Driver::VAGRANT_VERSION
+  config.enhancement_labels = "enhancement,Enhancement,New Feature,Feature,Improvement".split(",")
+  config.bug_labels = "bug,Bug".split(",")
+  config.exclude_labels = %w[Duplicate Question Discussion No_Changelog]
+end
