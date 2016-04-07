@@ -33,7 +33,7 @@ If you are creating Windows VMs over a WinRM Transport, then the
 [vagrant-winrm][vagrant_winrm] Vagrant plugin must be installed. As a
 consequence, the minimum version of Vagrant required is 1.6 or higher.
 
-### <a name="dependencies-virtualization"></a> Virtualbox and/or VMware Fusion/Workstation
+### <a name="dependencies-virtualization"></a> Virtualbox, VMware Fusion/Workstation, and/or Parallels
 
 Currently this driver supports VirtualBox and VMware Fusion/Workstation.
 Virtualbox is free and is the default provider for Vagrant.
@@ -48,6 +48,13 @@ software from VMware and then must also purchase the Vagrant VMware plugin.
 [VMware Fusion][fusion_dl]
 
 [VMware Workstation][workstation_dl]
+
+If you would like to use Parallels you must also purchase the software but the
+`vagrant-parallels` plugin is freely available.
+
+[Parllels][parallels_dl]
+
+[Vagrant Parallels Provider][vagrant_parallels]
 
 
 ## <a name="installation"></a> Installation and Setup
@@ -484,3 +491,5 @@ Apache 2.0 (see [LICENSE][license])
 [workstation_dl]:           http://www.vmware.com/products/workstation/
 [bento_org]:                https://atlas.hashicorp.com/bento
 [atlas]:                    https://atlas.hashicorp.com/
+[parallels_dl]:             http://www.parallels.com/products/desktop/download/
+[vagrant_parallels]:        https://github.com/Parallels/vagrant-parallels
