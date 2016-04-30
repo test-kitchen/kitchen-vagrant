@@ -107,6 +107,10 @@ Vagrant.configure("2") do |c|
       <% config[:customize][:backingstore_options].each do |opt, opt_val| %>
     p.backingstore_option "--<%= opt %>", "<%= opt_val %>"
       <% end %>
+    <% elsif key == :include %>
+      <% Array(value).each do |include| %>
+    p.customize "<%= key %>", "<%= include %>"
+      <% end %>
     <% else %>
     p.customize "<%= key %>", "<%= value %>"
     <% end %>
