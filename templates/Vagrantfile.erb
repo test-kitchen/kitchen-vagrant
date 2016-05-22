@@ -54,7 +54,7 @@ Vagrant.configure("2") do |c|
   c.ssh.private_key_path = "<%= config[:ssh_key] %>"
 <% end %>
 <% config[:ssh].each do |key, value| %>
-  c.ssh.<%= key %> = "<%= value %>"
+  c.ssh.<%= key %> = <%= value.inspect %>
 <% end %>
 <% if config[:winrm] %>
   <% config[:winrm].each do |key, value| %>

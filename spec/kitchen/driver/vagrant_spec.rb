@@ -1111,7 +1111,8 @@ describe Kitchen::Driver::Vagrant do
       config[:ssh] = {
         :username => %{jdoe},
         :password => %{secret},
-        :private_key_path => %{/key}
+        :private_key_path => %{/key},
+        :insert_key => false
       }
       cmd
 
@@ -1119,6 +1120,7 @@ describe Kitchen::Driver::Vagrant do
         c.ssh.username = "jdoe"
         c.ssh.password = "secret"
         c.ssh.private_key_path = "/key"
+        c.ssh.insert_key = false
       RUBY
     end
 
