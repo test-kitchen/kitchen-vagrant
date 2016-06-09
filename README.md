@@ -49,10 +49,10 @@ software from VMware and then must also purchase the Vagrant VMware plugin.
 
 [VMware Workstation][workstation_dl]
 
-If you would like to use Parallels you must also purchase the software but the
+If you would like to use Parallels Desktop you must also purchase the software but the
 `vagrant-parallels` plugin is freely available.
 
-[Parllels][parallels_dl]
+[Parallels Desktop for Mac][parallels_dl]
 
 [Vagrant Parallels Provider][vagrant_parallels]
 
