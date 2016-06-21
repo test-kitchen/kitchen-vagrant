@@ -207,7 +207,7 @@ describe Kitchen::Driver::Vagrant do
     it "sets :box_download_ca_cert to a custom value" do
       config[:box_download_ca_cert] = "cacert.pem"
 
-      expect(driver[:box_check_update]).to eq("cacert.pem")
+      expect(driver[:box_download_ca_cert]).to eq("cacert.pem")
     end
 
     it "sets :box_download_insecure to nil by default" do
