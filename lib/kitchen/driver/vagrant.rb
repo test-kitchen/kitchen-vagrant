@@ -248,6 +248,27 @@ module Kitchen
               options || "nil"
             ]
           end
+        add_extra_synced_folders!
+      end
+
+      # Verify if we are using the Provisioner::ChefBase that now has a
+      # config parameter for the Chef omnibus cache, if that is set then
+      # we would like to sync a local folder to the instance so we can
+      # take advantage of the cache packages that we might have,
+      # therefore we wont download a package we already have in the cache
+      def add_extra_synced_folders!
+        if chef_omnibus_cache
+          FileUtils.mkdir_p(local_kitchen_cache)
+          config[:synced_folders].push([
+            local_kitchen_cache,
+            chef_omnibus_cache,
+            "create: true"
+          ])
+        end
+      end
+
+      def chef_omnibus_cache
+        instance.provisioner[:chef_omnibus_cache] if instance
       end
 
       # Truncates the length of `:vm_hostname` to 12 characters for
@@ -387,6 +408,12 @@ module Kitchen
         state[:ssh_key] = hash["IdentityFile"] if hash["IdentityFile"]
         state[:proxy_command] = hash["ProxyCommand"] if hash["ProxyCommand"]
         state[:rdp_port] = hash["RDPPort"] if hash["RDPPort"]
+      end
+
+      # @return [String] full absolute path to the kitchen cache directory
+      # @api private
+      def local_kitchen_cache
+        @local_kitchen_cache ||= File.expand_path("~/.kitchen/cache")
       end
 
       # @return [String] full local path to the directory containing the
