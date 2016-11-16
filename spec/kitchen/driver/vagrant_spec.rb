@@ -360,6 +360,19 @@ describe Kitchen::Driver::Vagrant do
       ])
     end
 
+    describe "when chef_omnibus_cache is set" do
+      before do
+        allow(driver_object).to receive(:chef_omnibus_cache).
+          and_return("/tmp/path")
+      end
+
+      it "adds the extra synced folder for omnibus cache" do
+        expect(driver[:synced_folders]).to eq([
+          [File.expand_path("~/.kitchen/cache"), "/tmp/path", "create: true"]
+        ])
+      end
+    end
+
     it "sets :vagrant_binary to 'vagrant' by default" do
       expect(driver[:vagrant_binary]).to eq("vagrant")
     end
