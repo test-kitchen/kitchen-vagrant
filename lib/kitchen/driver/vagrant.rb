@@ -169,6 +169,13 @@ module Kitchen
         instance.transport.name.downcase =~ /win_?rm/
       end
 
+      # Setting up the `cache_directory` to store omnibus packages in cache
+      # and share a local folder to that directory so that we don't pull them
+      # down every single time
+      def cache_directory
+        windows_os? ? "$env:TEMP\\omnibus\\cache" : "/tmp/omnibus/cache"
+      end
+
       protected
 
       WEBSITE = "http://www.vagrantup.com/downloads.html".freeze
@@ -251,24 +258,18 @@ module Kitchen
         add_extra_synced_folders!
       end
 
-      # Verify if we are using the Provisioner::ChefBase that now has a
-      # config parameter for the Chef omnibus cache, if that is set then
-      # we would like to sync a local folder to the instance so we can
-      # take advantage of the cache packages that we might have,
-      # therefore we wont download a package we already have in the cache
+      # We would like to sync a local folder to the instance so we can
+      # take advantage of the packages that we might have in cache,
+      # therefore we wont download a package we already have
       def add_extra_synced_folders!
-        if chef_omnibus_cache
+        if cache_directory
           FileUtils.mkdir_p(local_kitchen_cache)
           config[:synced_folders].push([
             local_kitchen_cache,
-            chef_omnibus_cache,
+            cache_directory,
             "create: true"
           ])
         end
-      end
-
-      def chef_omnibus_cache
-        instance.provisioner[:chef_omnibus_cache] if instance
       end
 
       # Truncates the length of `:vm_hostname` to 12 characters for
