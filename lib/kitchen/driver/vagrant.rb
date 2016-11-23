@@ -169,6 +169,13 @@ module Kitchen
         instance.transport.name.downcase =~ /win_?rm/
       end
 
+      # Setting up the `cache_directory` to store omnibus packages in cache
+      # and share a local folder to that directory so that we don't pull them
+      # down every single time
+      def cache_directory
+        windows_os? ? "$env:TEMP\\omnibus\\cache" : "/tmp/omnibus/cache"
+      end
+
       protected
 
       WEBSITE = "http://www.vagrantup.com/downloads.html".freeze
@@ -248,6 +255,21 @@ module Kitchen
               options || "nil"
             ]
           end
+        add_extra_synced_folders!
+      end
+
+      # We would like to sync a local folder to the instance so we can
+      # take advantage of the packages that we might have in cache,
+      # therefore we wont download a package we already have
+      def add_extra_synced_folders!
+        if cache_directory
+          FileUtils.mkdir_p(local_kitchen_cache)
+          config[:synced_folders].push([
+            local_kitchen_cache,
+            cache_directory,
+            "create: true"
+          ])
+        end
       end
 
       # Truncates the length of `:vm_hostname` to 12 characters for
@@ -387,6 +409,12 @@ module Kitchen
         state[:ssh_key] = hash["IdentityFile"] if hash["IdentityFile"]
         state[:proxy_command] = hash["ProxyCommand"] if hash["ProxyCommand"]
         state[:rdp_port] = hash["RDPPort"] if hash["RDPPort"]
+      end
+
+      # @return [String] full absolute path to the kitchen cache directory
+      # @api private
+      def local_kitchen_cache
+        @local_kitchen_cache ||= File.expand_path("~/.kitchen/cache")
       end
 
       # @return [String] full local path to the directory containing the
