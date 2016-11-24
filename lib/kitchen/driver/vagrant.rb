@@ -45,6 +45,8 @@ module Kitchen
 
       default_config :box_download_insecure, nil
 
+      default_config :box_download_ca_cert, nil
+
       default_config(:box_url) { |driver| driver.default_box_url }
 
       default_config :box_version, nil
@@ -303,6 +305,9 @@ module Kitchen
       # @raise [ActionFailed] if the Vagrantfile template was not found
       # @api private
       def render_template
+        config[:box_download_ca_cert] = File.expand_path(
+          config[:box_download_ca_cert], config[:kitchen_root]) unless
+            config[:box_download_ca_cert].nil?
         template = File.expand_path(
           config[:vagrantfile_erb], config[:kitchen_root])
 

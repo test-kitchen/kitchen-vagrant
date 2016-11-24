@@ -146,7 +146,7 @@ The default will be computed from the platform name of the instance. However, fo
 
 For example, a platform with a Bento box called "ubuntu-14.04" will produce a
 default `box` value of `"opscode-ubuntu-14.04"`. Alternatively, a box called
-`"slackware-14.1"` will produce a default `box` value of `"slackware-14.1".
+`"slackware-14.1"` will produce a default `box` value of `"slackware-14.1"`.
 
 ### <a name="config-box-check-update"></a> box\_check\_update
 
@@ -158,6 +158,22 @@ A default URL will be computed only for a small number of common/known
 platforms in the [Bento][bento] project. Additionally, a URL will only be
 computed if the Vagrant provider is VirtualBox or is VMware based (these are
 the only providers with downloadable base boxes).
+
+### <a name="config-box-download-ca-cert"></a> box\_download\_ca\_cert
+
+Path relative to the `.kitchen.yml` file for locating the trusted CA bundle.
+Useful when combined with `box_url`.
+
+The default is `nil`, indicating to use the default Mozilla CA cert bundle.
+See also `box_download_insecure`.
+
+### <a name="config-box-download-insecure"></a> box\_download\_insecure
+
+If true, then SSL certificates from the server will
+not be verified.
+
+The default is `false`, meaning if the URL is an HTTPS URL,
+then SSL certs will be verified.
 
 ### <a name="config-box-version"></a> box\_version
 
