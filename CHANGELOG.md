@@ -1,3 +1,19 @@
+## [0.21.0](https://github.com/test-kitchen/kitchen-vagrant/tree/0.21.0) (2016-11-29)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.20.0...0.21.0)
+
+**Fixed bugs:**
+
+- Generated Vagrantfile has type issues [\#236](https://github.com/test-kitchen/kitchen-vagrant/issues/236)
+- Fix ssh boolean values in Vagrantfile template [\#231](https://github.com/test-kitchen/kitchen-vagrant/pull/231) ([zuazo](https://github.com/zuazo))
+
+**Merged pull requests:**
+
+- Add a synced folder to persist chef omnibus packages [\#248](https://github.com/test-kitchen/kitchen-vagrant/pull/248) ([afiune](https://github.com/afiune))
+- Fix generated Vagrantfile type issues [\#243](https://github.com/test-kitchen/kitchen-vagrant/pull/243) ([OBrienCommaJosh](https://github.com/OBrienCommaJosh))
+- Bump travis rubies to the modern age [\#242](https://github.com/test-kitchen/kitchen-vagrant/pull/242) ([mwrock](https://github.com/mwrock))
+- Fix the name of "Parallels Desktop for Mac" [\#233](https://github.com/test-kitchen/kitchen-vagrant/pull/233) ([legal90](https://github.com/legal90))
+- Add support for ovirt3 vagrant provider [\#223](https://github.com/test-kitchen/kitchen-vagrant/pull/223) ([xiboy](https://github.com/xiboy))
+
 ## [0.20.0](https://github.com/test-kitchen/kitchen-vagrant/tree/v0.20.0) (2016-04-07)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.19.0...v0.20.0)
 
