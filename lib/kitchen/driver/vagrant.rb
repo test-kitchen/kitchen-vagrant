@@ -84,6 +84,10 @@ module Kitchen
         driver.windows_os? ? nil : driver.instance.name
       end
 
+      default_config(:cache_directory) do |driver|
+        driver.windows_os? ? "C:\\omnibus\\cache" : "/tmp/omnibus/cache"
+      end
+
       no_parallel_for :create, :destroy
 
       # Creates a Vagrant VM instance.
@@ -173,7 +177,7 @@ module Kitchen
       # and share a local folder to that directory so that we don't pull them
       # down every single time
       def cache_directory
-        windows_os? ? "C:\\omnibus\\cache" : "/tmp/omnibus/cache"
+        config[:cache_directory]
       end
 
       protected
