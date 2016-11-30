@@ -17,7 +17,7 @@
 # limitations under the License.
 
 if ENV["CODECLIMATE_REPO_TOKEN"]
-  require 'simplecov'
+  require "simplecov"
   SimpleCov.start
 elsif ENV["COVERAGE"]
   require "simplecov"
