@@ -394,6 +394,23 @@ Vagrant.configure("2") do |config|
 end
 ```
 
+### <a name="config-cache_directory"></a> cache_directory
+
+Customize the cache directory on the instance. This parameter must be an
+absolute path.
+
+The defaults are:
+* Windows: `C:\\omnibus\\cache`
+* Unix: `/tmp/omnibus/cache`
+
+The example:
+
+```yaml
+---
+driver:
+  cache_directory: Z:\\custom\\cache
+```
+
 ### <a name="config-vagrantfile-erb"></a> vagrantfile\_erb
 
 An alternate Vagrantfile ERB template that will be rendered for use by this
