@@ -1,3 +1,10 @@
+## [0.21.1](https://github.com/test-kitchen/kitchen-vagrant/tree/0.21.1) (2016-11-30)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.21.0...0.21.1)
+
+**Fixed bugs:**
+
+- Fix cache directory on windows [\#251](https://github.com/test-kitchen/kitchen-vagrant/pull/251) ([afiune](https://github.com/afiune))
+
 ## [0.21.0](https://github.com/test-kitchen/kitchen-vagrant/tree/0.21.0) (2016-11-29)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.20.0...0.21.0)
 
