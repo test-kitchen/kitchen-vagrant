@@ -1,5 +1,21 @@
+## [0.21.1](https://github.com/test-kitchen/kitchen-vagrant/tree/0.21.1) (2016-12-05)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.21.0...v0.21.1)
+
+**Implemented enhancements:**
+
+- add oracle as supported bento-box type [\#258](https://github.com/test-kitchen/kitchen-vagrant/pull/258) ([lamont-granquist](https://github.com/lamont-granquist))
+
+**Fixed bugs:**
+
+- Change default cache dir for Windows [\#259](https://github.com/test-kitchen/kitchen-vagrant/pull/259) ([afiune](https://github.com/afiune))
+- Vagrant requires also to scape slashes [\#253](https://github.com/test-kitchen/kitchen-vagrant/pull/253) ([afiune](https://github.com/afiune))
+- Fix cache directory on windows [\#251](https://github.com/test-kitchen/kitchen-vagrant/pull/251) ([afiune](https://github.com/afiune))
+- Exclude freebsd and ability to disable cache dir [\#262](https://github.com/test-kitchen/kitchen-vagrant/pull/262) ([afiune](https://github.com/afiune))
+- Don't alter the path during the bundler cleanup on windows [\#241](https://github.com/test-kitchen/kitchen-vagrant/pull/241) ([mwrock](https://github.com/mwrock))
+- do not map the extra cache drive on non virtualbox windows [\#255](https://github.com/test-kitchen/kitchen-vagrant/pull/255) ([mwrock](https://github.com/mwrock))
+
 ## [0.21.0](https://github.com/test-kitchen/kitchen-vagrant/tree/0.21.0) (2016-11-29)
-[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.20.0...0.21.0)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.20.0...v0.21.0)
 
 **Fixed bugs:**
 
