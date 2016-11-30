@@ -436,7 +436,7 @@ describe Kitchen::Driver::Vagrant do
       let(:win_cache_directory_array) do
         [
           File.expand_path("~/.kitchen/cache"),
-          "$env:TEMP\\omnibus\\cache",
+          "C:\\omnibus\\cache",
           "create: true"
         ]
       end

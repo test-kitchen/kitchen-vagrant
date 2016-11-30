@@ -173,7 +173,7 @@ module Kitchen
       # and share a local folder to that directory so that we don't pull them
       # down every single time
       def cache_directory
-        windows_os? ? "$env:TEMP\\omnibus\\cache" : "/tmp/omnibus/cache"
+        windows_os? ? "C:\\omnibus\\cache" : "/tmp/omnibus/cache"
       end
 
       protected
