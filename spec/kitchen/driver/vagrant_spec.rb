@@ -468,6 +468,34 @@ describe Kitchen::Driver::Vagrant do
         ])
       end
     end
+
+    context "when cache_directory is customized" do
+
+      let(:custom_cache_directory_array) do
+        [
+          File.expand_path("~/.kitchen/cache"),
+          "Z:\\awesome\\cache",
+          "create: true"
+        ]
+      end
+
+      before { config[:cache_directory] = 'Z:\\awesome\\cache' }
+
+      it "sets :synced_folders with the custom cache_directory" do
+        expect(driver[:synced_folders]).to eq([custom_cache_directory_array])
+      end
+
+      it "replaces %{instance_name} with instance name in :synced_folders" do
+        config[:synced_folders] = [
+          ["/root/%{instance_name}", "/vm_path", "stuff"]
+        ]
+
+        expect(driver[:synced_folders]).to eq([
+          [File.expand_path("/root/suitey-fooos-99"), "/vm_path", "stuff"],
+          custom_cache_directory_array
+        ])
+      end
+    end
   end
 
   describe "#verify_dependencies" do
