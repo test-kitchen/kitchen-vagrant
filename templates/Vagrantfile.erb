@@ -72,7 +72,7 @@ Vagrant.configure("2") do |c|
 
   c.vm.synced_folder ".", "/vagrant", disabled: true
 <% config[:synced_folders].each do |source, destination, options| %>
-  c.vm.synced_folder "<%= source %>", "<%= destination %>", <%= options %>
+  c.vm.synced_folder <%= source.inspect %>, <%= destination.inspect %>, <%= options %>
 <% end %>
 
   c.vm.provider :<%= config[:provider] %> do |p|
