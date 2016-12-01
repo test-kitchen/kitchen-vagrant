@@ -177,6 +177,7 @@ module Kitchen
       # and share a local folder to that directory so that we don't pull them
       # down every single time
       def cache_directory
+        return if windows_host? && config[:provider] != "virtualbox"
         config[:cache_directory]
       end
 
