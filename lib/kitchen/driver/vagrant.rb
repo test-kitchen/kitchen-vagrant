@@ -205,7 +205,7 @@ module Kitchen
       #   box
       # @api private
       def bento_box?(name)
-        name =~ /^(centos|debian|fedora|freebsd|opensuse|ubuntu)-/
+        name =~ /^(centos|debian|fedora|freebsd|opensuse|ubuntu|oracle)-/
       end
 
       # Renders and writes out a Vagrantfile dedicated to this instance.
