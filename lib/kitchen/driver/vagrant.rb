@@ -341,6 +341,7 @@ module Kitchen
       # will inherit our bundled environment.
       # @see https://github.com/test-kitchen/kitchen-vagrant/issues/190
       # @see Kitchen::ShellOut#run_command
+      # rubocop:disable Metrics/CyclomaticComplexity
       def run_command(cmd, options = {})
         merged = {
           :use_sudo => config[:use_sudo],
@@ -359,15 +360,27 @@ module Kitchen
            RUBYOPT _ORIGINAL_GEM_PATH].each do |var|
           env[var] = nil
         end
-        gem_home = ENV["GEM_HOME"]
-        if gem_home && (env["PATH"] || ENV["PATH"])
-          env["PATH"] ||= ENV["PATH"].dup if ENV["PATH"]
-          gem_bin = File.join(gem_home, "bin") + File::PATH_SEPARATOR
-          env["PATH"][gem_bin] = "" if env["PATH"].include?(gem_bin)
+
+        # Altering the path seems to break vagrant. When the :environment
+        # is passed to a windows process with a PATH, Vagrant's batch installer
+        # (https://github.com/mitchellh/vagrant-installers/blob/master/substrate
+        # /modules/vagrant_installer/templates/windows_vagrant.bat.erb)
+        # does not efectively prepend the vagrant ruby path in a persistent
+        # manner which causes vagrant to use the same ruby as test-kitchen and
+        # then the environment is essentially corrupted leading to many errors
+        # and dispair
+        unless windows_host?
+          gem_home = ENV["GEM_HOME"]
+          if gem_home && (env["PATH"] || ENV["PATH"])
+            env["PATH"] ||= ENV["PATH"].dup if ENV["PATH"]
+            gem_bin = File.join(gem_home, "bin") + File::PATH_SEPARATOR
+            env["PATH"][gem_bin] = "" if env["PATH"].include?(gem_bin)
+          end
         end
 
         super(cmd, merged)
       end
+      # rubocop:enable Metrics/CyclomaticComplexity
 
       # Runs a local command before `vagrant up` has been called.
       #
@@ -475,6 +488,13 @@ module Kitchen
             "Please install this plugin with: " \
             "`vagrant plugin install vagrant-winrm' and try again."
         end
+      end
+
+      # @return [true,false] whether or not the host is windows
+      #
+      # @api private
+      def windows_host?
+        RbConfig::CONFIG["host_os"] =~ /mswin|mingw/
       end
 
       # @return [true,false] whether or not the vagrant-winrm plugin is
