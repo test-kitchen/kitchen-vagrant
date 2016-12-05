@@ -85,7 +85,7 @@ module Kitchen
       end
 
       default_config(:cache_directory) do |driver|
-        driver.windows_os? ? "C:\\omnibus\\cache" : "/tmp/omnibus/cache"
+        driver.windows_os? ? "/omnibus/cache" : "/tmp/omnibus/cache"
       end
 
       no_parallel_for :create, :destroy
