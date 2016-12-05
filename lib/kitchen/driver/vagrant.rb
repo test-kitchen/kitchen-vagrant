@@ -177,7 +177,7 @@ module Kitchen
       # and share a local folder to that directory so that we don't pull them
       # down every single time
       def cache_directory
-        return if windows_host? && config[:provider] != "virtualbox"
+        return if disable_cache?
         config[:cache_directory]
       end
 
@@ -207,6 +207,22 @@ module Kitchen
       # @api private
       def bento_box?(name)
         name =~ /^(centos|debian|fedora|freebsd|opensuse|ubuntu|oracle)-/
+      end
+
+      # Return true if we found the criteria to disable the cache_directory
+      # functionality
+      def disable_cache?
+        # Disable for Windows not using Virtualbox
+        if windows_host? && config[:provider] != "virtualbox" ||
+            # Disable for FreeBSD
+            instance.platform.name == "freebsd" ||
+            # Disable if cache_directory is set to "false" on .kitchen.yml
+            !config[:cache_directory]
+          return true
+        end
+
+        # Otherwise
+        false
       end
 
       # Renders and writes out a Vagrantfile dedicated to this instance.

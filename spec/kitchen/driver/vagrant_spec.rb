@@ -157,7 +157,7 @@ describe Kitchen::Driver::Vagrant do
       ]
     end
 
-    %W[centos debian fedora opensuse ubuntu].each do |name|
+    %W[centos debian fedora opensuse ubuntu oracle freebsd].each do |name|
 
       context "for known bento platform names starting with #{name}" do
 
@@ -334,6 +334,11 @@ describe Kitchen::Driver::Vagrant do
       allow(RbConfig::CONFIG).to receive(:[]).with("host_os").
         and_return("mingw")
       config[:provider] = "notvbox"
+      expect(driver[:synced_folders]).to eq([])
+    end
+
+    it "does not set :synced_folders to cache_directory on freebsd systems" do
+      allow(platform).to receive(:name).and_return("freebsd")
       expect(driver[:synced_folders]).to eq([])
     end
 
