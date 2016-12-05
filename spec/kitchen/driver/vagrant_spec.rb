@@ -136,6 +136,8 @@ describe Kitchen::Driver::Vagrant do
       end
 
       it "fixes path if it notices gem_home in it" do
+        allow(RbConfig::CONFIG).to receive(:[]).with("host_os").
+          and_return("linux")
         env.merge!(bundler_env)
         env["PATH"] = "gem_home/bin#{File::PATH_SEPARATOR}/something/else"
         options = driver.send(:run_command, "cmd")
@@ -326,6 +328,13 @@ describe Kitchen::Driver::Vagrant do
 
     it "sets :synced_folders with the cache_directory by default" do
       expect(driver[:synced_folders]).to eq([cache_directory_array])
+    end
+
+    it "does not set :synced_folders to cache_directory on windows/non-vbox" do
+      allow(RbConfig::CONFIG).to receive(:[]).with("host_os").
+        and_return("mingw")
+      config[:provider] = "notvbox"
+      expect(driver[:synced_folders]).to eq([])
     end
 
     it "sets :synced_folders to a custom value" do
