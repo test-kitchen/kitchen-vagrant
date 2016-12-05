@@ -1216,6 +1216,19 @@ describe Kitchen::Driver::Vagrant do
       RUBY
     end
 
+    it "vm.synced_folder scapes the back slashes for Windows paths" do
+      config[:synced_folders] = [
+        ["/a/b", "C:\\opt\\instance_data", "nil"],
+        ["Z:\\host_path", "/vm_path", "create: true"]
+      ]
+      cmd
+
+      expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {6}/, "").chomp))
+        c.vm.synced_folder "/a/b", "C:\\\\opt\\\\instance_data", nil
+        c.vm.synced_folder "Z:\\\\host_path", "/vm_path", create: true
+      RUBY
+    end
+
     context "for virtualbox provider" do
 
       before { config[:provider] = "virtualbox" }
