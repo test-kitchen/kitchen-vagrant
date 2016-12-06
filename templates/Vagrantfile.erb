@@ -129,7 +129,21 @@ Vagrant.configure("2") do |c|
     p.<%= key %> = "<%= value %>"
     <% end %>
   <% when "virtualbox" %>
+    <% if key == :createhd %>
+    p.customize ["createhd", "--filename", "<%= value[:filename] %>", "--size", <%= value[:size] %>]
+    <% elsif key == :storageattach %>
+      <% options = [] %>
+      <% value.each do |storageattach_option_key, storageattach_option_value|
+           if storageattach_option_value.instance_of? Fixnum
+             options << "'--#{storageattach_option_key}', #{storageattach_option_value}"
+           else
+             options << "'--#{storageattach_option_key}', '#{storageattach_option_value}'"
+           end
+         end %>
+    p.customize ["storageattach", :id, <%= options.join(',') %> ]
+    <% else %>
     p.customize ["modifyvm", :id, "--<%= key %>", "<%= value %>"]
+    <% end %>
   <% when /^vmware_/ %>
     <% if key == :memory %>
       <% unless config[:customize].include?(:memsize) %>
