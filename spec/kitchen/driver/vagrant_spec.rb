@@ -18,6 +18,8 @@
 
 require_relative "../../spec_helper"
 
+require "zlib"
+
 require "logger"
 require "stringio"
 
@@ -286,7 +288,7 @@ describe Kitchen::Driver::Vagrant do
       config[:pre_create_command] = "{{vagrant_root}}/candy"
 
       expect(driver[:pre_create_command]).to eq(
-        "/kroot/.kitchen/kitchen-vagrant/kitchen-kroot-suitey-fooos-99/candy"
+        "/kroot/.kitchen/kitchen-vagrant/kitchen-017YDE1N-suitey-fooos-99/candy"
       )
     end
 
@@ -608,7 +610,8 @@ describe Kitchen::Driver::Vagrant do
     let(:vagrant_root) do
       File.join(%W[
         #{@dir} .kitchen kitchen-vagrant
-        kitchen-#{File.basename(@dir)}-suitey-fooos-99
+        kitchen-#{Zlib.crc32(@dir).to_s(36).upcase.
+            rjust(8, "0")}-suitey-fooos-99
       ])
     end
 
@@ -840,7 +843,8 @@ describe Kitchen::Driver::Vagrant do
     let(:vagrant_root) do
       File.join(%W[
         #{@dir} .kitchen kitchen-vagrant
-        kitchen-#{File.basename(@dir)}-suitey-fooos-99
+        kitchen-#{Zlib.crc32(@dir).to_s(36).upcase.
+            rjust(8, "0")}-suitey-fooos-99
       ])
     end
 
@@ -930,7 +934,8 @@ describe Kitchen::Driver::Vagrant do
     let(:vagrant_root) do
       File.join(%W[
         #{@dir} .kitchen kitchen-vagrant
-        kitchen-#{File.basename(@dir)}-suitey-fooos-99
+        kitchen-#{Zlib.crc32(@dir).to_s(36).upcase.
+            rjust(8, "0")}-suitey-fooos-99
       ])
     end
 
