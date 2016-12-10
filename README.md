@@ -223,6 +223,42 @@ end
 Please read the "Customizations" sections for [VirtualBox][vagrant_config_vbox]
 and [VMware][vagrant_config_vmware] for more details.
 
+#### <a name="config-customize-virtualbox-disk"></a> VirtualBox additional disk
+
+Adding the `createhd` and `storageattach` keys in `customize` allows for creation
+of an additional disk in VirtualBox.
+
+```yaml
+driver:
+  customize:
+    createhd:
+      filename: ./tmp/disk1.vmdk
+      size: 1024
+    storageattach:
+      storagectl: IDE Controller
+      port: 1
+      device: 0
+      type: hdd
+      medium: ./tmp/disk1.vmdk
+```
+
+will generate a Vagrantfile configuration similar to:
+
+```ruby
+Vagrant.configure("2") do |config|
+  # ...
+
+  config.vm.provider :virtualbox do |virtualbox|
+    virtualbox.customize ["createhd", "--filename", "./tmp/disk1.vmdk", "--size", 1024]
+    virtualbox.customize ["storageattach", :id, "--storagectl", "IDE Controller", "--port", "1", "device", 0, "--type", "hdd", "--medium", "./tmp/disk1.vmdk"]
+  end
+end
+```
+
+Please read [createhd](https://www.virtualbox.org/manual/ch08.html#vboxmanage-createvdi)
+and [storageattach](https://www.virtualbox.org/manual/ch08.html#vboxmanage-storageattach)
+for additional information on these options.
+
 ### <a name="config-guest"></a> guest
 
 **Note:** It should largely be the responsibility of the underlying Vagrant

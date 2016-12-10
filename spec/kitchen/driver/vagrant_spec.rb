@@ -1320,6 +1320,38 @@ describe Kitchen::Driver::Vagrant do
           end
         RUBY
       end
+
+      it "adds a lines for createhd in :customize" do
+        config[:customize] = {
+          :createhd => {
+            :filename => "./d1.vmdk",
+            :size => 10 * 1024
+          }
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :virtualbox do |p|
+            p.customize ["createhd", "--filename", "./d1.vmdk", "--size", 10240]
+          end
+        RUBY
+      end
+
+      it "adds a lines for storageattach in :customize" do
+        config[:customize] = {
+          :storageattach => {
+            :type => "hdd",
+            :port => 1
+          }
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :virtualbox do |p|
+            p.customize ["storageattach", :id, "--type", "hdd", "--port", 1]
+          end
+        RUBY
+      end
     end
 
     context "for parallels provider" do
