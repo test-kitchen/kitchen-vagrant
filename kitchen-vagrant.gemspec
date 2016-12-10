@@ -22,7 +22,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency "test-kitchen", "~> 1.4"
 
   gem.add_development_dependency "countloc",  "~> 0.4"
-  gem.add_development_dependency "rake"
+  gem.add_development_dependency "rake",      "~> 11.3"
   gem.add_development_dependency "rspec",     "~> 3.2"
   gem.add_development_dependency "simplecov", "~> 0.9"
   gem.add_development_dependency "github_changelog_generator", "1.11.3"
