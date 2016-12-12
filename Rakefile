@@ -17,7 +17,7 @@ Cane::RakeTask.new do |cane|
   cane.canefile = "./.cane"
 end
 
-require "finstyle"
+require "chefstyle"
 require "rubocop/rake_task"
 RuboCop::RakeTask.new(:style) do |task|
   task.options << "--display-cop-names"
@@ -42,5 +42,5 @@ GitHubChangelogGenerator::RakeTask.new :changelog do |config|
   config.future_release = Kitchen::Driver::VAGRANT_VERSION
   config.enhancement_labels = "enhancement,Enhancement,New Feature,Feature,Improvement".split(",")
   config.bug_labels = "bug,Bug".split(",")
-  config.exclude_labels = %w[Duplicate Question Discussion No_Changelog]
+  config.exclude_labels = %w{Duplicate Question Discussion No_Changelog}
 end

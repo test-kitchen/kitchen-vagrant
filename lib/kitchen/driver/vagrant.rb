@@ -273,7 +273,7 @@ module Kitchen
                 config[:kitchen_root]
               ),
               destination.gsub("%{instance_name}", instance.name),
-              options || "nil"
+              options || "nil",
             ]
           end
         add_extra_synced_folders!
@@ -288,7 +288,7 @@ module Kitchen
           config[:synced_folders].push([
             local_kitchen_cache,
             cache_directory,
-            "create: true"
+            "create: true",
           ])
         end
       end
@@ -363,7 +363,7 @@ module Kitchen
         merged = {
           :use_sudo => config[:use_sudo],
           :log_subject => name,
-          :environment => {}
+          :environment => {},
         }.merge(options)
 
         # Attempt to extract bundler and associated GEM related values.
@@ -373,8 +373,8 @@ module Kitchen
         # "A Hard Problem"(TM), we simply blow away all known bundler
         # related changes.
         env = merged[:environment]
-        %w[BUNDLE_BIN_PATH BUNDLE_GEMFILE GEM_HOME GEM_PATH GEM_ROOT RUBYLIB
-           RUBYOPT _ORIGINAL_GEM_PATH].each do |var|
+        %w{BUNDLE_BIN_PATH BUNDLE_GEMFILE GEM_HOME GEM_PATH GEM_ROOT RUBYLIB
+           RUBYOPT _ORIGINAL_GEM_PATH}.each do |var|
           env[var] = nil
         end
 
@@ -456,7 +456,7 @@ module Kitchen
       # @api private
       def vagrant_root
         @vagrant_root ||= instance.nil? ? nil : File.join(
-          config[:kitchen_root], %w[.kitchen kitchen-vagrant],
+          config[:kitchen_root], %w{.kitchen kitchen-vagrant},
           "kitchen-#{File.basename(config[:kitchen_root])}-#{instance.name}"
         )
       end
@@ -470,7 +470,7 @@ module Kitchen
         lines = run_silently("#{config[:vagrant_binary]} #{type}-config").
           split("\n").map do |line|
           tokens = line.strip.partition(" ")
-          [tokens.first, tokens.last.gsub(/"/, "")]
+          [tokens.first, tokens.last.delete('"')]
         end
         Hash[lines]
       end
