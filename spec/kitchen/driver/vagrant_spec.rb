@@ -122,7 +122,7 @@ describe Kitchen::Driver::Vagrant do
           "GEM_ROOT" => "gem_root",
           "RUBYLIB" => "ruby_lib",
           "RUBYOPT" => "ruby_opt",
-          "_ORIGINAL_GEM_PATH" => "original_gem_path"
+          "_ORIGINAL_GEM_PATH" => "original_gem_path",
         }
       end
 
@@ -153,11 +153,11 @@ describe Kitchen::Driver::Vagrant do
       [
         File.expand_path("~/.kitchen/cache"),
         "/tmp/omnibus/cache",
-        "create: true"
+        "create: true",
       ]
     end
 
-    %W[centos debian fedora opensuse ubuntu oracle freebsd].each do |name|
+    %w{centos debian fedora opensuse ubuntu oracle freebsd}.each do |name|
 
       context "for known bento platform names starting with #{name}" do
 
@@ -264,11 +264,11 @@ describe Kitchen::Driver::Vagrant do
 
     it "sets :network to a custom value" do
       config[:network] = [
-        ["forwarded_port", :guest => 80, :host => 8080]
+        ["forwarded_port", :guest => 80, :host => 8080],
       ]
 
       expect(driver[:network]).to eq([
-        ["forwarded_port", :guest => 80, :host => 8080]
+        ["forwarded_port", :guest => 80, :host => 8080],
       ])
     end
 
@@ -344,7 +344,7 @@ describe Kitchen::Driver::Vagrant do
 
     it "sets :synced_folders to a custom value" do
       config[:synced_folders] = [
-        ["/host_path", "/vm_path", "create: true, type: :nfs"]
+        ["/host_path", "/vm_path", "create: true, type: :nfs"],
       ]
 
       expect(driver[:synced_folders]).to eq([
@@ -352,40 +352,40 @@ describe Kitchen::Driver::Vagrant do
           File.expand_path("/host_path"),
           "/vm_path", "create: true, type: :nfs"
         ],
-        cache_directory_array
+        cache_directory_array,
       ])
     end
 
     it "replaces %{instance_name} with instance name in :synced_folders" do
       config[:synced_folders] = [
-        ["/root/%{instance_name}", "/vm_path", "stuff"]
+        ["/root/%{instance_name}", "/vm_path", "stuff"],
       ]
 
       expect(driver[:synced_folders]).to eq([
         [File.expand_path("/root/suitey-fooos-99"), "/vm_path", "stuff"],
-        cache_directory_array
+        cache_directory_array,
       ])
     end
 
     it "expands source paths relative to :kitchen_root in :synced_folders" do
       config[:synced_folders] = [
-        ["./a", "/vm_path", "stuff"]
+        ["./a", "/vm_path", "stuff"],
       ]
 
       expect(driver[:synced_folders]).to eq([
         [File.expand_path("/kroot/a"), "/vm_path", "stuff"],
-        cache_directory_array
+        cache_directory_array,
       ])
     end
 
     it "sets options to 'nil' if not set in :synced_folders entry" do
       config[:synced_folders] = [
-        ["/host_path", "/vm_path", nil]
+        ["/host_path", "/vm_path", nil],
       ]
 
       expect(driver[:synced_folders]).to eq([
         [File.expand_path("/host_path"), "/vm_path", "nil"],
-        cache_directory_array
+        cache_directory_array,
       ])
     end
 
@@ -423,10 +423,10 @@ describe Kitchen::Driver::Vagrant do
     end
 
     it "sets and expands paths in :vagrantfiles" do
-      config[:vagrantfiles] = %W[one two three]
+      config[:vagrantfiles] = %w{one two three}
 
       expect(driver[:vagrantfiles]).to eq(
-        %W[/kroot/one /kroot/two /kroot/three].map { |f| File.expand_path(f) }
+        %w{/kroot/one /kroot/two /kroot/three}.map { |f| File.expand_path(f) }
       )
     end
 
@@ -451,7 +451,7 @@ describe Kitchen::Driver::Vagrant do
         [
           File.expand_path("~/.kitchen/cache"),
           "/omnibus/cache",
-          "create: true"
+          "create: true",
         ]
       end
 
@@ -473,12 +473,12 @@ describe Kitchen::Driver::Vagrant do
 
       it "replaces %{instance_name} with instance name in :synced_folders" do
         config[:synced_folders] = [
-          ["/root/%{instance_name}", "/vm_path", "stuff"]
+          ["/root/%{instance_name}", "/vm_path", "stuff"],
         ]
 
         expect(driver[:synced_folders]).to eq([
           [File.expand_path("/root/suitey-fooos-99"), "/vm_path", "stuff"],
-          win_cache_directory_array
+          win_cache_directory_array,
         ])
       end
     end
@@ -489,7 +489,7 @@ describe Kitchen::Driver::Vagrant do
         [
           File.expand_path("~/.kitchen/cache"),
           "Z:\\awesome\\cache",
-          "create: true"
+          "create: true",
         ]
       end
 
@@ -501,12 +501,12 @@ describe Kitchen::Driver::Vagrant do
 
       it "replaces %{instance_name} with instance name in :synced_folders" do
         config[:synced_folders] = [
-          ["/root/%{instance_name}", "/vm_path", "stuff"]
+          ["/root/%{instance_name}", "/vm_path", "stuff"],
         ]
 
         expect(driver[:synced_folders]).to eq([
           [File.expand_path("/root/suitey-fooos-99"), "/vm_path", "stuff"],
-          custom_cache_directory_array
+          custom_cache_directory_array,
         ])
       end
     end
@@ -606,10 +606,10 @@ describe Kitchen::Driver::Vagrant do
     let(:cmd) { driver.create(state) }
 
     let(:vagrant_root) do
-      File.join(%W[
+      File.join(%W{
         #{@dir} .kitchen kitchen-vagrant
         kitchen-#{File.basename(@dir)}-suitey-fooos-99
-      ])
+      })
     end
 
     before do
@@ -838,10 +838,10 @@ describe Kitchen::Driver::Vagrant do
     let(:cmd) { driver.destroy(state) }
 
     let(:vagrant_root) do
-      File.join(%W[
+      File.join(%W{
         #{@dir} .kitchen kitchen-vagrant
         kitchen-#{File.basename(@dir)}-suitey-fooos-99
-      ])
+      })
     end
 
     before do
@@ -928,10 +928,10 @@ describe Kitchen::Driver::Vagrant do
     let(:cmd) { driver.create(state) }
 
     let(:vagrant_root) do
-      File.join(%W[
+      File.join(%W{
         #{@dir} .kitchen kitchen-vagrant
         kitchen-#{File.basename(@dir)}-suitey-fooos-99
-      ])
+      })
     end
 
     before do
@@ -993,7 +993,7 @@ describe Kitchen::Driver::Vagrant do
     end
 
     it "requires each entry in :vagranfiles" do
-      config[:vagrantfiles] = %W[/a /b /c]
+      config[:vagrantfiles] = %w{/a /b /c}
       cmd
 
       expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
@@ -1192,7 +1192,7 @@ describe Kitchen::Driver::Vagrant do
         :username => %{jdoe},
         :password => %{secret},
         :private_key_path => %{/key},
-        :insert_key => false
+        :insert_key => false,
       }
       cmd
 
@@ -1207,7 +1207,7 @@ describe Kitchen::Driver::Vagrant do
     it "adds a vm.network line for each element in :network" do
       config[:network] = [
         ["forwarded_port", { :guest => 80, :host => 8080 }],
-        ["private_network", { :ip => "192.168.33.33" }]
+        ["private_network", { :ip => "192.168.33.33" }],
       ]
       cmd
 
@@ -1220,7 +1220,7 @@ describe Kitchen::Driver::Vagrant do
     it "adds a vm.synced_folder line for each element in :synced_folders" do
       config[:synced_folders] = [
         ["/a/b", "/opt/instance_data", "nil"],
-        ["/host_path", "/vm_path", "create: true, type: :nfs"]
+        ["/host_path", "/vm_path", "create: true, type: :nfs"],
       ]
       cmd
 
@@ -1233,7 +1233,7 @@ describe Kitchen::Driver::Vagrant do
     it "vm.synced_folder scapes the back slashes for Windows paths" do
       config[:synced_folders] = [
         ["/a/b", "C:\\opt\\instance_data", "nil"],
-        ["Z:\\host_path", "/vm_path", "create: true"]
+        ["Z:\\host_path", "/vm_path", "create: true"],
       ]
       cmd
 
@@ -1250,7 +1250,7 @@ describe Kitchen::Driver::Vagrant do
       it "adds a line for each element in :customize" do
         config[:customize] = {
           :a_key => "some value",
-          :something => "else"
+          :something => "else",
         }
         cmd
 
@@ -1325,8 +1325,8 @@ describe Kitchen::Driver::Vagrant do
         config[:customize] = {
           :createhd => {
             :filename => "./d1.vmdk",
-            :size => 10 * 1024
-          }
+            :size => 10 * 1024,
+          },
         }
         cmd
 
@@ -1341,8 +1341,8 @@ describe Kitchen::Driver::Vagrant do
         config[:customize] = {
           :storageattach => {
             :type => "hdd",
-            :port => 1
-          }
+            :port => 1,
+          },
         }
         cmd
 
@@ -1361,7 +1361,7 @@ describe Kitchen::Driver::Vagrant do
       it "adds a line for each element in :customize" do
         config[:customize] = {
           :a_key => "some value",
-          :something => "else"
+          :something => "else",
         }
         cmd
 
@@ -1376,7 +1376,7 @@ describe Kitchen::Driver::Vagrant do
       it "adds a short form of :memory and :cpus elements in :customize" do
         config[:customize] = {
           :memory => 2048,
-          :cpus => 4
+          :cpus => 4,
         }
         cmd
 
@@ -1426,7 +1426,7 @@ describe Kitchen::Driver::Vagrant do
       it "adds a line for each element in :customize" do
         config[:customize] = {
           :a_key => "some value",
-          :something => "else"
+          :something => "else",
         }
         cmd
 
@@ -1447,8 +1447,8 @@ describe Kitchen::Driver::Vagrant do
         config[:customize] = {
           :disk_capacity => {
             :"0" => 25,
-            :"2" => 100
-          }
+            :"2" => 100,
+          },
         }
         cmd
 
@@ -1462,7 +1462,7 @@ describe Kitchen::Driver::Vagrant do
       it "adds a line for each element in :customize" do
         config[:customize] = {
           :a_key => "some value",
-          :something => "else"
+          :something => "else",
         }
         cmd
 
@@ -1483,7 +1483,7 @@ describe Kitchen::Driver::Vagrant do
         config[:customize] = {
           :a_key => "some value",
           :something => "else",
-          :a_number_key => 1024
+          :a_number_key => 1024,
         }
         cmd
 
@@ -1503,7 +1503,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "sets container_name to :machine if set" do
         config[:customize] = {
-          :container_name => ":machine"
+          :container_name => ":machine",
         }
         cmd
 
@@ -1516,7 +1516,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "sets container_name to another value in quotes if set" do
         config[:customize] = {
-          :container_name => "beans"
+          :container_name => "beans",
         }
         cmd
 
@@ -1529,7 +1529,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "sets backingstore if set" do
         config[:customize] = {
-          :backingstore => "lvm"
+          :backingstore => "lvm",
         }
         cmd
 
@@ -1544,8 +1544,8 @@ describe Kitchen::Driver::Vagrant do
         config[:customize] = {
           :backingstore_options => {
             :vgname => "schroots",
-            :fstype => "xfs"
-          }
+            :fstype => "xfs",
+          },
         }
         cmd
 
@@ -1560,7 +1560,7 @@ describe Kitchen::Driver::Vagrant do
       it "sets all other options to customize lines" do
         config[:customize] = {
           :cookies => "cream",
-          :salt => "vinegar"
+          :salt => "vinegar",
         }
         cmd
 
@@ -1609,7 +1609,7 @@ describe Kitchen::Driver::Vagrant do
       it "adds a line for each element in :customize" do
         config[:customize] = {
           :a_key => "some value",
-          :something => "else"
+          :something => "else",
         }
         cmd
 
@@ -1623,7 +1623,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "converts :memory into :memsize" do
         config[:customize] = {
-          :memory => "222"
+          :memory => "222",
         }
         cmd
 
@@ -1637,7 +1637,7 @@ describe Kitchen::Driver::Vagrant do
       it "skips :memory if key :memsize exists" do
         config[:customize] = {
           :memory => "222",
-          :memsize => "444"
+          :memsize => "444",
         }
         cmd
 
@@ -1650,7 +1650,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "converts :cpus into :numvcpus" do
         config[:customize] = {
-          :cpus => "2"
+          :cpus => "2",
         }
         cmd
 
@@ -1664,7 +1664,7 @@ describe Kitchen::Driver::Vagrant do
       it "skips :cpus if key :numvcpus exists" do
         config[:customize] = {
           :cpus => "2",
-          :numvcpus => "4"
+          :numvcpus => "4",
         }
         cmd
 
@@ -1682,7 +1682,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds a line a server" do
         config[:customize] = {
-          :server => "my_server"
+          :server => "my_server",
         }
         cmd
 
@@ -1696,7 +1696,7 @@ describe Kitchen::Driver::Vagrant do
       it "ignores all other key types than server" do
         config[:customize] = {
           :other => "stuff",
-          :is => "ignored"
+          :is => "ignored",
         }
         cmd
 
@@ -1715,7 +1715,7 @@ describe Kitchen::Driver::Vagrant do
         config[:customize] = {
           :key1 => "some string value",
           :key2 => 22,
-          :key3 => false
+          :key3 => false,
         }
         cmd
 
@@ -1736,7 +1736,7 @@ describe Kitchen::Driver::Vagrant do
       it "adds a line for each element in :customize" do
         config[:customize] = {
           :a_key => "some value",
-          :something => "else"
+          :something => "else",
         }
         cmd
 
@@ -1756,16 +1756,16 @@ describe Kitchen::Driver::Vagrant do
               :cidrlist  => "B.B.B.B/24",
               :protocol  => "tcp",
               :startport => 2222,
-              :endport   => 2222
+              :endport   => 2222,
             },
             {
               :ipaddress => "C.C.C.C",
               :cidrlist  => "D.D.D.D/32",
               :protocol  => "tcp",
               :startport => 80,
-              :endport   => 81
-            }
-          ]
+              :endport   => 81,
+            },
+          ],
         }
         cmd
 
@@ -1784,7 +1784,7 @@ describe Kitchen::Driver::Vagrant do
       it "builds an array for security group ids in :customize" do
         config[:customize] = {
           :security_group_ids => ["aaaa-bbbb-cccc-dddd",
-                                  "1111-2222-3333-4444"]
+                                  "1111-2222-3333-4444"],
         }
         cmd
 
@@ -1800,8 +1800,8 @@ describe Kitchen::Driver::Vagrant do
 
       it "builds an array for security group names in :customize" do
         config[:customize] = {
-          :security_group_names => %w[min_fantastiska_security_group
-                                      another_security_group]
+          :security_group_names => %w{min_fantastiska_security_group
+                                      another_security_group},
         }
         cmd
 
@@ -1827,18 +1827,18 @@ describe Kitchen::Driver::Vagrant do
                   :protocol => "TCP",
                   :startport => 22,
                   :endport => 22,
-                  :cidrlist => "0.0.0.0/0"
+                  :cidrlist => "0.0.0.0/0",
                 },
                 {
                   :type => "egress",
                   :protocol => "TCP",
                   :startport => 81,
                   :endport => 82,
-                  :cidrlist => "1.2.3.4/24"
-                }
-              ]
-            }
-          ]
+                  :cidrlist => "1.2.3.4/24",
+                },
+              ],
+            },
+          ],
         }
         cmd
 
@@ -1858,7 +1858,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "builds an array of hashes for static nat in :customize" do
         config[:customize] = {
-          :static_nat => [{ :idaddress => "A.A.A.A" }]
+          :static_nat => [{ :idaddress => "A.A.A.A" }],
         }
         cmd
 
@@ -1877,16 +1877,16 @@ describe Kitchen::Driver::Vagrant do
               :protocol => "tcp",
               :publicport => 22,
               :privateport => 22,
-              :openfirewall => false
+              :openfirewall => false,
             },
             {
               :ipaddress => "X.X.X.X",
               :protocol => "tcp",
               :publicport => 80,
               :privateport => 80,
-              :openfirewall => false
-            }
-          ]
+              :openfirewall => false,
+            },
+          ],
         }
         cmd
 

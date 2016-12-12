@@ -42,5 +42,5 @@ GitHubChangelogGenerator::RakeTask.new :changelog do |config|
   config.future_release = Kitchen::Driver::VAGRANT_VERSION
   config.enhancement_labels = "enhancement,Enhancement,New Feature,Feature,Improvement".split(",")
   config.bug_labels = "bug,Bug".split(",")
-  config.exclude_labels = %w[Duplicate Question Discussion No_Changelog]
+  config.exclude_labels = %w{Duplicate Question Discussion No_Changelog}
 end
