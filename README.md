@@ -33,10 +33,10 @@ If you are creating Windows VMs over a WinRM Transport, then the
 [vagrant-winrm][vagrant_winrm] Vagrant plugin must be installed. As a
 consequence, the minimum version of Vagrant required is 1.6 or higher.
 
-### <a name="dependencies-virtualization"></a> Virtualbox, VMware Fusion/Workstation, and/or Parallels
+### <a name="dependencies-virtualization"></a> Virtualization Hypervisor(s)
 
-Currently this driver supports VirtualBox and VMware Fusion/Workstation.
-Virtualbox is free and is the default provider for Vagrant.
+Currently this driver supports Parallels, VirtualBox, and VMware Fusion/Workstation
+hypervisors. VirtualBox is free and is the default provider for Vagrant.
 
 [VirtualBox package][virtualbox_dl]
 
@@ -70,17 +70,9 @@ on [Atlas][atlas] such as:
 ```yaml
 ---
 platforms:
-  - name: ubuntu-12.04
-  - name: ubuntu-14.04
-  - name: centos-5.11
-  - name: centos-6.7
-  - name: centos-7.2
-  - name: debian-7.9
-  - name: debian-8.3
-  - name: fedora-22
-  - name: fedora-23
-  - name: freebsd-9.3
-  - name: freebsd-10.2
+  - name: ubuntu-16.04
+  - name: centos-7.3
+  - name: freebsd-11
 ```
 
 This will effectively generate a configuration similar to:
@@ -88,21 +80,15 @@ This will effectively generate a configuration similar to:
 ```yaml
 ---
 platforms:
-  - name: ubuntu-12.04
+  - name: ubuntu-16.04
     driver:
-      box: bento/ubuntu-12.04
-  - name: ubuntu-14.04
+      box: bento/ubuntu-16.04
+  - name: centos-7.3
     driver:
-      box: bento/ubuntu-14.04
-  - name: centos-5.11
+      box: bento/centos-7.3
+  - name: freebsd-11.0
     driver:
-      box: bento/centos-5.11
-  - name: centos-6.7
-    driver:
-      box: bento/centos-6.7
-  - name: centos-7.2
-    driver:
-      box: bento/centos-7.2
+      box: bento/freebsd-11.0
   # ...
 ```
 
@@ -142,11 +128,13 @@ Many host wide defaults for Vagrant can be set using `$HOME/.vagrant.d/Vagrantfi
 details, please read the Vagrant [machine settings][vagrant_machine_settings]
 page.
 
-The default will be computed from the platform name of the instance. However, for a small number of common/known platforms in the [Bento][bento] project, the default will prepend `"opscode-"` to the start to match the downloadable `box_url` (see below).
+The default will be computed from the platform name of the instance. However, 
+for a number of common platforms in the [Bento][bento] project, the default will 
+prefix the name with `bento/` in accordance with Atlas naming standards.
 
-For example, a platform with a Bento box called "ubuntu-14.04" will produce a
-default `box` value of `"opscode-ubuntu-14.04"`. Alternatively, a box called
-`"slackware-14.1"` will produce a default `box` value of `"slackware-14.1".
+For example, a platform with name `ubuntu-16.04` will produce a
+default `box` value of `bento/ubuntu-16.04`. Alternatively, a box called
+`slackware-14.1` will produce a default `box` value of `slackware-14.1`.
 
 ### <a name="config-box-check-update"></a> box\_check\_update
 
@@ -154,16 +142,18 @@ Whether to check for box updates (enabled by default).
 
 ### <a name="config-box-url"></a> box\_url
 
-A default URL will be computed only for a small number of common/known
-platforms in the [Bento][bento] project. Additionally, a URL will only be
-computed if the Vagrant provider is VirtualBox or is VMware based (these are
-the only providers with downloadable base boxes).
+A box_url is not required when using the Atlas format of 
+`bento/ubuntu-16.04` assuming the organization and box referenced
+exist. If using a custom box this can be an `https://` or `file://`
+URL.
 
 ### <a name="config-box-version"></a> box\_version
 
-The [version][vagrant_versioning] of the configured box.
+The [version][vagrant_versioning] of the configured box. 
 
 The default is `nil`, indicating unset.
+
+This option is only relevant when used with Atlas boxes which support versioning.
 
 ### <a name="config-communicator"></a> communicator
 
@@ -281,7 +271,7 @@ providers.
 ```yaml
 ---
 platforms:
-  - name: ubuntu-14.04
+  - name: ubuntu-16.04
     driver:
       gui: true
 ```
@@ -307,7 +297,7 @@ Allows to use linked clones to import boxes for VirtualBox, VMware and Parallels
 ```yaml
 ---
 platforms:
-  - name: ubuntu-14.04
+  - name: ubuntu-16.04
     driver:
       linked_clone: true
 ```
@@ -512,17 +502,17 @@ example:
 
 ## <a name="authors"></a> Authors
 
-Created and maintained by [Fletcher Nichol][author] (<fnichol@nichol.ca>)
+Created by [Fletcher Nichol][author] (<fnichol@nichol.ca>)
 
 ## <a name="license"></a> License
 
 Apache 2.0 (see [LICENSE][license])
 
 
-[author]:           https://github.com/opscode
-[issues]:           https://github.com/opscode/kitchen-vagrant/issues
-[license]:          https://github.com/opscode/kitchen-vagrant/blob/master/LICENSE
-[repo]:             https://github.com/opscode/kitchen-vagrant
+[author]:           https://github.com/chef
+[issues]:           https://github.com/chef/kitchen-vagrant/issues
+[license]:          https://github.com/chef/kitchen-vagrant/blob/master/LICENSE
+[repo]:             https://github.com/chef/kitchen-vagrant
 [driver_usage]:     http://kitchen.ci/docs/getting-started/adding-platform
 
 [bento]:                    https://github.com/chef/bento
