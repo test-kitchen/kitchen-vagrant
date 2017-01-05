@@ -81,7 +81,7 @@ module Kitchen
       expand_path_for :vagrantfiles
 
       default_config(:vm_hostname) do |driver|
-        driver.windows_os? ? nil : driver.instance.name
+        driver.windows_os? ? nil : "#{driver.instance.name}.vagrantup.com"
       end
 
       default_config(:cache_directory) do |driver|
