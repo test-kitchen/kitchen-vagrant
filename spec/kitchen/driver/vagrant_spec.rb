@@ -955,6 +955,27 @@ describe Kitchen::Driver::Vagrant do
       ))
     end
 
+    it "sets no cache.scope if missing" do
+      config[:cachier] = nil
+      cmd
+
+      expect(vagrantfile).to_not match(regexify(%{c.cache.scope}, :partial))
+    end
+
+    it "sets cache.scope to :box if :cachier is set" do
+      config[:cachier] = true
+      cmd
+
+      expect(vagrantfile).to match(regexify(%{c.cache.scope = :box}))
+    end
+
+    it "sets cache.scope if :cachier is set to a custom value" do
+      config[:cachier] = ":machine"
+      cmd
+
+      expect(vagrantfile).to match(regexify(%{c.cache.scope = :machine}))
+    end
+
     it "sets the vm.box" do
       cmd
 
