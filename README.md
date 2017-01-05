@@ -509,10 +509,10 @@ Created by [Fletcher Nichol][author] (<fnichol@nichol.ca>)
 Apache 2.0 (see [LICENSE][license])
 
 
-[author]:           https://github.com/chef
-[issues]:           https://github.com/chef/kitchen-vagrant/issues
-[license]:          https://github.com/chef/kitchen-vagrant/blob/master/LICENSE
-[repo]:             https://github.com/chef/kitchen-vagrant
+[author]:           https://github.com/test-kitchen
+[issues]:           https://github.com/test-kitchen/kitchen-vagrant/issues
+[license]:          https://github.com/test-kitchen/kitchen-vagrant/blob/master/LICENSE
+[repo]:             https://github.com/test-kitchen/kitchen-vagrant
 [driver_usage]:     http://kitchen.ci/docs/getting-started/adding-platform
 
 [bento]:                    https://github.com/chef/bento
