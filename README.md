@@ -122,6 +122,28 @@ Many host wide defaults for Vagrant can be set using `$HOME/.vagrant.d/Vagrantfi
 
 ## <a name="config"></a> Configuration
 
+### <a name="config-cachier"></a> cachier
+
+Enable and configure scope for [vagrant-cachier][vagrant_cachier] plugin.
+Valid options are `:box` or `:machine`, setting to a truthy value yields `:box`
+
+For example:
+
+```yaml
+---
+driver:
+  cachier: true
+```
+
+will generate a Vagrantfile configuration similar to:
+
+```ruby
+  config.cache.scope = :box
+```
+
+The default is `nil`, indicating unset.
+
+
 ### <a name="config-box"></a> box
 
 **Required** This determines which Vagrant box will be used. For more
@@ -536,3 +558,4 @@ Apache 2.0 (see [LICENSE][license])
 [atlas]:                    https://atlas.hashicorp.com/
 [parallels_dl]:             http://www.parallels.com/products/desktop/download/
 [vagrant_parallels]:        https://github.com/Parallels/vagrant-parallels
+[vagrant_cachier]:        https://github.com/fgrehm/vagrant-cachier
