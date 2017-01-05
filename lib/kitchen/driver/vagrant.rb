@@ -88,6 +88,8 @@ module Kitchen
         driver.windows_os? ? "/omnibus/cache" : "/tmp/omnibus/cache"
       end
 
+      default_config :cachier, nil
+
       no_parallel_for :create, :destroy
 
       # Creates a Vagrant VM instance.
