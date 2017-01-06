@@ -1516,6 +1516,38 @@ describe Kitchen::Driver::Vagrant do
           end
         RUBY
       end
+
+      it "adds a single storage definition in :customize" do
+        config[:customize] = {
+          :storage => ":file, :size => '32G'",
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :libvirt do |p|
+            p.storage :file, :size => '32G'
+          end
+        RUBY
+      end
+
+      it "adds a line for each additional storage definition in :customize" do
+        config[:customize] = {
+          :storage => [
+            ":file, :size => '1G'",
+            ":file, :size => '128G', :bus => 'sata'",
+            ":file, :size => '64G', :bus => 'sata'",
+          ],
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :libvirt do |p|
+            p.storage :file, :size => '1G'
+            p.storage :file, :size => '128G', :bus => 'sata'
+            p.storage :file, :size => '64G', :bus => 'sata'
+          end
+        RUBY
+      end
     end
 
     context "for lxc provider" do
