@@ -1373,6 +1373,19 @@ describe Kitchen::Driver::Vagrant do
           end
         RUBY
       end
+
+      it "adds a line for cpuidset in :customize" do
+        config[:customize] = {
+          :cpuidset => %w{00000001 00000002},
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :virtualbox do |p|
+            p.customize ["modifyvm", :id, "--cpuidset", "00000001", "00000002"]
+          end
+        RUBY
+      end
     end
 
     context "for parallels provider" do
