@@ -169,6 +169,22 @@ A box_url is not required when using the Atlas format of
 exist. If using a custom box this can be an `https://` or `file://`
 URL.
 
+### <a name="config-box-download-ca-cert"></a> box\_download\_ca\_cert
+
+Path relative to the `.kitchen.yml` file for locating the trusted CA bundle.
+Useful when combined with `box_url`.
+
+The default is `nil`, indicating to use the default Mozilla CA cert bundle.
+See also `box_download_insecure`.
+
+### <a name="config-box-download-insecure"></a> box\_download\_insecure
+
+If true, then SSL certificates from the server will
+not be verified.
+
+The default is `false`, meaning if the URL is an HTTPS URL,
+then SSL certs will be verified.
+
 ### <a name="config-box-version"></a> box\_version
 
 The [version][vagrant_versioning] of the configured box. 
