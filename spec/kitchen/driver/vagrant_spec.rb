@@ -1519,7 +1519,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds a single storage definition in :customize" do
         config[:customize] = {
-          :storage => ":file, :size => '32G'"
+          :storage => ":file, :size => '32G'",
         }
         cmd
 
@@ -1535,8 +1535,8 @@ describe Kitchen::Driver::Vagrant do
           :storage => [
             ":file, :size => '1G'",
             ":file, :size => '128G', :bus => 'sata'",
-            ":file, :size => '64G', :bus => 'sata'"
-          ]
+            ":file, :size => '64G', :bus => 'sata'",
+          ],
         }
         cmd
 
