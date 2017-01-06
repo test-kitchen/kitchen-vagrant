@@ -1081,14 +1081,7 @@ describe Kitchen::Driver::Vagrant do
       config[:box_check_update] = false
       cmd
 
-      expect(vagrantfile).to match(regexify(%{c.vm.box_check_update = "false"}))
-    end
-
-    it "sets vm.box_check_update if :box_check_update is set" do
-      config[:box_check_update] = "um"
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.vm.box_check_update = "um"}))
+      expect(vagrantfile).to match(regexify(%{c.vm.box_check_update = false}))
     end
 
     it "sets no vm.box_download_insecure if missing" do
