@@ -210,6 +210,16 @@ describe Kitchen::Driver::Vagrant do
       expect(driver[:box_check_update]).to eq(true)
     end
 
+    it "sets :box_download_ca_cert to nil by default" do
+      expect(driver[:box_download_ca_cert]).to eq(nil)
+    end
+
+    it "sets :box_download_ca_cert to a custom value" do
+      config[:box_download_ca_cert] = "cacert.pem"
+
+      expect(driver[:box_download_ca_cert]).to eq("/kroot/cacert.pem")
+    end
+
     it "sets :box_download_insecure to nil by default" do
       expect(driver[:box_download_insecure]).to eq(nil)
     end
