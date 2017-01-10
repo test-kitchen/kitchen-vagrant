@@ -1,3 +1,22 @@
+## [1.0.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.0.0) (2017-01-10)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.21.1...v1.0.0)
+
+**Implemented enhancements:**
+
+- Add vagrant-cachier support to default Vagrantfile.erb [\#186](https://github.com/test-kitchen/kitchen-vagrant/issues/186)
+- Allow customization of cpuidset for VirtualBox VMs  [\#175](https://github.com/test-kitchen/kitchen-vagrant/issues/175)
+- Add KVM/libvirt storage support to Vagrantfile.erb [\#271](https://github.com/test-kitchen/kitchen-vagrant/pull/271) ([dprts](https://github.com/dprts))
+- Move to chefstyle [\#264](https://github.com/test-kitchen/kitchen-vagrant/pull/264) ([shortdudey123](https://github.com/shortdudey123))
+- Allow multiple "include" statements in LXC configuration [\#230](https://github.com/test-kitchen/kitchen-vagrant/pull/230) ([alexmv](https://github.com/alexmv))
+- Set FQDN to include vagrantup.com again for non-windows operating sys… [\#168](https://github.com/test-kitchen/kitchen-vagrant/pull/168) ([spion06](https://github.com/spion06))
+- Virtualbox storage via createhd and storageattach [\#246](https://github.com/test-kitchen/kitchen-vagrant/pull/246) ([shortdudey123](https://github.com/shortdudey123))
+- Add support for box\_download\_ca\_cert [\#274](https://github.com/test-kitchen/kitchen-vagrant/pull/274) ([cheeseplus](https://github.com/cheeseplus))
+
+**Fixed bugs:**
+
+- Bug in box\_check\_update code [\#237](https://github.com/test-kitchen/kitchen-vagrant/issues/237)
+- Fix quoting for cloud providers \(redux \#179\) [\#268](https://github.com/test-kitchen/kitchen-vagrant/pull/268) ([cheeseplus](https://github.com/cheeseplus))
+
 ## [0.21.1](https://github.com/test-kitchen/kitchen-vagrant/tree/0.21.1) (2016-12-05)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.21.0...v0.21.1)
 
