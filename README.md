@@ -278,7 +278,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider :virtualbox do |virtualbox|
     virtualbox.customize ["createhd", "--filename", "./tmp/disk1.vmdk", "--size", 1024]
-    virtualbox.customize ["storageattach", :id, "--storagectl", "IDE Controller", "--port", "1", "device", 0, "--type", "hdd", "--medium", "./tmp/disk1.vmdk"]
+    virtualbox.customize ["storageattach", :id, "--storagectl", "IDE Controller", "--port", "1", "--device", 0, "--type", "hdd", "--medium", "./tmp/disk1.vmdk"]
   end
 end
 ```
