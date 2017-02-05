@@ -352,6 +352,16 @@ describe Kitchen::Driver::Vagrant do
       expect(driver[:synced_folders]).to eq([])
     end
 
+    it "does not set :synced_folders to cache_directory on macos systems" do
+      allow(platform).to receive(:name).and_return("macos")
+      expect(driver[:synced_folders]).to eq([])
+    end
+
+    it "does not set :synced_folders to cache_directory on osx systems" do
+      allow(platform).to receive(:name).and_return("osx")
+      expect(driver[:synced_folders]).to eq([])
+    end
+
     it "sets :synced_folders to a custom value" do
       config[:synced_folders] = [
         ["/host_path", "/vm_path", "create: true, type: :nfs"],
