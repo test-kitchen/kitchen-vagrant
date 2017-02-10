@@ -219,10 +219,7 @@ module Kitchen
       def disable_cache?
         # Disable for Windows not using Virtualbox
         if windows_host? && config[:provider] != "virtualbox" ||
-            # Disable for FreeBSD
-            instance.platform.name == "freebsd" ||
-            # Disable for macos / osx
-            instance.platform.name =~ /(macos|osx)/ ||
+            instance.platform.name =~ /(freebsd|macos|osx)/ ||
             # Disable if cache_directory is set to "false" on .kitchen.yml
             !config[:cache_directory]
           return true

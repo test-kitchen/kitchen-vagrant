@@ -348,7 +348,7 @@ describe Kitchen::Driver::Vagrant do
     end
 
     it "does not set :synced_folders to cache_directory on freebsd systems" do
-      allow(platform).to receive(:name).and_return("freebsd")
+      allow(platform).to receive(:name).and_return("freebsd-99")
       expect(driver[:synced_folders]).to eq([])
     end
 
@@ -358,7 +358,7 @@ describe Kitchen::Driver::Vagrant do
     end
 
     it "does not set :synced_folders to cache_directory on osx systems" do
-      allow(platform).to receive(:name).and_return("osx")
+      allow(platform).to receive(:name).and_return("osx-99")
       expect(driver[:synced_folders]).to eq([])
     end
 
