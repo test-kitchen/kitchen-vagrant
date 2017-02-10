@@ -1,3 +1,10 @@
+## [v1.0.1](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.0.1) (2017-02-10)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.0.0...v1.0.1)
+
+**Fixed bugs:**
+
+- Fixed cache folder disable for FreeBSD and MacOS/OSX [\#281](https://github.com/test-kitchen/kitchen-vagrant/pull/281) ([brentm5](https://github.com/brentm5)) [\#283](https://github.com/test-kitchen/kitchen-vagrant/pull/283) ([cheeseplus](https://github.com/cheeseplus))
+
 ## [1.0.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.0.0) (2017-01-10)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.21.1...v1.0.0)
 
