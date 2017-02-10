@@ -221,6 +221,8 @@ module Kitchen
         if windows_host? && config[:provider] != "virtualbox" ||
             # Disable for FreeBSD
             instance.platform.name == "freebsd" ||
+            # Disable for macos / osx
+            instance.platform.name =~ /(macos|osx)/ ||
             # Disable if cache_directory is set to "false" on .kitchen.yml
             !config[:cache_directory]
           return true
