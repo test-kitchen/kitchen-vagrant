@@ -259,9 +259,10 @@ module Kitchen
       #
       # @api private
       def finalize_ca_cert!
-        config[:box_download_ca_cert] = File.expand_path(
-          config[:box_download_ca_cert], config[:kitchen_root]) unless
-            config[:box_download_ca_cert].nil?
+        unless config[:box_download_ca_cert].nil?
+          config[:box_download_ca_cert] = File.expand_path(
+            config[:box_download_ca_cert], config[:kitchen_root])
+        end
       end
 
       # Replaces any `{{vagrant_root}}` tokens in the pre create command.
@@ -468,10 +469,10 @@ module Kitchen
       #   instance's Vagrantfile
       # @api private
       def vagrant_root
-        @vagrant_root ||= instance.nil? ? nil : File.join(
-          config[:kitchen_root], %w{.kitchen kitchen-vagrant},
+        root = File.join(config[:kitchen_root], %w{.kitchen kitchen-vagrant},
           "kitchen-#{File.basename(config[:kitchen_root])}-#{instance.name}"
         )
+        @vagrant_root ||= instance.nil? ? nil : root
       end
 
       # @param type [Symbol] either `:ssh` or `:winrm`
