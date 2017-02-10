@@ -254,20 +254,23 @@ and [VMware][vagrant_config_vmware] for more details.
 #### <a name="config-customize-virtualbox-disk"></a> VirtualBox additional disk
 
 Adding the `createhd` and `storageattach` keys in `customize` allows for creation
-of an additional disk in VirtualBox.
+of an additional disk in VirtualBox. Full paths must be used as required by VirtualBox.
+
+*NOTE*: IDE Controller based drives always show up in the boot order first, regardless of if they
+are [bootable][vbox_ide_boot].
 
 ```yaml
 driver:
   customize:
     createhd:
-      filename: ./tmp/disk1.vmdk
+      filename: /tmp/disk1.vmdk
       size: 1024
     storageattach:
-      storagectl: IDE Controller
+      storagectl: SATA Controller
       port: 1
       device: 0
       type: hdd
-      medium: ./tmp/disk1.vmdk
+      medium: /tmp/disk1.vmdk
 ```
 
 will generate a Vagrantfile configuration similar to:
@@ -574,4 +577,5 @@ Apache 2.0 (see [LICENSE][license])
 [atlas]:                    https://atlas.hashicorp.com/
 [parallels_dl]:             http://www.parallels.com/products/desktop/download/
 [vagrant_parallels]:        https://github.com/Parallels/vagrant-parallels
-[vagrant_cachier]:        https://github.com/fgrehm/vagrant-cachier
+[vagrant_cachier]:          https://github.com/fgrehm/vagrant-cachier
+[vbox_ide_boot]:            https://www.virtualbox.org/ticket/6979
