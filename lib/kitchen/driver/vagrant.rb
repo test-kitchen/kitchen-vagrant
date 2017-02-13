@@ -469,10 +469,13 @@ module Kitchen
       #   instance's Vagrantfile
       # @api private
       def vagrant_root
-        root = File.join(config[:kitchen_root], %w{.kitchen kitchen-vagrant},
-          "kitchen-#{File.basename(config[:kitchen_root])}-#{instance.name}"
-        )
-        @vagrant_root ||= instance.nil? ? nil : root
+        if !@vagrant_root && !instance.nil?
+          @vagrant_root = File.join(
+            config[:kitchen_root], %w{.kitchen kitchen-vagrant},
+            "kitchen-#{File.basename(config[:kitchen_root])}-#{instance.name}"
+          )
+        end
+        @vagrant_root
       end
 
       # @param type [Symbol] either `:ssh` or `:winrm`
