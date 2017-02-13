@@ -48,6 +48,10 @@ describe Kitchen::Driver::Vagrant do
     d
   end
 
+  let(:driver_with_no_instance) do
+    driver_object
+  end
+
   let(:instance) do
     Kitchen::Instance.new(
       :verifier => verifier,
@@ -538,6 +542,12 @@ describe Kitchen::Driver::Vagrant do
       with_modern_vagrant
 
       driver.verify_dependencies
+    end
+
+    it "passes for supported versions of Vagrant when it has no instances" do
+      with_modern_vagrant
+
+      driver_with_no_instance.verify_dependencies
     end
 
     it "raises a UserError for unsupported versions of Vagrant" do
