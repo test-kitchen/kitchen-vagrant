@@ -1,3 +1,12 @@
+# Change Log
+
+## [v1.0.2](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.0.2) (2017-02-13)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.0.1...v1.0.2)
+
+**Fixed bugs:**
+
+- Fixed a bug that can occur when `instance` returns `nil` [\#285](https://github.com/test-kitchen/kitchen-vagrant/pull/285) ([Kuniwak](https://github.com/Kuniwak))
+
 ## [v1.0.1](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.0.1) (2017-02-10)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.0.0...v1.0.1)
 
