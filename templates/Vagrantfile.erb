@@ -185,7 +185,7 @@ Vagrant.configure("2") do |c|
     <% else %>
     p.vmx["<%= key %>"] = "<%= value %>"
     <% end %>
-  <% when "openstack", "cloudstack", "hyperv", "ovirt3", "rackspace", "aws" %>
+  <% else %>
     <% if value.is_a? String %>
     p.<%= key %> = "<%= value%>"
     <% else  %>
