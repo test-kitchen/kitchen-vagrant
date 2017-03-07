@@ -90,6 +90,9 @@ module Kitchen
         driver.windows_os? ? "/omnibus/cache" : "/tmp/omnibus/cache"
       end
 
+      default_config :kitchen_cache_directory,
+        File.expand_path("~/.kitchen/cache")
+
       default_config :cachier, nil
 
       no_parallel_for :create, :destroy
@@ -462,7 +465,7 @@ module Kitchen
       # @return [String] full absolute path to the kitchen cache directory
       # @api private
       def local_kitchen_cache
-        @local_kitchen_cache ||= File.expand_path("~/.kitchen/cache")
+        @local_kitchen_cache ||= config[:kitchen_cache_directory]
       end
 
       # @return [String] full local path to the directory containing the
