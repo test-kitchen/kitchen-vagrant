@@ -662,10 +662,24 @@ describe Kitchen::Driver::Vagrant do
       )
     end
 
+    it "logs a message at debug when creating the ssh/winrm-config files" do
+      cmd
+
+      expect(logged_output.string).to match(
+        /^D, .+ DEBUG -- : .+ (ssh|winrm)-config file.+ \<suitey-fooos-99\>/
+      )
+    end
+
     it "creates a Vagrantfile in the vagrant root directory" do
       cmd
 
       expect(File.exist?(File.join(vagrant_root, "Vagrantfile"))).to eq(true)
+    end
+
+    it "creates an ssh-config file in the vagrant root directory" do
+      cmd
+
+      expect(File.exist?(File.join(vagrant_root, "ssh-config"))).to eq(true)
     end
 
     it "calls Transport's #wait_until_ready" do
@@ -674,6 +688,19 @@ describe Kitchen::Driver::Vagrant do
       expect(conn).to receive(:wait_until_ready)
 
       cmd
+    end
+
+    context "when the winrm plugin is installed" do
+      before do
+        allow(driver_object).to receive(:winrm_plugin_installed?).and_return(true)
+      end
+
+      it "creates a winrm-config file in the vagrant root directory" do
+        cmd
+
+        expect(File.exist?(File.join(vagrant_root,
+                                     "winrm-config"))).to eq(true)
+      end
     end
 
     it "logs the Vagrantfile contents on debug level" do
@@ -749,7 +776,12 @@ describe Kitchen::Driver::Vagrant do
         before do
           allow(transport).to receive(:name).and_return("Coolness")
           allow(driver).to receive(:run_command).
-            with("vagrant ssh-config", any_args).and_return(output)
+            with("vagrant ssh-config").with(any_args).and_return(output)
+        end
+
+        it "creates an ssh-config file with content" do
+          cmd
+          expect(ssh_config).to match(/Host hehe/)
         end
 
         it "sets :hostname from ssh-config" do
@@ -819,7 +851,12 @@ describe Kitchen::Driver::Vagrant do
         before do
           allow(transport).to receive(:name).and_return("WinRM")
           allow(driver).to receive(:run_command).
-            with("vagrant winrm-config", any_args).and_return(output)
+            with("vagrant winrm-config").with(any_args).and_return(output)
+        end
+
+        it "creates a winrm-config file with content" do
+          cmd
+          expect(ssh_config).to match(/Host hehe/)
         end
 
         it "sets :hostname from winrm-config" do
@@ -2020,5 +2057,9 @@ describe Kitchen::Driver::Vagrant do
 
   def vagrantfile
     IO.read(File.join(vagrant_root, "Vagrantfile"))
+  end
+
+  def ssh_config
+    IO.read(File.join(vagrant_root, "ssh-config"))
   end
 end

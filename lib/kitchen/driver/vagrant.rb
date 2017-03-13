@@ -102,6 +102,7 @@ module Kitchen
         create_vagrantfile
         run_pre_create_command
         run_vagrant_up
+        create_con_config_file
         update_state(state)
         instance.transport.connection(state).wait_until_ready
         info("Vagrant instance #{instance.to_str} created.")
@@ -241,6 +242,27 @@ module Kitchen
         File.open(vagrantfile, "wb") { |f| f.write(render_template) }
         debug_vagrantfile(vagrantfile)
         @vagrantfile_created = true
+      end
+
+      # Renders and writes out an "ssh/winrm-config" file for this instance.
+      #
+      # @api private
+      def create_con_config_file
+        return if @con_config_file
+
+        path = File.join(vagrant_root, "")
+        FileUtils.mkdir_p(vagrant_root)
+
+        types = winrm_plugin_installed? ? ['ssh', 'winrm'] : ['ssh']
+
+        types.each do |type|
+          path = File.join(vagrant_root, type.to_s + '-config')
+          content = run_command("#{config[:vagrant_binary]} #{type}-config #{instance.name}")
+          debug("Creating #{type}-config file for #{instance.to_str}")
+          File.open(path, "wb") { |f| f.write(content) }
+        end
+
+        @ssh_config_file = true
       end
 
       # Logs the Vagrantfile's contents to the debug log level.
