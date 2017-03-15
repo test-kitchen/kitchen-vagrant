@@ -463,7 +463,7 @@ end
 
 ### <a name="config-cache_directory"></a> cache_directory
 
-Customize the cache directory on the instance. This parameter must be an
+Customize the cache directory on the Vagrant instance. This parameter must be an
 absolute path.
 
 The defaults are:
@@ -476,6 +476,23 @@ The example:
 ---
 driver:
   cache_directory: Z:\\custom\\cache
+```
+
+### <a name="config-kitchen_cache_directory"></a> kitchen_cache_directory
+
+Customize the kitchen cache directory on the system running Test Kitchen. This parameter must be an
+absolute path.
+
+The defaults are:
+* Windows: `~/.kitchen/cache`
+* Unix: `~/.kitchen/cache`
+
+The example:
+
+```yaml
+---
+driver:
+  kitchen_cache_directory: Z:\\custom\\kitchen_cache
 ```
 
 ### <a name="config-vagrantfile-erb"></a> vagrantfile\_erb
