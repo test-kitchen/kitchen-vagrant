@@ -140,6 +140,20 @@ module Kitchen
         state.delete(:hostname)
       end
 
+      def package(state)
+        if state[:hostname].nil?
+          raise UserError, "Vagrant instance not created!"
+        end
+        if not (config[:ssh] && config[:ssh][:insert_key] == false)
+          m = "Disable vagrant ssh key replacement to preserve the default key!"
+          warn(m)
+        end
+        instance.transport.connection(state).close
+        box_name = File.join(Dir.pwd, instance.name + ".box")
+        run("#{config[:vagrant_binary]} package --output #{box_name}")
+        destroy(state)
+      end
+
       # A lifecycle method that should be invoked when the object is about
       # ready to be used. A reference to an Instance is required as
       # configuration dependant data may be access through an Instance. This
