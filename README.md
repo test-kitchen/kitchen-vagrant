@@ -478,6 +478,8 @@ driver:
   cache_directory: Z:\\custom\\cache
 ```
 
+To disable usage of cache directory set `cache_directory` parameter to `false`.
+
 ### <a name="config-kitchen_cache_directory"></a> kitchen_cache_directory
 
 Customize the kitchen cache directory on the system running Test Kitchen. This parameter must be an
