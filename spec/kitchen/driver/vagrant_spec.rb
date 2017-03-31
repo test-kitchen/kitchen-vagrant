@@ -340,29 +340,13 @@ describe Kitchen::Driver::Vagrant do
       expect(driver[:ssh]).to eq(:a => "b", :c => { :d => "e" })
     end
 
-    it "sets :synced_folders with the cache_directory by default" do
+    it "sets :synced_folders with the cache_directory for select bento boxes" do
+      config[:box] = "bento/centos-99"
       expect(driver[:synced_folders]).to eq([cache_directory_array])
-    end
-
-    it "does not set :synced_folders to cache_directory on windows/non-vbox" do
-      allow(RbConfig::CONFIG).to receive(:[]).with("host_os").
-        and_return("mingw")
-      config[:provider] = "notvbox"
-      expect(driver[:synced_folders]).to eq([])
     end
 
     it "does not set :synced_folders to cache_directory on freebsd systems" do
       allow(platform).to receive(:name).and_return("freebsd-99")
-      expect(driver[:synced_folders]).to eq([])
-    end
-
-    it "does not set :synced_folders to cache_directory on macos systems" do
-      allow(platform).to receive(:name).and_return("macos")
-      expect(driver[:synced_folders]).to eq([])
-    end
-
-    it "does not set :synced_folders to cache_directory on osx systems" do
-      allow(platform).to receive(:name).and_return("osx-99")
       expect(driver[:synced_folders]).to eq([])
     end
 
@@ -376,7 +360,6 @@ describe Kitchen::Driver::Vagrant do
           File.expand_path("/host_path"),
           "/vm_path", "create: true, type: :nfs"
         ],
-        cache_directory_array,
       ])
     end
 
@@ -387,7 +370,6 @@ describe Kitchen::Driver::Vagrant do
 
       expect(driver[:synced_folders]).to eq([
         [File.expand_path("/root/suitey-fooos-99"), "/vm_path", "stuff"],
-        cache_directory_array,
       ])
     end
 
@@ -398,7 +380,6 @@ describe Kitchen::Driver::Vagrant do
 
       expect(driver[:synced_folders]).to eq([
         [File.expand_path("/kroot/a"), "/vm_path", "stuff"],
-        cache_directory_array,
       ])
     end
 
@@ -409,7 +390,6 @@ describe Kitchen::Driver::Vagrant do
 
       expect(driver[:synced_folders]).to eq([
         [File.expand_path("/host_path"), "/vm_path", "nil"],
-        cache_directory_array,
       ])
     end
 
@@ -471,14 +451,6 @@ describe Kitchen::Driver::Vagrant do
 
     context "for windows os_types" do
 
-      let(:win_cache_directory_array) do
-        [
-          File.expand_path("~/.kitchen/cache"),
-          "/omnibus/cache",
-          "create: true",
-        ]
-      end
-
       before { allow(platform).to receive(:os_type).and_return("windows") }
 
       it "sets :vm_hostname to nil by default" do
@@ -491,10 +463,6 @@ describe Kitchen::Driver::Vagrant do
         expect(driver[:vm_hostname]).to eq("this-is-a--k")
       end
 
-      it "sets :synced_folders with the cache_directory by default" do
-        expect(driver[:synced_folders]).to eq([win_cache_directory_array])
-      end
-
       it "replaces %{instance_name} with instance name in :synced_folders" do
         config[:synced_folders] = [
           ["/root/%{instance_name}", "/vm_path", "stuff"],
@@ -502,7 +470,6 @@ describe Kitchen::Driver::Vagrant do
 
         expect(driver[:synced_folders]).to eq([
           [File.expand_path("/root/suitey-fooos-99"), "/vm_path", "stuff"],
-          win_cache_directory_array,
         ])
       end
     end

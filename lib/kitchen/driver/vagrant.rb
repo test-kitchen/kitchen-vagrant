@@ -86,9 +86,7 @@ module Kitchen
         driver.windows_os? ? nil : "#{driver.instance.name}.vagrantup.com"
       end
 
-      default_config(:cache_directory) do |driver|
-        driver.windows_os? ? "/omnibus/cache" : "/tmp/omnibus/cache"
-      end
+      default_config :cache_directory, false
 
       default_config :kitchen_cache_directory,
         File.expand_path("~/.kitchen/cache")
@@ -199,8 +197,11 @@ module Kitchen
       # and share a local folder to that directory so that we don't pull them
       # down every single time
       def cache_directory
-        return if disable_cache?
-        config[:cache_directory]
+        if enable_cache? && !config[:cache_directory]
+          windows_os? ? "/omnibus/cache" : "/tmp/omnibus/cache"
+        else
+          config[:cache_directory]
+        end
       end
 
       protected
@@ -231,17 +232,21 @@ module Kitchen
         name =~ /^(centos|debian|fedora|freebsd|opensuse|ubuntu|oracle)-/
       end
 
-      # Return true if we found the criteria to disable the cache_directory
+      # Returns whether or not the we expect the box to work with shared folders
+      # by matching against a whitelist of bento boxes
+      # @return [TrueClass,FalseClass] whether or not the box shoud work with
+      #   shared folders
+      # @api private
+      def safe_share?(box)
+        box =~ /^bento\/(centos|debian|fedora|opensuse|ubuntu|oracle)-/
+      end
+
+      # Return true if we found the criteria to enable the cache_directory
       # functionality
-      def disable_cache?
-        # Disable for Windows not using Virtualbox
-        if windows_host? && config[:provider] != "virtualbox" ||
-            instance.platform.name =~ /(freebsd|macos|osx)/ ||
-            # Disable if cache_directory is set to "false" on .kitchen.yml
-            !config[:cache_directory]
+      def enable_cache?
+        if safe_share?(config[:box])
           return true
         end
-
         # Otherwise
         false
       end
