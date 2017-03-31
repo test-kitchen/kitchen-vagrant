@@ -1,5 +1,18 @@
 # Change Log
 
+## [v1.1.0](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.1.0) (2017-03-31)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.0.2...v1.1.0)
+
+**New Features:**
+- Make kitchen package work [\#275](https://github.com/test-kitchen/kitchen-vagrant/pull/275) ([ccope](https://github.com/ccope))
+
+**Improvements:**
+
+- Only enable the cache when using known bento boxes. Fix \#296 [\#303](https://github.com/test-kitchen/kitchen-vagrant/pull/303) ([cheeseplus](https://github.com/cheeseplus))
+- README: add info about cache\_directory disabling [\#299](https://github.com/test-kitchen/kitchen-vagrant/pull/299) ([jugatsu](https://github.com/jugatsu))
+- Add ability to override Kitchen cache directory [\#292](https://github.com/test-kitchen/kitchen-vagrant/pull/292) ([Jakauppila](https://github.com/Jakauppila))
+- Add support for all misc vagrant providers [\#290](https://github.com/test-kitchen/kitchen-vagrant/pull/290) ([myoung34](https://github.com/myoung34))
+
 ## [v1.0.2](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.0.2) (2017-02-13)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.0.1...v1.0.2)
 
