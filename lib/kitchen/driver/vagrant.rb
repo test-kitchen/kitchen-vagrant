@@ -204,6 +204,13 @@ module Kitchen
         end
       end
 
+      def start(state)
+        cmd = "vagrant up --no-provision"
+        cmd += " --provider=#{config[:provider]}" if config[:provider]
+        run cmd
+        set_ssh_state(state)
+      end
+
       protected
 
       WEBSITE = "http://www.vagrantup.com/downloads.html".freeze
