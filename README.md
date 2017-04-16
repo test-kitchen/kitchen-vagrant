@@ -385,6 +385,31 @@ more details.
 
 The default is an empty Array, `[]`.
 
+### <a name="config-storage"></a> storage
+
+An **Array** of storage customizations for the virtual machine. Each Array
+element is itself an Array of arguments to be passed to the `vb.customize`
+method. For example:
+
+```ruby
+driver:
+  attached_disks:
+  - ["sdb.vdi", "500", "1", "0", "hdd"]
+```
+
+will create a disk sdb.vdi if it does not exist and attach it to the vm. 
+The generated Vagrantfile is:
+
+```ruby
+ c.vm.provider :virtualbox do |vb|
+   disk_file = "disk.vdi"
+   unless File.exist?(disk_file)
+     vb.customize ["createhd", "--filename", disk_file, "--size", 500]
+   end
+   vb.customize ["storageattach", :id, "--storagectl", "IDE Controller", "--port", 0, "--device", 1, "--type", "hdd", "--medium", disk_file]
+ end
+```
+
 ### <a name="config-pre-create-command"></a> pre\_create\_command
 
 An optional hook to run a command immediately prior to the
