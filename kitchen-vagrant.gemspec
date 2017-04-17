@@ -20,6 +20,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_dependency "test-kitchen", "~> 1.4"
+  gem.add_dependency "vagrant-wrapper"
 
   gem.add_development_dependency "countloc", "~> 0.4"
   gem.add_development_dependency "rake"
