@@ -561,7 +561,7 @@ module Kitchen
 
         self.class.winrm_plugin_passed = run_silently(
           "#{config[:vagrant_binary]} plugin list", :cwd => Dir.pwd).
-          split("\n").find { |line| line =~ /^vagrant-winrm\s+/ }
+          split("\n").find { |line| line =~ /vagrant-winrm\s+/ }
       end
     end
   end
