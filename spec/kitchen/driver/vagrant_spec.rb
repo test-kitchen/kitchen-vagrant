@@ -1341,11 +1341,11 @@ describe Kitchen::Driver::Vagrant do
         RUBY
       end
 
-      it "adds a lines for createhd in :customize" do
+      it "add line for single createhd in :customize" do
         config[:customize] = {
           :createhd => {
-            :filename => "./d1.vmdk",
-            :size => 10 * 1024,
+              :filename => "./d1.vmdk",
+              :size => 10 * 1024,
           },
         }
         cmd
@@ -1357,7 +1357,30 @@ describe Kitchen::Driver::Vagrant do
         RUBY
       end
 
-      it "adds a lines for storageattach in :customize" do
+      it "adds lines for multiple createhd in :customize" do
+        config[:customize] = {
+          :createhd => [
+            {
+              :filename => "./d1.vmdk",
+              :size => 10 * 1024,
+            },
+            {
+              :filename => "./d2.vmdk",
+              :size => 20 * 1024,
+            },
+          ],
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :virtualbox do |p|
+            p.customize ["createhd", "--filename", "./d1.vmdk", "--size", 10240]
+            p.customize ["createhd", "--filename", "./d2.vmdk", "--size", 20480]
+          end
+        RUBY
+      end
+
+      it "adds lines for single storageattach in :customize" do
         config[:customize] = {
           :storageattach => {
             :type => "hdd",
@@ -1369,6 +1392,35 @@ describe Kitchen::Driver::Vagrant do
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
             p.customize ["storageattach", :id, "--type", "hdd", "--port", 1]
+          end
+        RUBY
+      end
+
+      it "adds lines for multiple storageattach in :customize" do
+        config[:customize] = {
+          :storageattach => [
+            {
+              :storagectl => "SATA Controller",
+              :port => 1,
+              :device => 0,
+              :type => "hdd",
+              :medium => "./d1.vmdk",
+            },
+            {
+              :storagectl => "SATA Controller",
+              :port => 1,
+              :device => 1,
+              :type => "hdd",
+              :medium => "./d2.vmdk",
+            },
+          ],
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :virtualbox do |p|
+            p.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", 1, "--device", 0, "--type", "hdd", "--medium", "./d1.vmdk"]
+            p.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", 1, "--device", 1, "--type", "hdd", "--medium", "./d2.vmdk"]
           end
         RUBY
       end
