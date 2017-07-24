@@ -345,6 +345,12 @@ describe Kitchen::Driver::Vagrant do
       expect(driver[:synced_folders]).to eq([cache_directory_array])
     end
 
+    it "does not set :synced_folders when cache_directory is false" do
+      config[:box] = "bento/centos-99"
+      config[:cache_directory] = false
+      expect(driver[:synced_folders]).to eq([])
+    end
+
     it "does not set :synced_folders to cache_directory on freebsd systems" do
       allow(platform).to receive(:name).and_return("freebsd-99")
       expect(driver[:synced_folders]).to eq([])
@@ -484,7 +490,10 @@ describe Kitchen::Driver::Vagrant do
         ]
       end
 
-      before { config[:cache_directory] = 'Z:\\awesome\\cache' }
+      before do
+        config[:box] = "bento/centos-99"
+        config[:cache_directory] = "Z:\\awesome\\cache"
+      end
 
       it "sets :synced_folders with the custom cache_directory" do
         expect(driver[:synced_folders]).to eq([custom_cache_directory_array])
