@@ -56,6 +56,21 @@ If you would like to use Parallels Desktop you must also purchase the software b
 
 [Vagrant Parallels Provider][vagrant_parallels]
 
+#### <a name="unmaintained-virtualization"></a> Unmaintained Virtualization Hypervisors
+
+Some additional hypervisors may be used with this driver but are not officially supported:
+
+[CloudStack][cloudstack] using the unofficial [vagrant-cloudstack][vagrant_cloudstack] plugin for Vagrant.
+
+[KVM][kvm]/[Libvirt][libvirt] using the unofficial [vagrant-libvirt][vagrant_libvirt] plugin for Vagrant.
+
+[LXC][lxc] using the unofficial [vagrant-lxc][vagrant_lxc] plugin for Vagrant.
+
+[OpenStack][openstack] using an unofficial provider plugin for Vagrant.
+
+[RackSpace][rackspace] using the official [vagrant-rackspace][vagrant_rackspace] plugin for Vagrant.
+
+[SoftLayer][softlayer] using the unofficial [vagrant-softlayer][vagrant_softlayer] plugin for Vagrant.
 
 ## <a name="installation"></a> Installation and Setup
 
@@ -598,3 +613,15 @@ Apache 2.0 (see [LICENSE][license])
 [vagrant_parallels]:        https://github.com/Parallels/vagrant-parallels
 [vagrant_cachier]:          https://github.com/fgrehm/vagrant-cachier
 [vbox_ide_boot]:            https://www.virtualbox.org/ticket/6979
+[cloudstack]:               https://cloudstack.apache.org/
+[kvm]:                      https://www.linux-kvm.org/page/Main_Page
+[libvirt]:                  https://libvirt.org/
+[lxc]:                      https://linuxcontainers.org/
+[openstack]:                https://cloudstack.apache.org/
+[rackspace]:                https://www.rackspace.com/
+[softlayer]:                http://www.softlayer.com/
+[vagrant_cloudstack]:       https://github.com/MissionCriticalCloud/vagrant-cloudstack
+[vagrant_libvirt]:          https://github.com/vagrant-libvirt/vagrant-libvirt
+[vagrant_lxc]:              https://github.com/fgrehm/vagrant-lxc
+[vagrant_rackspace]:        https://github.com/mitchellh/vagrant-rackspace
+[vagrant_softlayer]:        https://github.com/audiolize/vagrant-softlayer
