@@ -1,5 +1,14 @@
 # Change Log
 
+## [v1.1.1](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.1.1) (2017-07-26)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.1.0...v1.1.1)
+
+**Fixed Bugs**
+
+- Fix detection of vagrant-winrm plugin. [\#309](https://github.com/test-kitchen/kitchen-vagrant/pull/309) ([silverl](https://github.com/silverl))
+- Fix bug in Vagrantfile template related to WinRM options. [\#306](https://github.com/test-kitchen/kitchen-vagrant/pull/306) ([aleksey-hariton](https://github.com/aleksey-hariton))
+- Disable caching, even for bento boxes. [\#313](https://github.com/test-kitchen/kitchen-vagrant/pull/313) ([robbkidd](https://github.com/robbkidd))
+
 ## [v1.1.0](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.1.0) (2017-03-31)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.0.2...v1.1.0)
 
