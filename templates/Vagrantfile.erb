@@ -170,6 +170,17 @@ Vagrant.configure("2") do |c|
            ids << "\"#{id}\""
          end %>
     p.customize ["modifyvm", :id, "--cpuidset", <%= ids.join(', ') %>]
+    <% elsif key == :usbfilter %>
+      <% options = [] %>
+      <% value.each do |usbfilter_option_key, usbfilter_option_value|
+           options << "\"--#{usbfilter_option_key}\""
+           if usbfilter_option_value.instance_of? Fixnum
+             options << usbfilter_option_value
+           else
+             options << "\"#{usbfilter_option_value}\""
+           end
+         end %>
+    p.customize ["usbfilter", "add", 0, "--target", :id, <%= options.join(', ') %>]
     <% else %>
     p.customize ["modifyvm", :id, "--<%= key %>", "<%= value %>"]
     <% end %>

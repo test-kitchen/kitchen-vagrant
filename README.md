@@ -305,6 +305,44 @@ Please read [createhd](https://www.virtualbox.org/manual/ch08.html#vboxmanage-cr
 and [storageattach](https://www.virtualbox.org/manual/ch08.html#vboxmanage-storageattach)
 for additional information on these options.
 
+
+
+
+#### <a name="config-customize-virtualbox-usb"></a> VirtualBox USB devices
+
+Adding the `usb`, `usbehci`, and `usbfilter` keys in `customize` allows for attachment
+to host USB devices in VirtualBox. Note that this requires installing the
+[VirtualBox Extension Pack](https://www.virtualbox.org/wiki/Downloads) on the host.
+
+
+```yaml
+driver:
+  customize:
+    usb: "on"
+    usbehci: "on"
+    usbfilter:
+      name: "YubiKey"
+      vendorid: "0x1050"
+      productid: "0x0120"
+```
+
+will generate a Vagrantfile configuration similar to:
+
+```ruby
+Vagrant.configure("2") do |config|
+  # ...
+
+  config.vm.provider :virtualbox do |virtualbox|
+    virtualbox.customize ["modifyvm", :id, "--usb", "on"]
+    virtualbox.customize ["modifyvm", :id, "--usbehci", "on"]
+    virtualbox.customize ["usbfilter", "add", 0, "--target", :id, "--name", "YubiKey", "--vendorid", "0x1050", "--productid", "0x0120"]
+end
+end
+```
+
+Please read [usbfilter](https://www.virtualbox.org/manual/ch08.html#idm5512)
+for additional information on these options.
+
 ### <a name="config-guest"></a> guest
 
 **Note:** It should largely be the responsibility of the underlying Vagrant
