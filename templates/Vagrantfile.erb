@@ -152,18 +152,24 @@ Vagrant.configure("2") do |c|
     <% end %>
   <% when "virtualbox" %>
     <% if key == :createhd %>
-    p.customize ["createhd", "--filename", "<%= value[:filename] %>", "--size", <%= value[:size] %>]
+      <% value = [value] unless value.instance_of?(Array) %>
+      <% value.each do |item| %>
+    p.customize ["createhd", "--filename", "<%= item[:filename] %>", "--size", <%= item[:size] %>]
+      <% end %>
     <% elsif key == :storageattach %>
-      <% options = [] %>
-      <% value.each do |storageattach_option_key, storageattach_option_value|
-           options << "\"--#{storageattach_option_key}\""
-           if storageattach_option_value.instance_of? Fixnum
-             options << storageattach_option_value
-           else
-             options << "\"#{storageattach_option_value}\""
-           end
-         end %>
+      <% value = [value] unless value.instance_of?(Array) %>
+      <% value.each do |item| %>
+        <% options = [] %>
+        <% item.each do |storageattach_option_key, storageattach_option_value|
+             options << "\"--#{storageattach_option_key}\""
+             if storageattach_option_value.instance_of? Fixnum
+               options << storageattach_option_value
+             else
+               options << "\"#{storageattach_option_value}\""
+             end
+           end %>
     p.customize ["storageattach", :id, <%= options.join(', ') %>]
+    <% end %>
     <% elsif key == :cpuidset %>
       <% ids = [] %>
       <% value.each do | id |
