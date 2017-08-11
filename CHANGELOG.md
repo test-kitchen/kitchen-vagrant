@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.2.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.2.0) (2017-08-11)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.1.1...1.2.0)
+
+**Implemented enhancements:**
+
+- Support to create/attach multiple additional VirtualBox disks [\#312](https://github.com/test-kitchen/kitchen-vagrant/pull/312) ([stissot](https://github.com/stissot))
+- Parallel virtualbox [\#202](https://github.com/test-kitchen/kitchen-vagrant/pull/202) ([rveznaver](https://github.com/rveznaver))
+
 ## [v1.1.1](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.1.1) (2017-07-26)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.1.0...v1.1.1)
 
