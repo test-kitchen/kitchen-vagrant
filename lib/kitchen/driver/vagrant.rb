@@ -95,7 +95,7 @@ module Kitchen
 
       default_config :cachier, nil
 
-      # no_parallel_for :create, :destroy
+      no_parallel_for :create, :destroy
 
       # Creates a Vagrant VM instance.
       #
