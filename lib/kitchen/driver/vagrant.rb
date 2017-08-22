@@ -95,7 +95,9 @@ module Kitchen
 
       default_config :cachier, nil
 
-      # no_parallel_for :create, :destroy
+      # disable parallel create/destroy on Windows hosts because it exacerbates an existing
+      # path length problem
+      no_parallel_for :create, :destroy if RbConfig::CONFIG["host_os"] =~ /mswin|msys|mingw|cygwin|bccwin|wince|emc/
 
       # Creates a Vagrant VM instance.
       #
@@ -378,7 +380,7 @@ module Kitchen
       # @see Kitchen::ShellOut.run_command
       # @api private
       def run(cmd, options = {})
-        if vagrant_root && config[:provider] == "virtualbox"
+        if !windows_host? && vagrant_root && config[:provider] == "virtualbox"
           require "digest"
           options[:environment] = {} if options[:environment].nil?
           options[:environment]["VBOX_IPC_SOCKETID"] =
@@ -448,7 +450,7 @@ module Kitchen
       #
       # @api private
       def run_pre_create_command
-        if vagrant_root && config[:provider] == "virtualbox"
+        if !windows_host? && vagrant_root && config[:provider] == "virtualbox"
           run("vboxmanage setproperty machinefolder #{vagrant_root}",
             :cwd => config[:kitchen_root])
           debug("Set VirtualBox machinefolder to #{vagrant_root}")
@@ -564,7 +566,7 @@ module Kitchen
       #
       # @api private
       def windows_host?
-        RbConfig::CONFIG["host_os"] =~ /mswin|mingw/
+        RbConfig::CONFIG["host_os"] =~ /mswin|msys|mingw|cygwin|bccwin|wince|emc/
       end
 
       # @return [true,false] whether or not the vagrant-winrm plugin is
