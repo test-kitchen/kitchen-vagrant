@@ -495,7 +495,7 @@ module Kitchen
         if !@vagrant_root && !instance.nil?
           @vagrant_root = File.join(
             config[:kitchen_root], %w{.kitchen kitchen-vagrant},
-            "kitchen-#{File.basename(config[:kitchen_root])}-#{instance.name}"
+            "#{instance.name}"
           )
         end
         @vagrant_root
