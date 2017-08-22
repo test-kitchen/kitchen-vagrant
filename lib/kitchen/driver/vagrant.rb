@@ -378,14 +378,6 @@ module Kitchen
       # @see Kitchen::ShellOut.run_command
       # @api private
       def run(cmd, options = {})
-        if vagrant_root && config[:provider] == "virtualbox"
-          require "digest"
-          options[:environment] = {} if options[:environment].nil?
-          options[:environment]["VBOX_IPC_SOCKETID"] =
-            Digest::SHA256.hexdigest(vagrant_root)
-          options[:environment]["VBOX_USER_HOME"] = vagrant_root
-          debug("Accessing isolated VirtualBox environment in #{vagrant_root}")
-        end
         cmd = "echo #{cmd}" if config[:dry_run]
         run_command(cmd, { :cwd => vagrant_root }.merge(options))
       end
@@ -448,11 +440,6 @@ module Kitchen
       #
       # @api private
       def run_pre_create_command
-        if vagrant_root && config[:provider] == "virtualbox"
-          run("vboxmanage setproperty machinefolder #{vagrant_root}",
-            :cwd => config[:kitchen_root])
-          debug("Set VirtualBox machinefolder to #{vagrant_root}")
-        end
         if config[:pre_create_command]
           run(config[:pre_create_command], :cwd => config[:kitchen_root])
         end
