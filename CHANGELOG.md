@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.2.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.2.1) (2017-08-22)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.2.0...1.2.1)
+
+- Revert parallel virtualbox [\#325](https://github.com/test-kitchen/kitchen-vagrant/pull/325)
+- Shorten directory name for `vagrant_root` [\#323](https://github.com/test-kitchen/kitchen-vagrant/pull/323)
+
 ## [1.2.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.2.0) (2017-08-11)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.1.1...1.2.0)
 
