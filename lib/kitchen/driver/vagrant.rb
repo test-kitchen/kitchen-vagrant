@@ -97,6 +97,21 @@ module Kitchen
 
       no_parallel_for :create, :destroy
 
+      def telemetry
+        {
+          driver_name: "vagrant",
+          driver_version: Kitchen::Driver::VAGRANT_VERSION,
+          vagrant_version: self.class.vagrant_version,
+          vagrant_provider: config[:provider],
+          transport: instance.transport.name.downcase,
+        }.tap do |telemetry|
+          if config[:box].start_with?("bento/")
+            telemetry[:target] = config[:box]
+            telemetry[:target_version] = config[:box_version]
+          end
+        end
+      end
+
       # Creates a Vagrant VM instance.
       #
       # @param state [Hash] mutable instance state
