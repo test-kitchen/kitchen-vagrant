@@ -68,7 +68,11 @@ Vagrant.configure("2") do |c|
 <% end %>
 <% if config[:winrm] %>
   <% config[:winrm].each do |key, value| %>
-    c.winrm.<%= key %> = "<%= value %>"
+    <% if value.is_a? String %>
+      c.winrm.<%= key %> = "<%= value%>"
+    <% else  %>
+      c.winrm.<%= key %> = <%= value%>
+    <% end  %>
   <% end %>
 <% end %>
 
