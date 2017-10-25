@@ -1377,6 +1377,48 @@ describe Kitchen::Driver::Vagrant do
         RUBY
       end
 
+      it "adds lines for single storagectl in :customize" do
+        config[:customize] = {
+          :storagectl => {
+            :name => "Custom SATA Controller",
+            :add => "sata",
+            :controller => "IntelAHCI",
+            :portcount => 4,
+          },
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :virtualbox do |p|
+            p.customize ["storagectl", :id, "--name", "Custom SATA Controller", "--add", "sata", "--controller", "IntelAHCI", "--portcount", 4]
+          end
+        RUBY
+      end
+
+      it "adds lines for multiple storagectl in :customize" do
+        config[:customize] = {
+          :storagectl => [
+            {
+              :name => "Custom SATA Controller",
+              :add => "sata",
+              :controller => "IntelAHCI",
+            },
+            {
+              :name => "Custom SATA Controller",
+              :portcount => 4,
+            },
+          ],
+        }
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :virtualbox do |p|
+            p.customize ["storagectl", :id, "--name", "Custom SATA Controller", "--add", "sata", "--controller", "IntelAHCI"]
+            p.customize ["storagectl", :id, "--name", "Custom SATA Controller", "--portcount", 4]
+          end
+        RUBY
+      end
+
       it "adds lines for single storageattach in :customize" do
         config[:customize] = {
           :storageattach => {

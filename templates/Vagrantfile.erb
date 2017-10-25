@@ -160,19 +160,19 @@ Vagrant.configure("2") do |c|
       <% value.each do |item| %>
     p.customize ["createhd", "--filename", "<%= item[:filename] %>", "--size", <%= item[:size] %>]
       <% end %>
-    <% elsif key == :storageattach %>
+    <% elsif key == :storageattach || key == :storagectl %>
       <% value = [value] unless value.instance_of?(Array) %>
       <% value.each do |item| %>
         <% options = [] %>
-        <% item.each do |storageattach_option_key, storageattach_option_value|
-             options << "\"--#{storageattach_option_key}\""
-             if storageattach_option_value.instance_of? Fixnum
-               options << storageattach_option_value
+        <% item.each do |storage_option_key, storage_option_value|
+             options << "\"--#{storage_option_key}\""
+             if storage_option_value.instance_of? Fixnum
+               options << storage_option_value
              else
-               options << "\"#{storageattach_option_value}\""
+               options << "\"#{storage_option_value}\""
              end
            end %>
-    p.customize ["storageattach", :id, <%= options.join(', ') %>]
+    p.customize ["<%= key.to_s %>", :id, <%= options.join(', ') %>]
     <% end %>
     <% elsif key == :cpuidset %>
       <% ids = [] %>
