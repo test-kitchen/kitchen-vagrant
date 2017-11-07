@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.2.2](https://github.com/test-kitchen/kitchen-vagrant/tree/1.2.2) (2017-11-07)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.2.1...1.2.2)
+
+- For WinRM options, only treat strings as strings. [\#330](https://github.com/test-kitchen/kitchen-vagrant/pull/330)
+
 ## [1.2.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.2.1) (2017-08-22)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.2.0...1.2.1)
 

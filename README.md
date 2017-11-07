@@ -35,7 +35,7 @@ consequence, the minimum version of Vagrant required is 1.6 or higher.
 
 ### <a name="dependencies-virtualization"></a> Virtualization Hypervisor(s)
 
-Currently this driver supports Parallels, VirtualBox, and VMware Fusion/Workstation
+Currently this driver supports the Parallels, VirtualBox, and VMware Fusion/Workstation
 hypervisors. VirtualBox is free and is the default provider for Vagrant.
 
 [VirtualBox package][virtualbox_dl]
@@ -80,13 +80,13 @@ Please read the [Driver usage][driver_usage] page for more details.
 
 For a select number of platforms and a select number of hypervisors (VirtualBox, VMware,
 and Parallels) default boxes are published under the [Bento organization][bento_org]
-on [Atlas][atlas] such as:
+on [Vagrant Cloud][vagrant_cloud] such as:
 
 ```yaml
 ---
 platforms:
   - name: ubuntu-16.04
-  - name: centos-7.3
+  - name: centos-7
   - name: freebsd-11
 ```
 
@@ -98,14 +98,16 @@ platforms:
   - name: ubuntu-16.04
     driver:
       box: bento/ubuntu-16.04
-  - name: centos-7.3
+  - name: centos-7
     driver:
-      box: bento/centos-7.3
-  - name: freebsd-11.0
+      box: bento/centos-7
+  - name: freebsd-11
     driver:
-      box: bento/freebsd-11.0
+      box: bento/freebsd-11
   # ...
 ```
+
+*NOTE:* for most platforms that follow a point release model, we maintain a `os-maj` box that is a copy of `os-maj.min`. Ex. `bento/centos-7` will effectively be a copy of the last `bento/centos-7.x` release.
 
 Any other platform names will set a more reasonable default for `box` and leave `box_url` unset. For example:
 
@@ -167,7 +169,7 @@ page.
 
 The default will be computed from the platform name of the instance. However, 
 for a number of common platforms in the [Bento][bento] project, the default will 
-prefix the name with `bento/` in accordance with Atlas naming standards.
+prefix the name with `bento/` in accordance with Vagrant Cloud naming standards.
 
 For example, a platform with name `ubuntu-16.04` will produce a
 default `box` value of `bento/ubuntu-16.04`. Alternatively, a box called
@@ -179,7 +181,7 @@ Whether to check for box updates (enabled by default).
 
 ### <a name="config-box-url"></a> box\_url
 
-A box_url is not required when using the Atlas format of 
+A box_url is not required when using the Vagrant Cloud format of 
 `bento/ubuntu-16.04` assuming the organization and box referenced
 exist. If using a custom box this can be an `https://` or `file://`
 URL.
@@ -206,7 +208,7 @@ The [version][vagrant_versioning] of the configured box.
 
 The default is `nil`, indicating unset.
 
-This option is only relevant when used with Atlas boxes which support versioning.
+This option is only relevant when used with Vagrant Cloud boxes which support versioning.
 
 ### <a name="config-communicator"></a> communicator
 
@@ -614,8 +616,8 @@ Apache 2.0 (see [LICENSE][license])
 [vmware_plugin]:            http://www.vagrantup.com/vmware
 [fusion_dl]:                http://www.vmware.com/products/fusion/overview.html
 [workstation_dl]:           http://www.vmware.com/products/workstation/
-[bento_org]:                https://atlas.hashicorp.com/bento
-[atlas]:                    https://atlas.hashicorp.com/
+[bento_org]:                https://app.vagrantup.com/bento
+[vagrant_cloud]:            https://app.vagrantup.com/boxes/search
 [parallels_dl]:             http://www.parallels.com/products/desktop/download/
 [vagrant_parallels]:        https://github.com/Parallels/vagrant-parallels
 [vagrant_cachier]:          https://github.com/fgrehm/vagrant-cachier
