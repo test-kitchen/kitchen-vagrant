@@ -273,6 +273,9 @@ and [VMware][vagrant_config_vmware] for more details.
 Adding the `createhd` and `storageattach` keys in `customize` allows for creation
 of additional disks in VirtualBox. Full paths must be used as required by VirtualBox.
 
+Adding the `storagectl` key in `customize` allows for creation or customization of
+disks controller in Virtualbox.
+
 *NOTE*: IDE Controller based drives always show up in the boot order first, regardless of if they
 are [bootable][vbox_ide_boot].
 
@@ -284,6 +287,9 @@ driver:
         size: 1024
       - filename: /tmp/disk2.vmdk
         size: 2048
+    storagectl:
+      - name: IDE Controller
+        portcount: 4
     storageattach:
       - storagectl: IDE Controller
         port: 1
@@ -305,13 +311,15 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider :virtualbox do |virtualbox|
     virtualbox.customize ["createhd", "--filename", "./tmp/disk1.vmdk", "--size", 1024]
+    virtualbox.customize ["storagectl", :id, "--name", "IDE Controller", "--portcount", 4]
     virtualbox.customize ["storageattach", :id, "--storagectl", "IDE Controller", "--port", "1", "--device", 0, "--type", "hdd", "--medium", "./tmp/disk1.vmdk"]
   end
 end
 ```
 
 Please read [createhd](https://www.virtualbox.org/manual/ch08.html#vboxmanage-createvdi)
-and [storageattach](https://www.virtualbox.org/manual/ch08.html#vboxmanage-storageattach)
+, [storageattach](https://www.virtualbox.org/manual/ch08.html#vboxmanage-storageattach)
+and [storagectl](https://www.virtualbox.org/manual/ch08.html#vboxmanage-storagectl)
 for additional information on these options.
 
 ### <a name="config-guest"></a> guest
