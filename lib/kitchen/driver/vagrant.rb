@@ -22,6 +22,7 @@ require "rubygems/version"
 
 require "kitchen"
 require "kitchen/driver/vagrant_version"
+require "kitchen/driver/helpers"
 
 module Kitchen
 
@@ -33,6 +34,7 @@ module Kitchen
     class Vagrant < Kitchen::Driver::Base
 
       include ShellOut
+      include Kitchen::Driver::HypervHelpers
 
       kitchen_driver_api_version 2
 
@@ -169,6 +171,7 @@ module Kitchen
         finalize_pre_create_command!
         finalize_synced_folders!
         finalize_ca_cert!
+        finalize_network!
         self
       end
 
@@ -240,6 +243,7 @@ module Kitchen
       #   shared folders
       # @api private
       def safe_share?(box)
+        return false if config[:provider] =~ /(hyperv|libvirt)/
         box =~ /^bento\/(centos|debian|fedora|opensuse|ubuntu|oracle)-/
       end
 
@@ -339,6 +343,19 @@ module Kitchen
 
         if windows_os? && string.is_a?(String) && string.size >= 12
           config[:vm_hostname] = "#{string[0...10]}-#{string[-1]}"
+        end
+      end
+
+      # If Hyper-V and no network configuration
+      # check KITCHEN_HYPERV_SWITCH and fallback to helper method
+      # to select the best switch
+      # @api private
+      def finalize_network!
+        if config[:provider] == "hyperv" && config[:network].empty?
+          config[:network].push([
+            "public_network",
+            "bridge: #{hyperv_switch}",
+            ])
         end
       end
 
