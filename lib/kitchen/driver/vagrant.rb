@@ -22,7 +22,7 @@ require "rubygems/version"
 
 require "kitchen"
 require "kitchen/driver/vagrant_version"
-require 'kitchen/driver/helpers'
+require "kitchen/driver/helpers"
 
 module Kitchen
 
@@ -347,13 +347,13 @@ module Kitchen
       end
 
       # If Hyper-V and no network configuration
-      # check KITCHEN_HYPERV_SWITCH and fallback to helper method 
+      # check KITCHEN_HYPERV_SWITCH and fallback to helper method
       # to select the best switch
       # @api private
       def finalize_network!
-        if config[:provider] == 'hyperv' && config[:network].empty?
+        if config[:provider] == "hyperv" && config[:network].empty?
           config[:network].push([
-            "public_network", 
+            "public_network",
             "bridge: #{hyperv_switch}",
             ])
         end

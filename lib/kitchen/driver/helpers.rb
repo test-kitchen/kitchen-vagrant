@@ -15,28 +15,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'mixlib/shellout'
-require 'fileutils'
-require 'json'
+require "mixlib/shellout"
+require "fileutils"
+require "json"
 
 module Kitchen
   module Driver
     module HypervHelpers
       def encode_command(script)
-        encoded_script = script.encode('UTF-16LE', 'UTF-8')
+        encoded_script = script.encode("UTF-16LE", "UTF-8")
         Base64.strict_encode64(encoded_script)
       end
 
       def is_64bit?
-        os_arch = ENV['PROCESSOR_ARCHITEW6432'] || ENV['PROCESSOR_ARCHITECTURE']
-        ruby_arch = ['foo'].pack('p').size == 4 ? 32 : 64
-        os_arch == 'AMD64' && ruby_arch == 64
+        os_arch = ENV["PROCESSOR_ARCHITEW6432"] || ENV["PROCESSOR_ARCHITECTURE"]
+        ruby_arch = ["foo"].pack("p").size == 4 ? 32 : 64
+        os_arch == "AMD64" && ruby_arch == 64
       end
 
       def is_32bit?
-        os_arch = ENV['PROCESSOR_ARCHITEW6432'] || ENV['PROCESSOR_ARCHITECTURE']
-        ruby_arch = ['foo'].pack('p').size == 4 ? 32 : 64
-        os_arch != 'AMD64' && ruby_arch == 32
+        os_arch = ENV["PROCESSOR_ARCHITEW6432"] || ENV["PROCESSOR_ARCHITECTURE"]
+        ruby_arch = ["foo"].pack("p").size == 4 ? 32 : 64
+        os_arch != "AMD64" && ruby_arch == 32
       end
 
       def powershell_64_bit
@@ -48,7 +48,7 @@ module Kitchen
       end
 
       def wrap_command(script)
-        base_script_path = File.join(File.dirname(__FILE__), '/../../../support/hyperv.ps1')
+        base_script_path = File.join(File.dirname(__FILE__), "/../../../support/hyperv.ps1")
         debug("Loading functions from #{base_script_path}")
         new_script = [ ". #{base_script_path}", "#{script}" ].join(";\n")
         debug("Wrapped script: #{new_script}")
@@ -64,7 +64,7 @@ module Kitchen
       # @api private
       def run_ps(cmd, options = {})
         cmd = "echo #{cmd}" if config[:dry_run]
-        debug('Preparing to run: ')
+        debug("Preparing to run: ")
         debug("  #{cmd}")
         wrapped_command = wrap_command cmd
         execute_command wrapped_command, options
@@ -87,11 +87,11 @@ module Kitchen
       def hyperv_switch
         default_switch_object = run_ps hyperv_default_switch_ps
         if default_switch_object.nil? ||
-           !default_switch_object.key?('Name') ||
-           default_switch_object['Name'].empty?
+            !default_switch_object.key?("Name") ||
+            default_switch_object["Name"].empty?
           raise "Failed to find a default VM Switch."
         end
-        default_switch_object['Name']
+        default_switch_object["Name"]
       end
 
       def hyperv_default_switch_ps
@@ -104,7 +104,7 @@ module Kitchen
 
       def ruby_array_to_ps_array(list)
         return "@()" if list.nil? || list.empty?
-        list.to_s.tr('[]','()').prepend('@')
+        list.to_s.tr("[]", "()").prepend("@")
       end
     end
   end
