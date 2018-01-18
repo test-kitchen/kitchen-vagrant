@@ -17,7 +17,7 @@
 
 require 'mixlib/shellout'
 require 'fileutils'
-require 'JSON'
+require 'json'
 
 module Kitchen
   module Driver
