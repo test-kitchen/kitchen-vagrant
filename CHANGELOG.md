@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.3.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.3.0) (2018-01-17)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.2.2...1.3.0)
+
+- Improve Hyper-V defaults and support [\#338](https://github.com/test-kitchen/kitchen-vagrant/pull/338)
+
 ## [1.2.2](https://github.com/test-kitchen/kitchen-vagrant/tree/1.2.2) (2017-11-07)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.2.1...1.2.2)
 
