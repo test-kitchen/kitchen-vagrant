@@ -20,67 +20,35 @@ A Vagrant version of 1.1.0 or higher is required for this driver which means
 that a [native package][vagrant_dl] must be installed on the system running
 Test Kitchen.
 
-**Note:** If you have previously installed Vagrant as a gem (a version prior
-to 1.1.0), this version may be resolved first in your `PATH`. If you receive an
-error message that Vagrant is too old despite having installed Vagrant as a
-package, you may be required to uninstall the gem version or modify your `PATH`
-environment. If you require the vagrant gem for older projects you should
-consider the [vagrant-wrapper][vagrant_wrapper] gem which helps manage both
-styles of Vagrant installations
-([background details][vagrant_wrapper_background]).
-
 If you are creating Windows VMs over a WinRM Transport, then the
 [vagrant-winrm][vagrant_winrm] Vagrant plugin must be installed. As a
 consequence, the minimum version of Vagrant required is 1.6 or higher.
 
-### <a name="dependencies-virtualization"></a> Virtualization Hypervisor(s)
+### <a name="dependencies-virtualization"></a> Supported Virtualization Hypervisors
 
-Currently this driver supports the Parallels, VirtualBox, and VMware Fusion/Workstation
-hypervisors. VirtualBox is free and is the default provider for Vagrant.
+| Provider                          | vagrant plugin              | Paid    
+| ---------                         | ---------                   | --------- 
+| [VirtualBox][virtualbox_dl]       | built-in                    | N 
+| [VMware Fusion][fusion_dl]        | vagrant-vmware-fusion       | Y   
+| [VMware Workstation][ws_dl]       | vagrant-vmware-workstation  | Y
+| [Parallels Desktop][parallels_dl] | vagrant-parallels           | Y (plugin free)
+| Hyper-V                           | n/a                         | N
 
-[VirtualBox package][virtualbox_dl]
+If you would like to use VMware Fusion or Workstation you must purchase the
+software from VMware and also purchase the corresponding [Vagrant VMware Plugin][vmware_plugin].
 
-If you would like to use VMware Fusion/Workstation you must purchase the
-software from VMware and then must also purchase the Vagrant VMware plugin.
+## <a name="installation"></a> Installation
 
-[Vagrant VMware Plugin][vmware_plugin]
+If using the ChefDK, kitchen-vagrant is already installed. If using an existing Ruby install:
 
-[VMware Fusion][fusion_dl]
-
-[VMware Workstation][workstation_dl]
-
-If you would like to use Parallels Desktop you must also purchase the software but the
-`vagrant-parallels` plugin is freely available.
-
-[Parallels Desktop for Mac][parallels_dl]
-
-[Vagrant Parallels Provider][vagrant_parallels]
-
-#### <a name="unmaintained-virtualization"></a> Unmaintained Virtualization Hypervisors
-
-Some additional hypervisors may be used with this driver but are not officially supported:
-
-[CloudStack][cloudstack] using the unofficial [vagrant-cloudstack][vagrant_cloudstack] plugin for Vagrant.
-
-[KVM][kvm]/[Libvirt][libvirt] using the unofficial [vagrant-libvirt][vagrant_libvirt] plugin for Vagrant.
-
-[LXC][lxc] using the unofficial [vagrant-lxc][vagrant_lxc] plugin for Vagrant.
-
-[OpenStack][openstack] using an unofficial provider plugin for Vagrant.
-
-[RackSpace][rackspace] using the official [vagrant-rackspace][vagrant_rackspace] plugin for Vagrant.
-
-[SoftLayer][softlayer] using the unofficial [vagrant-softlayer][vagrant_softlayer] plugin for Vagrant.
-
-## <a name="installation"></a> Installation and Setup
-
-Please read the [Driver usage][driver_usage] page for more details.
+```
+gem install kitchen-vagrant
+```
 
 ## <a name="default-config"></a> Default Configuration
 
-For a select number of platforms and a select number of hypervisors (VirtualBox, VMware,
-and Parallels) default boxes are published under the [Bento organization][bento_org]
-on [Vagrant Cloud][vagrant_cloud] such as:
+For a set of platforms and hypervisors, boxes are published under the [Bento organization][bento_org]
+on [Vagrant Cloud][vagrant_cloud] which serve as the default boxes for common platforms:
 
 ```yaml
 ---
@@ -107,8 +75,6 @@ platforms:
   # ...
 ```
 
-*NOTE:* for most platforms that follow a point release model, we maintain a `os-maj` box that is a copy of `os-maj.min`. Ex. `bento/centos-7` will effectively be a copy of the last `bento/centos-7.x` release.
-
 Any other platform names will set a more reasonable default for `box` and leave `box_url` unset. For example:
 
 ```yaml
@@ -134,8 +100,23 @@ platforms:
     driver:
       box: windows-2012r2
 ```
+### Hyper-V
 
-Many host wide defaults for Vagrant can be set using `$HOME/.vagrant.d/Vagrantfile`. See the [Vagrantfile documentation][vagrantfile] for more information.
+As Hyper-V is an exclusive hypervisor, it is recomended that the environment variable `VAGRANT_DEFAULT_PROVIDER` be set to `hyperv`. Vagrant currently requires user input to choose a virtual switch so we try to detect this automatically and use a workaround. If no network configuration is provided, we check:
+
+1) environment variable `KITCHEN_HYPERV_SWITCH`
+2) If on Windows 10 Fall Creators Update, use the built-in 'Default Switch'
+3) the first switch returned
+
+If `VAGRANT_DEFAULT_PROVIDER` is set and the above logic has a valid virtual switch, no additional configuration is needed. This will effectively generate a configuration similar to:
+
+```yaml
+driver:
+  name: vagrant
+  provider: hyperv
+  network:
+  - ["public_network", bridge: "Default Switch"]
+```
 
 ## <a name="config"></a> Configuration
 
@@ -577,6 +558,17 @@ instance was called "default-fuzz-9" will produce a default `vm_hostname` value
 of `"default-fuzz-9"`. For Windows-based platforms, a default of `nil` is used
 to save on boot time and potential rebooting.
 
+## <a name="unsupported"></a> Unsupported Hypervisors
+
+The following providers are reported to work but are unsupported:
+
+- [CloudStack][cloudstack] via [vagrant-cloudstack][vagrant_cloudstack] 
+- [KVM][kvm]/[Libvirt][libvirt] via [vagrant-libvirt][vagrant_libvirt] 
+- [LXC][lxc] via [vagrant-lxc][vagrant_lxc]
+- [OpenStack][openstack]
+- [RackSpace][rackspace] via [vagrant-rackspace][vagrant_rackspace]
+- [SoftLayer][softlayer] via [vagrant-softlayer][vagrant_softlayer]
+
 ## <a name="development"></a> Development
 
 * Source hosted at [GitHub][repo]
@@ -623,7 +615,7 @@ Apache 2.0 (see [LICENSE][license])
 [vagrant_wrapper_background]: https://github.com/org-binbab/gem-vagrant-wrapper#background---aka-the-vagrant-gem-enigma
 [vmware_plugin]:            http://www.vagrantup.com/vmware
 [fusion_dl]:                http://www.vmware.com/products/fusion/overview.html
-[workstation_dl]:           http://www.vmware.com/products/workstation/
+[ws_dl]:                    http://www.vmware.com/products/workstation/
 [bento_org]:                https://app.vagrantup.com/bento
 [vagrant_cloud]:            https://app.vagrantup.com/boxes/search
 [parallels_dl]:             http://www.parallels.com/products/desktop/download/
