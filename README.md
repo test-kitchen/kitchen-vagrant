@@ -373,7 +373,7 @@ end
 Vagrant.configure("2") do |config|
   # ...
 
-  c.vm.provider :virtualbox do |p|
+  c.vm.provider :hyperv do |p|
     p.differencing_disk = true
   end
 end
