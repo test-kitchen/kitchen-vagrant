@@ -346,7 +346,7 @@ For more info about GUI vs. Headless mode please see [vagrant configuration docs
 
 ### <a name="config-linked_clone"></a> linked_clone
 
-Allows to use linked clones to import boxes for VirtualBox, VMware and Parallels Desktop. Default is **nil**.
+Allows to use linked clones to import boxes for VirtualBox, VMware, Parallels Desktop and Hyper-V. Default is **nil**.
 
 ```yaml
 ---
@@ -356,14 +356,25 @@ platforms:
       linked_clone: true
 ```
 
-will generate a Vagrantfile configuration similar to:
 
+will generate a Vagrantfile configuration similar to:
+#### VirtualBox, VMware and Parallels Desktop
 ```ruby
 Vagrant.configure("2") do |config|
   # ...
 
   c.vm.provider :virtualbox do |p|
     p.linked_clone = true
+  end
+end
+```
+#### Hyper-V
+```ruby
+Vagrant.configure("2") do |config|
+  # ...
+
+  c.vm.provider :hyperv do |p|
+    p.differencing_disk = true
   end
 end
 ```
