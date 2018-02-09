@@ -102,6 +102,10 @@ Vagrant.configure("2") do |c|
      if config[:linked_clone] == true || config[:linked_clone] == false %>
     p.linked_clone = <%= config[:linked_clone] %>
 <%   end
+   when "hyperv"
+     if config[:linked_clone] == true || config[:linked_clone] == false %>
+    p.differencing_disk = <%= config[:linked_clone] %>
+<%   end
    end %>
 
 <% config[:customize].each do |key, value| %>
