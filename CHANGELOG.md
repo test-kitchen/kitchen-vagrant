@@ -1,5 +1,12 @@
 # Change Log
 
+## [v1.3.1](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.1) (2018-02-20)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.0...v1.3.1)
+
+**Merged pull requests:**
+
+- Adding support for HyperV Differencing\_disk [\#342](https://github.com/test-kitchen/kitchen-vagrant/pull/342) ([cocazoulou](https://github.com/cocazoulou))
+
 ## [1.3.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.3.0) (2018-01-17)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.2.2...1.3.0)
 
