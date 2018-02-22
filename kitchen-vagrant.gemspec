@@ -7,7 +7,7 @@ require "English"
 Gem::Specification.new do |gem|
   gem.name          = "kitchen-vagrant"
   gem.version       = Kitchen::Driver::VAGRANT_VERSION
-  gem.license       = "Apache 2.0"
+  gem.license       = "Apache-2.0"
   gem.authors       = ["Fletcher Nichol"]
   gem.email         = ["fnichol@nichol.ca"]
   gem.description   = "Kitchen::Driver::Vagrant - A Vagrant Driver for Test Kitchen."
