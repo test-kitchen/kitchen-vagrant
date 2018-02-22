@@ -354,7 +354,7 @@ module Kitchen
         if config[:provider] == "hyperv" && config[:network].empty?
           config[:network].push([
             "public_network",
-            "bridge: #{hyperv_switch}",
+            "bridge: \"#{hyperv_switch}\"",
             ])
         end
       end
