@@ -88,9 +88,7 @@ module Kitchen
         driver.windows_os? ? nil : "#{driver.instance.name}.vagrantup.com"
       end
 
-      default_config(:cache_directory) do |driver|
-        driver.windows_os? ? "/omnibus/cache" : "/tmp/omnibus/cache"
-      end
+      default_config :cache_directory, false
 
       default_config :kitchen_cache_directory,
         File.expand_path("~/.kitchen/cache")
@@ -202,8 +200,10 @@ module Kitchen
       # and share a local folder to that directory so that we don't pull them
       # down every single time
       def cache_directory
-        if enable_cache?
+        if config[:cache_directory]
           config[:cache_directory]
+        elsif safe_share?(config[:box])
+          "/tmp/omnibus/cache"
         else
           false
         end
@@ -245,15 +245,6 @@ module Kitchen
       def safe_share?(box)
         return false if config[:provider] =~ /(hyperv|libvirt)/
         box =~ /^bento\/(centos|debian|fedora|opensuse|ubuntu|oracle)-/
-      end
-
-      # Return true if we found the criteria to enable the cache_directory
-      # functionality
-      def enable_cache?
-        return false unless config[:cache_directory]
-        return true if safe_share?(config[:box])
-        # Otherwise
-        false
       end
 
       # Renders and writes out a Vagrantfile dedicated to this instance.
