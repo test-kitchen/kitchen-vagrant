@@ -161,7 +161,7 @@ describe Kitchen::Driver::Vagrant do
       ]
     end
 
-    %w{centos debian fedora opensuse ubuntu oracle freebsd}.each do |name|
+    %w{centos debian fedora opensuse ubuntu oracle freebsd hardenedbsd}.each do |name|
 
       context "for known bento platform names starting with #{name}" do
 
