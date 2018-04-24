@@ -1,5 +1,14 @@
 # Change Log
 
+## [v1.3.2](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.2) (2018-04-23)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.1...v1.3.2)
+
+**Merged pull requests:**
+
+- Fixing \#349 - allow bento/hardenedbsd [\#355](https://github.com/test-kitchen/kitchen-vagrant/pull/355) ([cheeseplus](https://github.com/cheeseplus))
+- Updating travis config [\#354](https://github.com/test-kitchen/kitchen-vagrant/pull/354) ([cheeseplus](https://github.com/cheeseplus))
+- Hyper-V: Ensure default switch name is always wrapped in quotes [\#345](https://github.com/test-kitchen/kitchen-vagrant/pull/345) ([stuartpreston](https://github.com/stuartpreston))
+
 ## [v1.3.1](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.1) (2018-02-20)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.0...v1.3.1)
 
