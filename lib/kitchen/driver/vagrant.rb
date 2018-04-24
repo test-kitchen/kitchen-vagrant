@@ -61,6 +61,8 @@ module Kitchen
 
       default_config :linked_clone, nil
 
+      default_config :multi_machine, false
+
       default_config :network, []
 
       default_config :pre_create_command, nil
@@ -136,7 +138,9 @@ module Kitchen
         create_vagrantfile
         @vagrantfile_created = false
         instance.transport.connection(state).close
-        run("#{config[:vagrant_binary]} destroy -f")
+        cmd = "#{config[:vagrant_binary]} destroy -f"
+        cmd += " #{instance.platform.name}" if config[:multi_machine]
+        run(cmd)
         FileUtils.rm_rf(vagrant_root)
         info("Vagrant instance #{instance.to_str} destroyed.")
         state.delete(:hostname)
@@ -478,6 +482,7 @@ module Kitchen
       # @api private
       def run_vagrant_up
         cmd = "#{config[:vagrant_binary]} up"
+        cmd += " #{instance.platform.name}" if config[:multi_machine]
         cmd += " --no-provision" unless config[:provision]
         cmd += " --provider #{config[:provider]}" if config[:provider]
         run(cmd)
@@ -524,7 +529,9 @@ module Kitchen
       #   invocation
       # @api private
       def vagrant_config(type)
-        lines = run_silently("#{config[:vagrant_binary]} #{type}-config").
+        cmd = "#{config[:vagrant_binary]} #{type}-config"
+        cmd += " #{instance.platform.name}" if config[:multi_machine]
+        lines = run_silently(cmd).
           split("\n").map do |line|
           tokens = line.strip.partition(" ")
           [tokens.first, tokens.last.delete('"')]
