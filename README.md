@@ -276,7 +276,7 @@ driver:
         port: 1
         device: 0
         type: hdd
-        medium: /tmp/disk2.vmdk
+        medium: /tmp/disk1.vmdk
       - storagectl: IDE Controller
         port: 1
         device: 1
