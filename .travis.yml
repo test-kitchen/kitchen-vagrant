@@ -6,7 +6,7 @@ rvm:
   - 2.5.1
   - ruby-head
 
-bundler_args: --without guard
+bundler_args: --without guard, changelog
 
 sudo: false
 
