@@ -530,6 +530,7 @@ and `instance.provisioner[:run_list]` can be used to compose a custom
 Vagrantfile if necessary.
 
 ```yaml
+---
 driver:
   vagrantfile_erb: CustomVagrantfile.erb
 ```
