@@ -529,6 +529,11 @@ object, which means that methods like `config[:kitchen_root]`, `instance.name`,
 and `instance.provisioner[:run_list]` can be used to compose a custom
 Vagrantfile if necessary.
 
+```yaml
+driver:
+  vagrantfile_erb: CustomVagrantfile.erb
+```
+
 **Warning:** Be cautious when going down this road as your setup may cease to
 be portable or applicable to other Test Kitchen Drivers such as Ec2 or Docker.
 Using the alternative Vagrantfile template strategy may be a dangerous
