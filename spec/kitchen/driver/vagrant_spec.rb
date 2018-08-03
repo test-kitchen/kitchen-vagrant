@@ -35,6 +35,7 @@ describe Kitchen::Driver::Vagrant do
   let(:suite)         { Kitchen::Suite.new(:name => "suitey") }
   let(:verifier)      { Kitchen::Verifier::Dummy.new }
   let(:provisioner)   { Kitchen::Provisioner::Dummy.new }
+  let(:lifecycle_hooks) { Kitchen::LifecycleHooks.new({}) }
   let(:transport)     { Kitchen::Transport::Dummy.new }
   let(:state_file)    { double("state_file") }
   let(:state)         { Hash.new }
@@ -60,6 +61,7 @@ describe Kitchen::Driver::Vagrant do
       :suite => suite,
       :platform => platform,
       :provisioner => provisioner,
+      :lifecycle_hooks => lifecycle_hooks,
       :transport => transport,
       :state_file => state_file
     )
