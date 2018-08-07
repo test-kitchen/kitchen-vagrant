@@ -91,6 +91,11 @@ Vagrant.configure("2") do |c|
 
   c.vm.provider :<%= config[:provider] %> do |p|
 <% case config[:provider]
+   when "virtualbox" %>
+    p.name = "kitchen-<%= File.basename(config[:kitchen_root]) %>-<%= instance.name %>"
+<% end %>
+   
+<% case config[:provider]
    when "virtualbox", /^vmware_/
      if config[:gui] == true || config[:gui] == false %>
     p.gui = <%= config[:gui] %>
