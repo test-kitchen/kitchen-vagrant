@@ -35,6 +35,7 @@ describe Kitchen::Driver::Vagrant do
   let(:suite)         { Kitchen::Suite.new(:name => "suitey") }
   let(:verifier)      { Kitchen::Verifier::Dummy.new }
   let(:provisioner)   { Kitchen::Provisioner::Dummy.new }
+  let(:lifecycle_hooks) { Kitchen::LifecycleHooks.new({}) }
   let(:transport)     { Kitchen::Transport::Dummy.new }
   let(:state_file)    { double("state_file") }
   let(:state)         { Hash.new }
@@ -60,6 +61,7 @@ describe Kitchen::Driver::Vagrant do
       :suite => suite,
       :platform => platform,
       :provisioner => provisioner,
+      :lifecycle_hooks => lifecycle_hooks,
       :transport => transport,
       :state_file => state_file
     )
@@ -161,7 +163,7 @@ describe Kitchen::Driver::Vagrant do
       ]
     end
 
-    %w{centos debian fedora opensuse ubuntu oracle freebsd}.each do |name|
+    %w{centos debian fedora opensuse ubuntu oracle freebsd hardenedbsd}.each do |name|
 
       context "for known bento platform names starting with #{name}" do
 
@@ -1264,6 +1266,16 @@ describe Kitchen::Driver::Vagrant do
 
       before { config[:provider] = "virtualbox" }
 
+      it "sets :name for virtualbox GUI" do
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
+          end
+        RUBY
+      end
+
       it "adds a line for each element in :customize" do
         config[:customize] = {
           :a_key => "some value",
@@ -1273,6 +1285,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.customize ["modifyvm", :id, "--a_key", "some value"]
             p.customize ["modifyvm", :id, "--something", "else"]
           end
@@ -1292,6 +1305,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.gui = false
           end
         RUBY
@@ -1303,6 +1317,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.gui = true
           end
         RUBY
@@ -1322,6 +1337,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.linked_clone = false
           end
         RUBY
@@ -1333,6 +1349,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.linked_clone = true
           end
         RUBY
@@ -1349,6 +1366,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.customize ["createhd", "--filename", "./d1.vmdk", "--size", 10240]
           end
         RUBY
@@ -1371,6 +1389,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.customize ["createhd", "--filename", "./d1.vmdk", "--size", 10240]
             p.customize ["createhd", "--filename", "./d2.vmdk", "--size", 20480]
           end
@@ -1390,6 +1409,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.customize ["storagectl", :id, "--name", "Custom SATA Controller", "--add", "sata", "--controller", "IntelAHCI", "--portcount", 4]
           end
         RUBY
@@ -1413,6 +1433,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.customize ["storagectl", :id, "--name", "Custom SATA Controller", "--add", "sata", "--controller", "IntelAHCI"]
             p.customize ["storagectl", :id, "--name", "Custom SATA Controller", "--portcount", 4]
           end
@@ -1430,6 +1451,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.customize ["storageattach", :id, "--type", "hdd", "--port", 1]
           end
         RUBY
@@ -1458,6 +1480,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", 1, "--device", 0, "--type", "hdd", "--medium", "./d1.vmdk"]
             p.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", 1, "--device", 1, "--type", "hdd", "--medium", "./d2.vmdk"]
           end
@@ -1472,6 +1495,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.customize ["modifyvm", :id, "--cpuidset", "00000001", "00000002"]
           end
         RUBY

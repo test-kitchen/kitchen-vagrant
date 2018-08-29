@@ -276,7 +276,7 @@ driver:
         port: 1
         device: 0
         type: hdd
-        medium: /tmp/disk2.vmdk
+        medium: /tmp/disk1.vmdk
       - storagectl: IDE Controller
         port: 1
         device: 1
@@ -346,7 +346,7 @@ For more info about GUI vs. Headless mode please see [vagrant configuration docs
 
 ### <a name="config-linked_clone"></a> linked_clone
 
-Allows to use linked clones to import boxes for VirtualBox, VMware and Parallels Desktop. Default is **nil**.
+Allows to use linked clones to import boxes for VirtualBox, VMware, Parallels Desktop and Hyper-V. Default is **nil**.
 
 ```yaml
 ---
@@ -356,14 +356,25 @@ platforms:
       linked_clone: true
 ```
 
-will generate a Vagrantfile configuration similar to:
 
+will generate a Vagrantfile configuration similar to:
+#### VirtualBox, VMware and Parallels Desktop
 ```ruby
 Vagrant.configure("2") do |config|
   # ...
 
   c.vm.provider :virtualbox do |p|
     p.linked_clone = true
+  end
+end
+```
+#### Hyper-V
+```ruby
+Vagrant.configure("2") do |config|
+  # ...
+
+  c.vm.provider :hyperv do |p|
+    p.differencing_disk = true
   end
 end
 ```
@@ -517,6 +528,12 @@ driver. The binding context for the ERB processing is that of the Driver
 object, which means that methods like `config[:kitchen_root]`, `instance.name`,
 and `instance.provisioner[:run_list]` can be used to compose a custom
 Vagrantfile if necessary.
+
+```yaml
+---
+driver:
+  vagrantfile_erb: CustomVagrantfile.erb
+```
 
 **Warning:** Be cautious when going down this road as your setup may cease to
 be portable or applicable to other Test Kitchen Drivers such as Ec2 or Docker.

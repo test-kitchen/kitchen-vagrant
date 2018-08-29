@@ -234,7 +234,7 @@ module Kitchen
       #   box
       # @api private
       def bento_box?(name)
-        name =~ /^(centos|debian|fedora|freebsd|opensuse|ubuntu|oracle)-/
+        name =~ /^(centos|debian|fedora|freebsd|opensuse|ubuntu|oracle|hardenedbsd)-/
       end
 
       # Returns whether or not the we expect the box to work with shared folders
@@ -354,7 +354,7 @@ module Kitchen
         if config[:provider] == "hyperv" && config[:network].empty?
           config[:network].push([
             "public_network",
-            "bridge: #{hyperv_switch}",
+            "bridge: \"#{hyperv_switch}\"",
             ])
         end
       end

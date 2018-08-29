@@ -91,6 +91,11 @@ Vagrant.configure("2") do |c|
 
   c.vm.provider :<%= config[:provider] %> do |p|
 <% case config[:provider]
+   when "virtualbox" %>
+    p.name = "kitchen-<%= File.basename(config[:kitchen_root]) %>-<%= instance.name %>"
+<% end %>
+   
+<% case config[:provider]
    when "virtualbox", /^vmware_/
      if config[:gui] == true || config[:gui] == false %>
     p.gui = <%= config[:gui] %>
@@ -101,6 +106,11 @@ Vagrant.configure("2") do |c|
    when "virtualbox", /^vmware_/, "parallels"
      if config[:linked_clone] == true || config[:linked_clone] == false %>
     p.linked_clone = <%= config[:linked_clone] %>
+<%   end
+   when "hyperv" %>
+    p.vmname = "kitchen-<%= File.basename(config[:kitchen_root]) %>-<%= instance.name %>"
+<%   if config[:linked_clone] == true || config[:linked_clone] == false %>
+    p.differencing_disk = <%= config[:linked_clone] %>
 <%   end
    end %>
 
