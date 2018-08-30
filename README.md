@@ -374,7 +374,7 @@ Vagrant.configure("2") do |config|
   # ...
 
   c.vm.provider :hyperv do |p|
-    p.differencing_disk = true
+    p.linked_clone = true
   end
 end
 ```
