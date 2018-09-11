@@ -1,5 +1,5 @@
 <% config[:vagrantfiles].each do |vagrantfile| %>
-require "<%= vagrantfile %>"
+load "<%= vagrantfile %>"
 <% end %>
 
 Vagrant.configure("2") do |c|

@@ -1023,9 +1023,9 @@ describe Kitchen::Driver::Vagrant do
       cmd
 
       expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-        require "/a"
-        require "/b"
-        require "/c"
+        load "/a"
+        load "/b"
+        load "/c"
       RUBY
     end
 
