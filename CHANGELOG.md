@@ -1,5 +1,13 @@
 # Change Log
 
+## [v1.3.4](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.4) (2018-09-15)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.3...v1.3.4)
+
+**Merged pull requests:**
+
+- Fix \#371, change require =\> load [\#373](https://github.com/test-kitchen/kitchen-vagrant/pull/373) ([cheeseplus](https://github.com/cheeseplus))
+- Vagrantfile Template: Hyper-v Differencing\_disk deprecation [\#370](https://github.com/test-kitchen/kitchen-vagrant/pull/370) ([cocazoulou](https://github.com/cocazoulou))
+
 ## [v1.3.3](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.3) (2018-08-13)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.2...v1.3.3)
 
