@@ -556,11 +556,13 @@ module Kitchen
             " Please upgrade to version 1.6 or higher from #{WEBSITE}."
         end
 
-        if !winrm_plugin_installed?
-          raise UserError, "WinRM Transport requires the vagrant-winrm " \
-            "Vagrant plugin to properly communicate with this Vagrant VM. " \
-            "Please install this plugin with: " \
-            "`vagrant plugin install vagrant-winrm' and try again."
+        if Gem::Version.new(vagrant_version) < Gem::Version.new("2.2.0") && !winrm_plugin_installed?
+          raise UserError, "Vagrant version #{vagrant_version} requires the " \
+            "vagrant-winrm plugin to properly communicate with this Vagrant VM " \
+            "over WinRM Transport. Please install this plugin with: " \
+            "`vagrant plugin install vagrant-winrm' and try again." \
+            "Alternatively upgrade to Vagrant >= 2.2.0 which does not " \
+            "require the vagrant-winrm plugin."
         end
       end
 
