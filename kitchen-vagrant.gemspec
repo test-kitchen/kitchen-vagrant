@@ -2,7 +2,6 @@
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "kitchen/driver/vagrant_version.rb"
-require "English"
 
 Gem::Specification.new do |gem|
   gem.name          = "kitchen-vagrant"
@@ -14,8 +13,7 @@ Gem::Specification.new do |gem|
   gem.summary       = gem.description
   gem.homepage      = "https://github.com/test-kitchen/kitchen-vagrant/"
 
-  gem.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
-  gem.executables   = []
+  gem.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR).grep(/LICENSE|^CHANGELOG|^lib|^support|^templates/)
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
