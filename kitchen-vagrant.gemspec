@@ -13,7 +13,7 @@ Gem::Specification.new do |gem|
   gem.summary       = gem.description
   gem.homepage      = "https://github.com/test-kitchen/kitchen-vagrant/"
 
-  gem.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR).grep(/LICENSE|^CHANGELOG|^lib|^support|^templates/)
+  gem.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR).grep(/LICENSE|^lib|^support|^templates/)
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
