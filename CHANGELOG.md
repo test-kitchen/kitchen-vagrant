@@ -1,5 +1,12 @@
 # Change Log
 
+## [v1.3.5](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.5) (2018-10-23)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.4...v1.3.5)
+
+**Merged pull requests:**
+
+- Slim the size of the gem by removing spec files [\#377](https://github.com/test-kitchen/kitchen-vagrant/pull/377) ([tas50](https://github.com/tas50))
+
 ## [v1.3.4](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.4) (2018-09-15)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.3...v1.3.4)
 
