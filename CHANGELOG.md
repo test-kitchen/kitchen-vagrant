@@ -1,7 +1,19 @@
 # Change Log
 
+## [1.3.6](https://github.com/test-kitchen/kitchen-vagrant/tree/1.3.6) (2018-10-26)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.5...1.3.6)
+
+**Merged pull requests:**
+
+- Updating for new Chefstyle rules [\#382](https://github.com/test-kitchen/kitchen-vagrant/pull/382) ([tyler-ball](https://github.com/tyler-ball))
+- Newest vagrant no long requires vagrant-winrm plugin [\#379](https://github.com/test-kitchen/kitchen-vagrant/pull/379) ([tyler-ball](https://github.com/tyler-ball))
+
 ## [v1.3.5](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.5) (2018-10-23)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.4...v1.3.5)
+
+**Closed issues:**
+
+- vagrant winrm-config doesn't detect auto-assigned forwarding for RDP [\#224](https://github.com/test-kitchen/kitchen-vagrant/issues/224)
 
 **Merged pull requests:**
 
