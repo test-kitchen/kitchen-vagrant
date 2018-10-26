@@ -9,7 +9,7 @@ RSpec::Core::RakeTask.new(:spec) do |t|
 end
 
 desc "Run all test suites"
-task :test => [:spec]
+task test: [:spec]
 
 require "chefstyle"
 require "rubocop/rake_task"
@@ -26,9 +26,9 @@ task :stats do
 end
 
 desc "Run all quality tasks"
-task :quality => [:style, :stats]
+task quality: [:style, :stats]
 
-task :default => [:test, :quality]
+task default: [:test, :quality]
 
 begin
   require "github_changelog_generator/task"
