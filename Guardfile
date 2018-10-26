@@ -2,14 +2,14 @@
 ignore %r{^\.gem/}
 
 def rspec_opts
-  { :cmd => "bundle exec rspec" }
+  { cmd: "bundle exec rspec" }
 end
 
 def rubocop_opts
-  { :all_on_start => false, :keep_failed => false, :cli => "-r finstyle" }
+  { all_on_start: false, keep_failed: false, cli: "-r finstyle" }
 end
 
-group :red_green_refactor, :halt_on_fail => true do
+group :red_green_refactor, halt_on_fail: true do
   guard :rspec, rspec_opts do
     watch(%r{^spec/(.*)_spec\.rb})
     watch(%r{^lib/(.*)([^/]+)\.rb})   { |m| "spec/#{m[1]}#{m[2]}_spec.rb" }
