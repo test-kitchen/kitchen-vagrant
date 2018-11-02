@@ -92,8 +92,11 @@ module Kitchen
         driver.windows_os? ? "/omnibus/cache" : "/tmp/omnibus/cache"
       end
 
+      # for use with vagrant on WSL
+      user_home = ENV["VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH"].nil? ? "~" : ENV["VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH"]
+
       default_config :kitchen_cache_directory,
-        File.expand_path("~/.kitchen/cache")
+        File.expand_path("#{user_home}/.kitchen/cache")
 
       default_config :cachier, nil
 
