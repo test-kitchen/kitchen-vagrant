@@ -276,7 +276,7 @@ driver:
         port: 1
         device: 0
         type: hdd
-        medium: /tmp/disk2.vmdk
+        medium: /tmp/disk1.vmdk
       - storagectl: IDE Controller
         port: 1
         device: 1
@@ -374,7 +374,7 @@ Vagrant.configure("2") do |config|
   # ...
 
   c.vm.provider :hyperv do |p|
-    p.differencing_disk = true
+    p.linked_clone = true
   end
 end
 ```
@@ -529,6 +529,12 @@ object, which means that methods like `config[:kitchen_root]`, `instance.name`,
 and `instance.provisioner[:run_list]` can be used to compose a custom
 Vagrantfile if necessary.
 
+```yaml
+---
+driver:
+  vagrantfile_erb: CustomVagrantfile.erb
+```
+
 **Warning:** Be cautious when going down this road as your setup may cease to
 be portable or applicable to other Test Kitchen Drivers such as Ec2 or Docker.
 Using the alternative Vagrantfile template strategy may be a dangerous
@@ -557,10 +563,6 @@ driver:
 Sets the internal hostname for the instance. This is not used when connecting
 to the Vagrant virtual machine.
 
-For more details on this setting please read the
-[config.vm.hostname](http://docs.vagrantup.com/v2/vagrantfile/machine_settings.html)
-section of the Vagrant documentation.
-
 To prevent this value from being rendered in the default Vagrantfile, you can
 set this value to `false`.
 
@@ -568,6 +570,29 @@ The default will be computed from the name of the instance. For example, the
 instance was called "default-fuzz-9" will produce a default `vm_hostname` value
 of `"default-fuzz-9"`. For Windows-based platforms, a default of `nil` is used
 to save on boot time and potential rebooting.
+
+```yaml
+---
+platforms:
+  - name: ubuntu-16.04
+    driver:
+      vm_hostname: server1.example.com
+```
+
+will generate a Vagrantfile configuration similar to:
+
+```ruby
+Vagrant.configure("2") do |config|
+  # ...
+
+  config.vm.hostname = "server1.example.com"
+end
+```
+
+For more details on this setting please read the
+[config.vm.hostname](http://docs.vagrantup.com/v2/vagrantfile/machine_settings.html)
+section of the Vagrant documentation.
+
 
 ## <a name="unsupported"></a> Unsupported Hypervisors
 

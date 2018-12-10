@@ -30,11 +30,12 @@ describe Kitchen::Driver::Vagrant do
 
   let(:logged_output) { StringIO.new }
   let(:logger)        { Logger.new(logged_output) }
-  let(:config)        { { :kitchen_root => "/kroot" } }
-  let(:platform)      { Kitchen::Platform.new(:name => "fooos-99") }
-  let(:suite)         { Kitchen::Suite.new(:name => "suitey") }
+  let(:config)        { { kitchen_root: "/kroot" } }
+  let(:platform)      { Kitchen::Platform.new(name: "fooos-99") }
+  let(:suite)         { Kitchen::Suite.new(name: "suitey") }
   let(:verifier)      { Kitchen::Verifier::Dummy.new }
   let(:provisioner)   { Kitchen::Provisioner::Dummy.new }
+  let(:lifecycle_hooks) { Kitchen::LifecycleHooks.new({}) }
   let(:transport)     { Kitchen::Transport::Dummy.new }
   let(:state_file)    { double("state_file") }
   let(:state)         { Hash.new }
@@ -54,14 +55,15 @@ describe Kitchen::Driver::Vagrant do
 
   let(:instance) do
     Kitchen::Instance.new(
-      :verifier => verifier,
-      :driver => driver_object,
-      :logger => logger,
-      :suite => suite,
-      :platform => platform,
-      :provisioner => provisioner,
-      :transport => transport,
-      :state_file => state_file
+      verifier: verifier,
+      driver: driver_object,
+      logger: logger,
+      suite: suite,
+      platform: platform,
+      provisioner: provisioner,
+      lifecycle_hooks: lifecycle_hooks,
+      transport: transport,
+      state_file: state_file
     )
   end
 
@@ -99,7 +101,7 @@ describe Kitchen::Driver::Vagrant do
         options = driver.send(
           :run_command,
           "cmd",
-          :environment => { "EV1" => "Val1", "EV2" => "Val2" })
+          environment: { "EV1" => "Val1", "EV2" => "Val2" })
         expect(options[:environment]["EV1"]).to eq("Val1")
         expect(options[:environment]["EV2"]).to eq("Val2")
       end
@@ -109,7 +111,7 @@ describe Kitchen::Driver::Vagrant do
         options = driver.send(
           :run_command,
           "cmd",
-          :environment => { "PATH" => path })
+          environment: { "PATH" => path })
         expect(options[:environment]["PATH"]).to eq(path)
       end
 
@@ -140,8 +142,8 @@ describe Kitchen::Driver::Vagrant do
       end
 
       it "fixes path if it notices gem_home in it" do
-        allow(RbConfig::CONFIG).to receive(:[]).with("host_os").
-          and_return("linux")
+        allow(RbConfig::CONFIG).to receive(:[]).with("host_os")
+          .and_return("linux")
         env.merge!(bundler_env)
         env["PATH"] = "gem_home/bin#{File::PATH_SEPARATOR}/something/else"
         options = driver.send(:run_command, "cmd")
@@ -161,7 +163,7 @@ describe Kitchen::Driver::Vagrant do
       ]
     end
 
-    %w{centos debian fedora opensuse ubuntu oracle freebsd}.each do |name|
+    %w{centos debian fedora opensuse ubuntu oracle freebsd hardenedbsd}.each do |name|
 
       context "for known bento platform names starting with #{name}" do
 
@@ -259,9 +261,9 @@ describe Kitchen::Driver::Vagrant do
     end
 
     it "sets :customize to a custom value" do
-      config[:customize] = { :a => "b", :c => { :d => "e" } }
+      config[:customize] = { a: "b", c: { d: "e" } }
 
-      expect(driver[:customize]).to eq(:a => "b", :c => { :d => "e" })
+      expect(driver[:customize]).to eq(a: "b", c: { d: "e" })
     end
 
     it "sets :gui to nil by default" do
@@ -278,11 +280,11 @@ describe Kitchen::Driver::Vagrant do
 
     it "sets :network to a custom value" do
       config[:network] = [
-        ["forwarded_port", :guest => 80, :host => 8080],
+        ["forwarded_port", guest: 80, host: 8080],
       ]
 
       expect(driver[:network]).to eq([
-        ["forwarded_port", :guest => 80, :host => 8080],
+        ["forwarded_port", guest: 80, host: 8080],
       ])
     end
 
@@ -335,9 +337,9 @@ describe Kitchen::Driver::Vagrant do
     end
 
     it "sets :ssh to a custom value" do
-      config[:ssh] = { :a => "b", :c => { :d => "e" } }
+      config[:ssh] = { a: "b", c: { d: "e" } }
 
-      expect(driver[:ssh]).to eq(:a => "b", :c => { :d => "e" })
+      expect(driver[:ssh]).to eq(a: "b", c: { d: "e" })
     end
 
     it "sets :synced_folders with the cache_directory for select bento boxes" do
@@ -535,8 +537,8 @@ describe Kitchen::Driver::Vagrant do
     end
 
     it "raises a UserError for a missing Vagrant command" do
-      allow(driver_object).to receive(:run_command).
-        with("vagrant --version", any_args).and_raise(Errno::ENOENT)
+      allow(driver_object).to receive(:run_command)
+        .with("vagrant --version", any_args).and_raise(Errno::ENOENT)
 
       expect { driver.verify_dependencies }.to raise_error(
         Kitchen::UserError, /Vagrant 1.1.0 or higher is not installed/
@@ -560,8 +562,8 @@ describe Kitchen::Driver::Vagrant do
 
       it "modern vagrant without plugin installed raises UserError" do
         with_modern_vagrant
-        allow(driver_object).to receive(:run_command).
-          with("vagrant plugin list", any_args).and_return("nope (1.2.3)")
+        allow(driver_object).to receive(:run_command)
+          .with("vagrant plugin list", any_args).and_return("nope (1.2.3)")
 
         expect { instance }.to raise_error(
           Kitchen::Error, /vagrant plugin install vagrant-winrm/
@@ -570,9 +572,9 @@ describe Kitchen::Driver::Vagrant do
 
       it "modern vagrant with plugin installed succeeds" do
         with_modern_vagrant
-        allow(driver_object).to receive(:run_command).
-          with("vagrant plugin list", any_args).
-          and_return("vagrant-winrm (1.2.3)")
+        allow(driver_object).to receive(:run_command)
+          .with("vagrant plugin list", any_args)
+          .and_return("vagrant-winrm (1.2.3)")
 
         instance
       end
@@ -590,17 +592,17 @@ describe Kitchen::Driver::Vagrant do
 
       it "modern vagrant without plugin installed succeeds" do
         with_modern_vagrant
-        allow(driver_object).to receive(:run_command).
-          with("vagrant plugin list", any_args).and_return("nope (1.2.3)")
+        allow(driver_object).to receive(:run_command)
+          .with("vagrant plugin list", any_args).and_return("nope (1.2.3)")
 
         instance
       end
 
       it "modern vagrant with plugin installed succeeds" do
         with_modern_vagrant
-        allow(driver_object).to receive(:run_command).
-          with("vagrant plugin list", any_args).
-          and_return("vagrant-winrm (1.2.3)")
+        allow(driver_object).to receive(:run_command)
+          .with("vagrant plugin list", any_args)
+          .and_return("vagrant-winrm (1.2.3)")
 
         instance
       end
@@ -680,24 +682,24 @@ describe Kitchen::Driver::Vagrant do
 
     it "runs vagrant up with --no-provision if :provision is falsey" do
       config[:provision] = false
-      expect(driver).to receive(:run_command).
-        with("vagrant up --no-provision --provider virtualbox", any_args)
+      expect(driver).to receive(:run_command)
+        .with("vagrant up --no-provision --provider virtualbox", any_args)
 
       cmd
     end
 
     it "runs vagrant up without --no-provision if :provision is truthy" do
       config[:provision] = true
-      expect(driver).to receive(:run_command).
-        with("vagrant up --provider virtualbox", any_args)
+      expect(driver).to receive(:run_command)
+        .with("vagrant up --provider virtualbox", any_args)
 
       cmd
     end
 
     it "runs vagrant up with a custom provider if :provider is set" do
       config[:provider] = "bananas"
-      expect(driver).to receive(:run_command).
-        with("vagrant up --no-provision --provider bananas", any_args)
+      expect(driver).to receive(:run_command)
+        .with("vagrant up --no-provision --provider bananas", any_args)
 
       cmd
     end
@@ -723,26 +725,26 @@ describe Kitchen::Driver::Vagrant do
 
         before do
           allow(transport).to receive(:name).and_return("Coolness")
-          allow(driver).to receive(:run_command).
-            with("vagrant ssh-config", any_args).and_return(output)
+          allow(driver).to receive(:run_command)
+            .with("vagrant ssh-config", any_args).and_return(output)
         end
 
         it "sets :hostname from ssh-config" do
           cmd
 
-          expect(state).to include(:hostname => "192.168.32.64")
+          expect(state).to include(hostname: "192.168.32.64")
         end
 
         it "sets :port from ssh-config" do
           cmd
 
-          expect(state).to include(:port => "2022")
+          expect(state).to include(port: "2022")
         end
 
         it "sets :username from ssh-config" do
           cmd
 
-          expect(state).to include(:username => "vagrant")
+          expect(state).to include(username: "vagrant")
         end
 
         it "does not set :password by default" do
@@ -755,13 +757,13 @@ describe Kitchen::Driver::Vagrant do
           output.concat("  Password yep\n")
           cmd
 
-          expect(state).to include(:password => "yep")
+          expect(state).to include(password: "yep")
         end
 
         it "sets :ssh_key from ssh-config" do
           cmd
 
-          expect(state).to include(:ssh_key => "/path/to/private_key")
+          expect(state).to include(ssh_key: "/path/to/private_key")
         end
 
         it "does not set :proxy_command by default" do
@@ -774,7 +776,7 @@ describe Kitchen::Driver::Vagrant do
           output.concat("  ProxyCommand echo proxy\n")
           cmd
 
-          expect(state).to include(:proxy_command => "echo proxy")
+          expect(state).to include(proxy_command: "echo proxy")
         end
       end
 
@@ -793,38 +795,38 @@ describe Kitchen::Driver::Vagrant do
 
         before do
           allow(transport).to receive(:name).and_return("WinRM")
-          allow(driver).to receive(:run_command).
-            with("vagrant winrm-config", any_args).and_return(output)
+          allow(driver).to receive(:run_command)
+            .with("vagrant winrm-config", any_args).and_return(output)
         end
 
         it "sets :hostname from winrm-config" do
           cmd
 
-          expect(state).to include(:hostname => "192.168.32.64")
+          expect(state).to include(hostname: "192.168.32.64")
         end
 
         it "sets :port from winrm-config" do
           cmd
 
-          expect(state).to include(:port => "9999")
+          expect(state).to include(port: "9999")
         end
 
         it "sets :username from winrm-config" do
           cmd
 
-          expect(state).to include(:username => "vagrant")
+          expect(state).to include(username: "vagrant")
         end
 
         it "sets :password from winrm-config" do
           cmd
 
-          expect(state).to include(:password => "yep")
+          expect(state).to include(password: "yep")
         end
 
         it "sets :rdp_port from winrm-config" do
           cmd
 
-          expect(state).to include(:rdp_port => "5555")
+          expect(state).to include(rdp_port: "5555")
         end
       end
     end
@@ -885,8 +887,8 @@ describe Kitchen::Driver::Vagrant do
 
     it "does not run vagrant destroy if :hostname is not present in state" do
       state.delete(:hostname)
-      expect(driver).to_not receive(:run_command).
-        with("vagrant destroy -f", any_args)
+      expect(driver).to_not receive(:run_command)
+        .with("vagrant destroy -f", any_args)
 
       cmd
     end
@@ -900,8 +902,8 @@ describe Kitchen::Driver::Vagrant do
     end
 
     it "runs vagrant destroy" do
-      expect(driver).to receive(:run_command).
-        with("vagrant destroy -f", any_args)
+      expect(driver).to receive(:run_command)
+        .with("vagrant destroy -f", any_args)
 
       cmd
     end
@@ -1021,9 +1023,9 @@ describe Kitchen::Driver::Vagrant do
       cmd
 
       expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-        require "/a"
-        require "/b"
-        require "/c"
+        load "/a"
+        load "/b"
+        load "/c"
       RUBY
     end
 
@@ -1206,10 +1208,10 @@ describe Kitchen::Driver::Vagrant do
 
     it "adds a vm.ssh line for each key/value pair in :ssh" do
       config[:ssh] = {
-        :username => %{jdoe},
-        :password => %{secret},
-        :private_key_path => %{/key},
-        :insert_key => false,
+        username: %{jdoe},
+        password: %{secret},
+        private_key_path: %{/key},
+        insert_key: false,
       }
       cmd
 
@@ -1223,8 +1225,8 @@ describe Kitchen::Driver::Vagrant do
 
     it "adds a vm.network line for each element in :network" do
       config[:network] = [
-        ["forwarded_port", { :guest => 80, :host => 8080 }],
-        ["private_network", { :ip => "192.168.33.33" }],
+        ["forwarded_port", { guest: 80, host: 8080 }],
+        ["private_network", { ip: "192.168.33.33" }],
       ]
       cmd
 
@@ -1264,15 +1266,26 @@ describe Kitchen::Driver::Vagrant do
 
       before { config[:provider] = "virtualbox" }
 
+      it "sets :name for virtualbox GUI" do
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
+          end
+        RUBY
+      end
+
       it "adds a line for each element in :customize" do
         config[:customize] = {
-          :a_key => "some value",
-          :something => "else",
+          a_key: "some value",
+          something: "else",
         }
         cmd
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.customize ["modifyvm", :id, "--a_key", "some value"]
             p.customize ["modifyvm", :id, "--something", "else"]
           end
@@ -1292,6 +1305,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.gui = false
           end
         RUBY
@@ -1303,6 +1317,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.gui = true
           end
         RUBY
@@ -1322,6 +1337,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.linked_clone = false
           end
         RUBY
@@ -1333,6 +1349,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.linked_clone = true
           end
         RUBY
@@ -1340,15 +1357,16 @@ describe Kitchen::Driver::Vagrant do
 
       it "add line for single createhd in :customize" do
         config[:customize] = {
-          :createhd => {
-              :filename => "./d1.vmdk",
-              :size => 10 * 1024,
+          createhd: {
+              filename: "./d1.vmdk",
+              size: 10 * 1024,
           },
         }
         cmd
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.customize ["createhd", "--filename", "./d1.vmdk", "--size", 10240]
           end
         RUBY
@@ -1356,14 +1374,14 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds lines for multiple createhd in :customize" do
         config[:customize] = {
-          :createhd => [
+          createhd: [
             {
-              :filename => "./d1.vmdk",
-              :size => 10 * 1024,
+              filename: "./d1.vmdk",
+              size: 10 * 1024,
             },
             {
-              :filename => "./d2.vmdk",
-              :size => 20 * 1024,
+              filename: "./d2.vmdk",
+              size: 20 * 1024,
             },
           ],
         }
@@ -1371,6 +1389,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.customize ["createhd", "--filename", "./d1.vmdk", "--size", 10240]
             p.customize ["createhd", "--filename", "./d2.vmdk", "--size", 20480]
           end
@@ -1379,17 +1398,18 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds lines for single storagectl in :customize" do
         config[:customize] = {
-          :storagectl => {
-            :name => "Custom SATA Controller",
-            :add => "sata",
-            :controller => "IntelAHCI",
-            :portcount => 4,
+          storagectl: {
+            name: "Custom SATA Controller",
+            add: "sata",
+            controller: "IntelAHCI",
+            portcount: 4,
           },
         }
         cmd
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.customize ["storagectl", :id, "--name", "Custom SATA Controller", "--add", "sata", "--controller", "IntelAHCI", "--portcount", 4]
           end
         RUBY
@@ -1397,15 +1417,15 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds lines for multiple storagectl in :customize" do
         config[:customize] = {
-          :storagectl => [
+          storagectl: [
             {
-              :name => "Custom SATA Controller",
-              :add => "sata",
-              :controller => "IntelAHCI",
+              name: "Custom SATA Controller",
+              add: "sata",
+              controller: "IntelAHCI",
             },
             {
-              :name => "Custom SATA Controller",
-              :portcount => 4,
+              name: "Custom SATA Controller",
+              portcount: 4,
             },
           ],
         }
@@ -1413,6 +1433,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.customize ["storagectl", :id, "--name", "Custom SATA Controller", "--add", "sata", "--controller", "IntelAHCI"]
             p.customize ["storagectl", :id, "--name", "Custom SATA Controller", "--portcount", 4]
           end
@@ -1421,15 +1442,16 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds lines for single storageattach in :customize" do
         config[:customize] = {
-          :storageattach => {
-            :type => "hdd",
-            :port => 1,
+          storageattach: {
+            type: "hdd",
+            port: 1,
           },
         }
         cmd
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.customize ["storageattach", :id, "--type", "hdd", "--port", 1]
           end
         RUBY
@@ -1437,20 +1459,20 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds lines for multiple storageattach in :customize" do
         config[:customize] = {
-          :storageattach => [
+          storageattach: [
             {
-              :storagectl => "SATA Controller",
-              :port => 1,
-              :device => 0,
-              :type => "hdd",
-              :medium => "./d1.vmdk",
+              storagectl: "SATA Controller",
+              port: 1,
+              device: 0,
+              type: "hdd",
+              medium: "./d1.vmdk",
             },
             {
-              :storagectl => "SATA Controller",
-              :port => 1,
-              :device => 1,
-              :type => "hdd",
-              :medium => "./d2.vmdk",
+              storagectl: "SATA Controller",
+              port: 1,
+              device: 1,
+              type: "hdd",
+              medium: "./d2.vmdk",
             },
           ],
         }
@@ -1458,6 +1480,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", 1, "--device", 0, "--type", "hdd", "--medium", "./d1.vmdk"]
             p.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", 1, "--device", 1, "--type", "hdd", "--medium", "./d2.vmdk"]
           end
@@ -1466,12 +1489,13 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds a line for cpuidset in :customize" do
         config[:customize] = {
-          :cpuidset => %w{00000001 00000002},
+          cpuidset: %w{00000001 00000002},
         }
         cmd
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
             p.customize ["modifyvm", :id, "--cpuidset", "00000001", "00000002"]
           end
         RUBY
@@ -1484,8 +1508,8 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds a line for each element in :customize" do
         config[:customize] = {
-          :a_key => "some value",
-          :something => "else",
+          a_key: "some value",
+          something: "else",
         }
         cmd
 
@@ -1499,8 +1523,8 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds a short form of :memory and :cpus elements in :customize" do
         config[:customize] = {
-          :memory => 2048,
-          :cpus => 4,
+          memory: 2048,
+          cpus: 4,
         }
         cmd
 
@@ -1549,8 +1573,8 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds a line for each element in :customize" do
         config[:customize] = {
-          :a_key => "some value",
-          :something => "else",
+          a_key: "some value",
+          something: "else",
         }
         cmd
 
@@ -1569,9 +1593,9 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds a line for disk_capacity" do
         config[:customize] = {
-          :disk_capacity => {
-            :"0" => 25,
-            :"2" => 100,
+          disk_capacity: {
+            "0": 25,
+            "2": 100,
           },
         }
         cmd
@@ -1585,8 +1609,8 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds a line for each element in :customize" do
         config[:customize] = {
-          :a_key => "some value",
-          :something => "else",
+          a_key: "some value",
+          something: "else",
         }
         cmd
 
@@ -1605,9 +1629,9 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds a line for each element in :customize" do
         config[:customize] = {
-          :a_key => "some value",
-          :something => "else",
-          :a_number_key => 1024,
+          a_key: "some value",
+          something: "else",
+          a_number_key: 1024,
         }
         cmd
 
@@ -1622,7 +1646,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds a single storage definition in :customize" do
         config[:customize] = {
-          :storage => ":file, :size => '32G'",
+          storage: ":file, :size => '32G'",
         }
         cmd
 
@@ -1635,7 +1659,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds a line for each additional storage definition in :customize" do
         config[:customize] = {
-          :storage => [
+          storage: [
             ":file, :size => '1G'",
             ":file, :size => '128G', :bus => 'sata'",
             ":file, :size => '64G', :bus => 'sata'",
@@ -1659,7 +1683,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "sets container_name to :machine if set" do
         config[:customize] = {
-          :container_name => ":machine",
+          container_name: ":machine",
         }
         cmd
 
@@ -1672,7 +1696,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "sets container_name to another value in quotes if set" do
         config[:customize] = {
-          :container_name => "beans",
+          container_name: "beans",
         }
         cmd
 
@@ -1685,7 +1709,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "sets backingstore if set" do
         config[:customize] = {
-          :backingstore => "lvm",
+          backingstore: "lvm",
         }
         cmd
 
@@ -1698,9 +1722,9 @@ describe Kitchen::Driver::Vagrant do
 
       it "sets backingstore_option line for each backingstore_options" do
         config[:customize] = {
-          :backingstore_options => {
-            :vgname => "schroots",
-            :fstype => "xfs",
+          backingstore_options: {
+            vgname: "schroots",
+            fstype: "xfs",
           },
         }
         cmd
@@ -1715,8 +1739,8 @@ describe Kitchen::Driver::Vagrant do
 
       it "sets all other options to customize lines" do
         config[:customize] = {
-          :cookies => "cream",
-          :salt => "vinegar",
+          cookies: "cream",
+          salt: "vinegar",
         }
         cmd
 
@@ -1764,8 +1788,8 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds a line for each element in :customize" do
         config[:customize] = {
-          :a_key => "some value",
-          :something => "else",
+          a_key: "some value",
+          something: "else",
         }
         cmd
 
@@ -1779,7 +1803,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "converts :memory into :memsize" do
         config[:customize] = {
-          :memory => "222",
+          memory: "222",
         }
         cmd
 
@@ -1792,8 +1816,8 @@ describe Kitchen::Driver::Vagrant do
 
       it "skips :memory if key :memsize exists" do
         config[:customize] = {
-          :memory => "222",
-          :memsize => "444",
+          memory: "222",
+          memsize: "444",
         }
         cmd
 
@@ -1806,7 +1830,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "converts :cpus into :numvcpus" do
         config[:customize] = {
-          :cpus => "2",
+          cpus: "2",
         }
         cmd
 
@@ -1819,8 +1843,8 @@ describe Kitchen::Driver::Vagrant do
 
       it "skips :cpus if key :numvcpus exists" do
         config[:customize] = {
-          :cpus => "2",
-          :numvcpus => "4",
+          cpus: "2",
+          numvcpus: "4",
         }
         cmd
 
@@ -1838,7 +1862,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds a line a server" do
         config[:customize] = {
-          :server => "my_server",
+          server: "my_server",
         }
         cmd
 
@@ -1851,8 +1875,8 @@ describe Kitchen::Driver::Vagrant do
 
       it "ignores all other key types than server" do
         config[:customize] = {
-          :other => "stuff",
-          :is => "ignored",
+          other: "stuff",
+          is: "ignored",
         }
         cmd
 
@@ -1869,9 +1893,9 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds a line for each element in :customize" do
         config[:customize] = {
-          :key1 => "some string value",
-          :key2 => 22,
-          :key3 => false,
+          key1: "some string value",
+          key2: 22,
+          key3: false,
         }
         cmd
 
@@ -1891,8 +1915,8 @@ describe Kitchen::Driver::Vagrant do
 
       it "adds a line for each element in :customize" do
         config[:customize] = {
-          :a_key => "some value",
-          :something => "else",
+          a_key: "some value",
+          something: "else",
         }
         cmd
 
@@ -1906,20 +1930,20 @@ describe Kitchen::Driver::Vagrant do
 
       it "builds an array of hashes for firewall rules in :customize" do
         config[:customize] = {
-          :firewall_rules => [
+          firewall_rules: [
             {
-              :ipaddress => "A.A.A.A",
-              :cidrlist  => "B.B.B.B/24",
-              :protocol  => "tcp",
-              :startport => 2222,
-              :endport   => 2222,
+              ipaddress: "A.A.A.A",
+              cidrlist: "B.B.B.B/24",
+              protocol: "tcp",
+              startport: 2222,
+              endport: 2222,
             },
             {
-              :ipaddress => "C.C.C.C",
-              :cidrlist  => "D.D.D.D/32",
-              :protocol  => "tcp",
-              :startport => 80,
-              :endport   => 81,
+              ipaddress: "C.C.C.C",
+              cidrlist: "D.D.D.D/32",
+              protocol: "tcp",
+              startport: 80,
+              endport: 81,
             },
           ],
         }
@@ -1939,7 +1963,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "builds an array for security group ids in :customize" do
         config[:customize] = {
-          :security_group_ids => ["aaaa-bbbb-cccc-dddd",
+          security_group_ids: ["aaaa-bbbb-cccc-dddd",
                                   "1111-2222-3333-4444"],
         }
         cmd
@@ -1956,7 +1980,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "builds an array for security group names in :customize" do
         config[:customize] = {
-          :security_group_names => %w{min_fantastiska_security_group
+          security_group_names: %w{min_fantastiska_security_group
                                       another_security_group},
         }
         cmd
@@ -1973,24 +1997,24 @@ describe Kitchen::Driver::Vagrant do
 
       it "builds an array of hashes for security groups in :customize" do
         config[:customize] = {
-          :security_groups => [
+          security_groups: [
             {
-              :name        => "Awesome_security_group",
-              :description => "Created from the Vagrantfile",
-              :rules => [
+              name: "Awesome_security_group",
+              description: "Created from the Vagrantfile",
+              rules: [
                 {
-                  :type => "ingress",
-                  :protocol => "TCP",
-                  :startport => 22,
-                  :endport => 22,
-                  :cidrlist => "0.0.0.0/0",
+                  type: "ingress",
+                  protocol: "TCP",
+                  startport: 22,
+                  endport: 22,
+                  cidrlist: "0.0.0.0/0",
                 },
                 {
-                  :type => "egress",
-                  :protocol => "TCP",
-                  :startport => 81,
-                  :endport => 82,
-                  :cidrlist => "1.2.3.4/24",
+                  type: "egress",
+                  protocol: "TCP",
+                  startport: 81,
+                  endport: 82,
+                  cidrlist: "1.2.3.4/24",
                 },
               ],
             },
@@ -2014,7 +2038,7 @@ describe Kitchen::Driver::Vagrant do
 
       it "builds an array of hashes for static nat in :customize" do
         config[:customize] = {
-          :static_nat => [{ :idaddress => "A.A.A.A" }],
+          static_nat: [{ idaddress: "A.A.A.A" }],
         }
         cmd
 
@@ -2027,20 +2051,20 @@ describe Kitchen::Driver::Vagrant do
 
       it "builds an array of hashes for port forwarding rules in :customize" do
         config[:customize] = {
-          :port_forwarding_rules => [
+          port_forwarding_rules: [
             {
-              :ipaddress => "X.X.X.X",
-              :protocol => "tcp",
-              :publicport => 22,
-              :privateport => 22,
-              :openfirewall => false,
+              ipaddress: "X.X.X.X",
+              protocol: "tcp",
+              publicport: 22,
+              privateport: 22,
+              openfirewall: false,
             },
             {
-              :ipaddress => "X.X.X.X",
-              :protocol => "tcp",
-              :publicport => 80,
-              :privateport => 80,
-              :openfirewall => false,
+              ipaddress: "X.X.X.X",
+              protocol: "tcp",
+              publicport: 80,
+              privateport: 80,
+              openfirewall: false,
             },
           ],
         }
@@ -2062,8 +2086,8 @@ describe Kitchen::Driver::Vagrant do
 
   def debug_lines
     regex = %r{^D, .* : }
-    logged_output.string.lines.
-      select { |l| l =~ regex }.map { |l| l.sub(regex, "") }.join
+    logged_output.string.lines
+      .select { |l| l =~ regex }.map { |l| l.sub(regex, "") }.join
   end
 
   def with_modern_vagrant
@@ -2075,8 +2099,8 @@ describe Kitchen::Driver::Vagrant do
   end
 
   def with_vagrant(version)
-    allow(driver_object).to receive(:run_command).
-      with("vagrant --version", any_args).and_return("Vagrant #{version}")
+    allow(driver_object).to receive(:run_command)
+      .with("vagrant --version", any_args).and_return("Vagrant #{version}")
   end
 
   def regexify(str, line = :whole_line)

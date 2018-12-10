@@ -1,5 +1,58 @@
 # Change Log
 
+## [1.3.6](https://github.com/test-kitchen/kitchen-vagrant/tree/1.3.6) (2018-10-26)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.5...1.3.6)
+
+**Merged pull requests:**
+
+- Updating for new Chefstyle rules [\#382](https://github.com/test-kitchen/kitchen-vagrant/pull/382) ([tyler-ball](https://github.com/tyler-ball))
+- Newest vagrant no long requires vagrant-winrm plugin [\#379](https://github.com/test-kitchen/kitchen-vagrant/pull/379) ([tyler-ball](https://github.com/tyler-ball))
+
+## [v1.3.5](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.5) (2018-10-23)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.4...v1.3.5)
+
+**Closed issues:**
+
+- vagrant winrm-config doesn't detect auto-assigned forwarding for RDP [\#224](https://github.com/test-kitchen/kitchen-vagrant/issues/224)
+
+**Merged pull requests:**
+
+- Slim the size of the gem by removing spec files [\#377](https://github.com/test-kitchen/kitchen-vagrant/pull/377) ([tas50](https://github.com/tas50))
+
+## [v1.3.4](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.4) (2018-09-15)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.3...v1.3.4)
+
+**Merged pull requests:**
+
+- Fix \#371, change require =\> load [\#373](https://github.com/test-kitchen/kitchen-vagrant/pull/373) ([cheeseplus](https://github.com/cheeseplus))
+- Vagrantfile Template: Hyper-v Differencing\_disk deprecation [\#370](https://github.com/test-kitchen/kitchen-vagrant/pull/370) ([cocazoulou](https://github.com/cocazoulou))
+
+## [v1.3.3](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.3) (2018-08-13)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.2...v1.3.3)
+
+**Closed issues:**
+
+- Hard to identify running VM instance from Hyper-V Manager or PowerShell [\#367](https://github.com/test-kitchen/kitchen-vagrant/issues/367)
+- \[Feature\] Add support for vm.name for virtualbox [\#365](https://github.com/test-kitchen/kitchen-vagrant/issues/365)
+
+**Merged pull requests:**
+
+- Adding a per-instance generated vmname for Hyper-V [\#368](https://github.com/test-kitchen/kitchen-vagrant/pull/368) ([stuartpreston](https://github.com/stuartpreston))
+- Fix \#365 - add name for virtualbox instances [\#366](https://github.com/test-kitchen/kitchen-vagrant/pull/366) ([cheeseplus](https://github.com/cheeseplus))
+- Adding the lifecycle hooks stub to fix tests [\#364](https://github.com/test-kitchen/kitchen-vagrant/pull/364) ([cheeseplus](https://github.com/cheeseplus))
+- Add an example for vagrantfile\_erb [\#363](https://github.com/test-kitchen/kitchen-vagrant/pull/363) ([jkugler](https://github.com/jkugler))
+- Move github changelog generator to the gemfile and skip install in testing [\#362](https://github.com/test-kitchen/kitchen-vagrant/pull/362) ([tas50](https://github.com/tas50))
+- Fix disk examples [\#360](https://github.com/test-kitchen/kitchen-vagrant/pull/360) ([espoelstra](https://github.com/espoelstra))
+
+## [v1.3.2](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.2) (2018-04-23)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.1...v1.3.2)
+
+**Merged pull requests:**
+
+- Fixing \#349 - allow bento/hardenedbsd [\#355](https://github.com/test-kitchen/kitchen-vagrant/pull/355) ([cheeseplus](https://github.com/cheeseplus))
+- Updating travis config [\#354](https://github.com/test-kitchen/kitchen-vagrant/pull/354) ([cheeseplus](https://github.com/cheeseplus))
+- Hyper-V: Ensure default switch name is always wrapped in quotes [\#345](https://github.com/test-kitchen/kitchen-vagrant/pull/345) ([stuartpreston](https://github.com/stuartpreston))
+
 ## [v1.3.1](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.1) (2018-02-20)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.0...v1.3.1)
 

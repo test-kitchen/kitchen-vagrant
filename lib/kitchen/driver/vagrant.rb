@@ -234,7 +234,7 @@ module Kitchen
       #   box
       # @api private
       def bento_box?(name)
-        name =~ /^(centos|debian|fedora|freebsd|opensuse|ubuntu|oracle)-/
+        name =~ /^(centos|debian|fedora|freebsd|opensuse|ubuntu|oracle|hardenedbsd)-/
       end
 
       # Returns whether or not the we expect the box to work with shared folders
@@ -298,16 +298,16 @@ module Kitchen
       def finalize_pre_create_command!
         return if config[:pre_create_command].nil?
 
-        config[:pre_create_command] = config[:pre_create_command].
-          gsub("{{vagrant_root}}", vagrant_root)
+        config[:pre_create_command] = config[:pre_create_command]
+          .gsub("{{vagrant_root}}", vagrant_root)
       end
 
       # Replaces an `%{instance_name}` tokens in the synced folder items.
       #
       # @api private
       def finalize_synced_folders!
-        config[:synced_folders] = config[:synced_folders].
-          map do |source, destination, options|
+        config[:synced_folders] = config[:synced_folders]
+          .map do |source, destination, options|
             [
               File.expand_path(
                 source.gsub("%{instance_name}", instance.name),
@@ -396,7 +396,7 @@ module Kitchen
       # @api private
       def run(cmd, options = {})
         cmd = "echo #{cmd}" if config[:dry_run]
-        run_command(cmd, { :cwd => vagrant_root }.merge(options))
+        run_command(cmd, { cwd: vagrant_root }.merge(options))
       end
 
       # Delegates to Kitchen::ShellOut.run_command, overriding some default
@@ -415,9 +415,9 @@ module Kitchen
       # rubocop:disable Metrics/CyclomaticComplexity
       def run_command(cmd, options = {})
         merged = {
-          :use_sudo => config[:use_sudo],
-          :log_subject => name,
-          :environment => {},
+          use_sudo: config[:use_sudo],
+          log_subject: name,
+          environment: {},
         }.merge(options)
 
         # Attempt to extract bundler and associated GEM related values.
@@ -458,7 +458,7 @@ module Kitchen
       # @api private
       def run_pre_create_command
         if config[:pre_create_command]
-          run(config[:pre_create_command], :cwd => config[:kitchen_root])
+          run(config[:pre_create_command], cwd: config[:kitchen_root])
         end
       end
 
@@ -468,7 +468,7 @@ module Kitchen
       # @api private
       def run_silently(cmd, options = {})
         merged = {
-          :live_stream => nil, :quiet => (logger.debug? ? false : true)
+          live_stream: nil, quiet: (logger.debug? ? false : true)
         }.merge(options)
         run(cmd, merged)
       end
@@ -524,8 +524,8 @@ module Kitchen
       #   invocation
       # @api private
       def vagrant_config(type)
-        lines = run_silently("#{config[:vagrant_binary]} #{type}-config").
-          split("\n").map do |line|
+        lines = run_silently("#{config[:vagrant_binary]} #{type}-config")
+          .split("\n").map do |line|
           tokens = line.strip.partition(" ")
           [tokens.first, tokens.last.delete('"')]
         end
@@ -537,8 +537,8 @@ module Kitchen
       # @api private
       def vagrant_version
         self.class.vagrant_version ||= run_silently(
-          "#{config[:vagrant_binary]} --version", :cwd => Dir.pwd).
-          chomp.split(" ").last
+          "#{config[:vagrant_binary]} --version", cwd: Dir.pwd)
+          .chomp.split(" ").last
       rescue Errno::ENOENT
         raise UserError, "Vagrant #{MIN_VER} or higher is not installed." \
           " Please download a package from #{WEBSITE}."
@@ -556,11 +556,13 @@ module Kitchen
             " Please upgrade to version 1.6 or higher from #{WEBSITE}."
         end
 
-        if !winrm_plugin_installed?
-          raise UserError, "WinRM Transport requires the vagrant-winrm " \
-            "Vagrant plugin to properly communicate with this Vagrant VM. " \
-            "Please install this plugin with: " \
-            "`vagrant plugin install vagrant-winrm' and try again."
+        if Gem::Version.new(vagrant_version) < Gem::Version.new("2.2.0") && !winrm_plugin_installed?
+          raise UserError, "Vagrant version #{vagrant_version} requires the " \
+            "vagrant-winrm plugin to properly communicate with this Vagrant VM " \
+            "over WinRM Transport. Please install this plugin with: " \
+            "`vagrant plugin install vagrant-winrm' and try again." \
+            "Alternatively upgrade to Vagrant >= 2.2.0 which does not " \
+            "require the vagrant-winrm plugin."
         end
       end
 
@@ -578,8 +580,8 @@ module Kitchen
         return true if self.class.winrm_plugin_passed
 
         self.class.winrm_plugin_passed = run_silently(
-          "#{config[:vagrant_binary]} plugin list", :cwd => Dir.pwd).
-          split("\n").find { |line| line =~ /vagrant-winrm\s+/ }
+          "#{config[:vagrant_binary]} plugin list", cwd: Dir.pwd)
+          .split("\n").find { |line| line =~ /vagrant-winrm\s+/ }
       end
     end
   end
