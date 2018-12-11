@@ -1396,7 +1396,9 @@ describe Kitchen::Driver::Vagrant do
           c.vm.provider :virtualbox do |p|
             p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
             p.customize ["modifyvm", :id, "--audio", "none"]
-            p.customize ["createhd", "--filename", "./d1.vmdk", "--size", 10240]
+            unless File.file?("./d1.vmdk")
+              p.customize ["createhd", "--filename", "./d1.vmdk", "--size", 10240]
+            end
           end
         RUBY
       end
@@ -1420,8 +1422,12 @@ describe Kitchen::Driver::Vagrant do
           c.vm.provider :virtualbox do |p|
             p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
             p.customize ["modifyvm", :id, "--audio", "none"]
-            p.customize ["createhd", "--filename", "./d1.vmdk", "--size", 10240]
-            p.customize ["createhd", "--filename", "./d2.vmdk", "--size", 20480]
+            unless File.file?("./d1.vmdk")
+              p.customize ["createhd", "--filename", "./d1.vmdk", "--size", 10240]
+            end
+            unless File.file?("./d2.vmdk")
+              p.customize ["createhd", "--filename", "./d2.vmdk", "--size", 20480]
+            end
           end
         RUBY
       end
