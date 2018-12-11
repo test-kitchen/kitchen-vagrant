@@ -173,9 +173,9 @@ Vagrant.configure("2") do |c|
     <% if key == :createhd %>
       <% value = [value] unless value.instance_of?(Array) %>
       <% value.each do |item| %>
-unless File.file?("<%= item[:filename] %>")
-    p.customize ["createhd", "--filename", "<%= item[:filename] %>", "--size", <%= item[:size] %>]
-end
+    unless File.file?("<%= item[:filename] %>")
+      p.customize ["createhd", "--filename", "<%= item[:filename] %>", "--size", <%= item[:size] %>]
+    end
       <% end %>
     <% elsif key == :storageattach || key == :storagectl %>
       <% value = [value] unless value.instance_of?(Array) %>
