@@ -303,6 +303,23 @@ Please read [createhd](https://www.virtualbox.org/manual/ch08.html#vboxmanage-cr
 and [storagectl](https://www.virtualbox.org/manual/ch08.html#vboxmanage-storagectl)
 for additional information on these options.
 
+#### <a name="config-customize-virtualbox-audio"></a> Virtualbox audio
+
+Audio for VirtualBox guests is disabled by default mostly for reasons around
+[people wanting to enjoy listening to music while they work](https://github.com/test-kitchen/kitchen-vagrant/issues/388).
+We expect 99.9% of the use cases for test-kitchen and kitchen-vagrant do not
+require sound be enabled for guests. If you need to enable audio for your
+Test-Kitchen-managed VirtualBox guest VMs, you can use `customize` to configure
+sound. You will need to set the `audio` subkey—defaulted to `none`—to one of
+[the options VirtualBox supports](https://www.virtualbox.org/manual/ch08.html#vboxmanage-modifyvm-other)
+for `VBoxManage modifyvm --audio`. For example:
+
+```yaml
+driver:
+  customize:
+    audio: oss
+```
+
 ### <a name="config-guest"></a> guest
 
 **Note:** It should largely be the responsibility of the underlying Vagrant
