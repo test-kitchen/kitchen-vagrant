@@ -1,7 +1,16 @@
 # Change Log
 
+## [1.4.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.4.0) (2019-01-28)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.6...v1.4.0)
+
+**Merged pull requests:**
+
+- Add usage of vm_hostname to Readme.md [#386](https://github.com/test-kitchen/kitchen-vagrant/pull/386) ([@f9n](https://github.com/f9n))
+- Disable audio in virtualbox by default to prevent interupting host Bluetooth audio [#392](https://github.com/test-kitchen/kitchen-vagrant/pull/392) ([@robbkidd](https://github.com/robbkidd))
+- Added WSL support [#384](https://github.com/test-kitchen/kitchen-vagrant/pull/384) ([@BCarley](https://github.com/BCarley))
+
 ## [1.3.6](https://github.com/test-kitchen/kitchen-vagrant/tree/1.3.6) (2018-10-26)
-[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.5...1.3.6)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.5...v1.3.6)
 
 **Merged pull requests:**
 
