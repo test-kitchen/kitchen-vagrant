@@ -181,7 +181,7 @@ Vagrant.configure("2") do |c|
         <% options = [] %>
         <% item.each do |storage_option_key, storage_option_value|
              options << "\"--#{storage_option_key}\""
-             if storage_option_value.instance_of? Fixnum
+             if storage_option_value.kind_of? Integer
                options << storage_option_value
              else
                options << "\"#{storage_option_value}\""
