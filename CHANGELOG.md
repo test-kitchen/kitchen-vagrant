@@ -1,9 +1,12 @@
 # Change Log
 
+## [1.5.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.5.0) (2019-03-14)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.4.0...v1.5.0)
+
+- Support using bento/amazonlinux-2 when specifying just amazonlinux-2 platform [#397](https://github.com/test-kitchen/kitchen-vagrant/pull/397) ([@tas50](https://github.com/tas50))
+
 ## [1.4.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.4.0) (2019-01-28)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.6...v1.4.0)
-
-**Merged pull requests:**
 
 - Add usage of vm_hostname to Readme.md [#386](https://github.com/test-kitchen/kitchen-vagrant/pull/386) ([@f9n](https://github.com/f9n))
 - Disable audio in virtualbox by default to prevent interupting host Bluetooth audio [#392](https://github.com/test-kitchen/kitchen-vagrant/pull/392) ([@robbkidd](https://github.com/robbkidd))
