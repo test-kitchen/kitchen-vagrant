@@ -237,7 +237,7 @@ module Kitchen
       #   box
       # @api private
       def bento_box?(name)
-        name =~ /^(centos|debian|fedora|freebsd|opensuse|ubuntu|oracle|hardenedbsd)-/
+        name =~ /^(centos|debian|fedora|freebsd|opensuse|ubuntu|oracle|hardenedbsd|amazonlinux)-/
       end
 
       # Returns whether or not the we expect the box to work with shared folders
@@ -247,7 +247,7 @@ module Kitchen
       # @api private
       def safe_share?(box)
         return false if config[:provider] =~ /(hyperv|libvirt)/
-        box =~ /^bento\/(centos|debian|fedora|opensuse|ubuntu|oracle)-/
+        box =~ /^bento\/(centos|debian|fedora|opensuse|ubuntu|oracle|amazonlinux)-/
       end
 
       # Return true if we found the criteria to enable the cache_directory
