@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.5.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.5.1) (2019-03-19)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.5.0...v1.5.1)
+
+- Loosen the Test Kitchen dep to allow 2.0 [#398](https://github.com/test-kitchen/kitchen-vagrant/pull/398) ([@tas50](https://github.com/tas50))
+
 ## [1.5.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.5.0) (2019-03-14)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.4.0...v1.5.0)
 
