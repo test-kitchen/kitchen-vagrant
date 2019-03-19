@@ -14,10 +14,9 @@ Gem::Specification.new do |gem|
   gem.homepage      = "https://github.com/test-kitchen/kitchen-vagrant/"
 
   gem.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR).grep(/LICENSE|^lib|^support|^templates/)
-  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency "test-kitchen", "~> 1.4"
+  gem.add_dependency "test-kitchen", ">= 1.4", "< 3"
 
   gem.add_development_dependency "countloc", "~> 0.4"
   gem.add_development_dependency "rake"
