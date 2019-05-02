@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.5.2](https://github.com/test-kitchen/kitchen-vagrant/tree/1.5.2) (2019-05-02)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.5.1...v1.5.2)
+
+- Restores vm name uniqueness [#399](https://github.com/test-kitchen/kitchen-vagrant/pull/399) ([@fretb](https://github.com/fretb))
+
 ## [1.5.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.5.1) (2019-03-19)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.5.0...v1.5.1)
 
