@@ -344,8 +344,8 @@ module Kitchen
       def finalize_vm_hostname!
         string = config[:vm_hostname]
 
-        if windows_os? && string.is_a?(String) && string.size >= 12
-          config[:vm_hostname] = "#{string[0...10]}-#{string[-1]}"
+        if windows_os? && string.is_a?(String) && string.size > 15
+          config[:vm_hostname] = "#{string[0...12]}-#{string[-1]}"
         end
       end
 
