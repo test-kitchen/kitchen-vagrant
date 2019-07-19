@@ -465,10 +465,10 @@ describe Kitchen::Driver::Vagrant do
         expect(driver[:vm_hostname]).to eq(nil)
       end
 
-      it "sets :vm_hostname to a custom value, truncated to 12 chars" do
+      it "sets :vm_hostname to a custom value, truncated to 15 chars" do
         config[:vm_hostname] = "this-is-a-pretty-long-name-ya-think"
 
-        expect(driver[:vm_hostname]).to eq("this-is-a--k")
+        expect(driver[:vm_hostname]).to eq("this-is-a-pr-k")
       end
 
       it "replaces %{instance_name} with instance name in :synced_folders" do
