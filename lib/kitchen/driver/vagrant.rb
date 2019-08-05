@@ -40,7 +40,7 @@ module Kitchen
 
       plugin_version Kitchen::Driver::VAGRANT_VERSION
 
-      default_config(:box) { |driver| driver.default_box }
+      default_config(:box, &:default_box)
       required_config :box
 
       default_config :box_check_update, nil
@@ -49,7 +49,7 @@ module Kitchen
 
       default_config :box_download_ca_cert, nil
 
-      default_config(:box_url) { |driver| driver.default_box_url }
+      default_config(:box_url, &:default_box_url)
 
       default_config :box_version, nil
 
@@ -149,7 +149,8 @@ module Kitchen
         if state[:hostname].nil?
           raise UserError, "Vagrant instance not created!"
         end
-        if not (config[:ssh] && config[:ssh][:insert_key] == false)
+
+        unless config[:ssh] && config[:ssh][:insert_key] == false
           m = "Disable vagrant ssh key replacement to preserve the default key!"
           warn(m)
         end
@@ -247,7 +248,8 @@ module Kitchen
       # @api private
       def safe_share?(box)
         return false if config[:provider] =~ /(hyperv|libvirt)/
-        box =~ /^bento\/(centos|debian|fedora|opensuse|ubuntu|oracle|amazonlinux)-/
+
+        box =~ %r{^bento/(centos|debian|fedora|opensuse|ubuntu|oracle|amazonlinux)-}
       end
 
       # Return true if we found the criteria to enable the cache_directory
@@ -255,6 +257,7 @@ module Kitchen
       def enable_cache?
         return false unless config[:cache_directory]
         return true if safe_share?(config[:box])
+
         # Otherwise
         false
       end
@@ -291,7 +294,8 @@ module Kitchen
       def finalize_ca_cert!
         unless config[:box_download_ca_cert].nil?
           config[:box_download_ca_cert] = File.expand_path(
-            config[:box_download_ca_cert], config[:kitchen_root])
+            config[:box_download_ca_cert], config[:kitchen_root]
+          )
         end
       end
 
@@ -382,10 +386,11 @@ module Kitchen
       # @api private
       def render_template
         template = File.expand_path(
-          config[:vagrantfile_erb], config[:kitchen_root])
+          config[:vagrantfile_erb], config[:kitchen_root]
+        )
 
         if File.exist?(template)
-          ERB.new(IO.read(template)).result(binding).gsub(%r{^\s*$\n}, "")
+          ERB.new(IO.read(template)).result(binding).gsub(/^\s*$\n/, "")
         else
           raise ActionFailed, "Could not find Vagrantfile template #{template}"
         end
@@ -432,8 +437,8 @@ module Kitchen
         env = merged[:environment]
         %w{BUNDLE_BIN_PATH BUNDLE_GEMFILE GEM_HOME GEM_PATH GEM_ROOT RUBYLIB
            RUBYOPT _ORIGINAL_GEM_PATH}.each do |var|
-          env[var] = nil
-        end
+             env[var] = nil
+           end
 
         # Altering the path seems to break vagrant. When the :environment
         # is passed to a windows process with a PATH, Vagrant's batch installer
@@ -529,9 +534,9 @@ module Kitchen
       def vagrant_config(type)
         lines = run_silently("#{config[:vagrant_binary]} #{type}-config")
           .split("\n").map do |line|
-          tokens = line.strip.partition(" ")
-          [tokens.first, tokens.last.delete('"')]
-        end
+            tokens = line.strip.partition(" ")
+            [tokens.first, tokens.last.delete('"')]
+          end
         Hash[lines]
       end
 
@@ -540,7 +545,8 @@ module Kitchen
       # @api private
       def vagrant_version
         self.class.vagrant_version ||= run_silently(
-          "#{config[:vagrant_binary]} --version", cwd: Dir.pwd)
+          "#{config[:vagrant_binary]} --version", cwd: Dir.pwd
+        )
           .chomp.split(" ").last
       rescue Errno::ENOENT
         raise UserError, "Vagrant #{MIN_VER} or higher is not installed." \
@@ -583,7 +589,8 @@ module Kitchen
         return true if self.class.winrm_plugin_passed
 
         self.class.winrm_plugin_passed = run_silently(
-          "#{config[:vagrant_binary]} plugin list", cwd: Dir.pwd)
+          "#{config[:vagrant_binary]} plugin list", cwd: Dir.pwd
+        )
           .split("\n").find { |line| line =~ /vagrant-winrm\s+/ }
       end
     end

@@ -38,8 +38,8 @@ describe Kitchen::Driver::Vagrant do
   let(:lifecycle_hooks) { Kitchen::LifecycleHooks.new({}) }
   let(:transport)     { Kitchen::Transport::Dummy.new }
   let(:state_file)    { double("state_file") }
-  let(:state)         { Hash.new }
-  let(:env)           { Hash.new }
+  let(:state)         { {} }
+  let(:env)           { {} }
 
   let(:driver_object) { Kitchen::Driver::Vagrant.new(config) }
 
@@ -90,7 +90,8 @@ describe Kitchen::Driver::Vagrant do
 
   it "plugin_version is set to Kitchen::Vagrant::VERSION" do
     expect(driver.diagnose_plugin[:version]).to eq(
-      Kitchen::Driver::VAGRANT_VERSION)
+      Kitchen::Driver::VAGRANT_VERSION
+    )
   end
 
   describe "#run_command" do
@@ -101,7 +102,8 @@ describe Kitchen::Driver::Vagrant do
         options = driver.send(
           :run_command,
           "cmd",
-          environment: { "EV1" => "Val1", "EV2" => "Val2" })
+          environment: { "EV1" => "Val1", "EV2" => "Val2" }
+        )
         expect(options[:environment]["EV1"]).to eq("Val1")
         expect(options[:environment]["EV2"]).to eq("Val2")
       end
@@ -111,7 +113,8 @@ describe Kitchen::Driver::Vagrant do
         options = driver.send(
           :run_command,
           "cmd",
-          environment: { "PATH" => path })
+          environment: { "PATH" => path }
+        )
         expect(options[:environment]["PATH"]).to eq(path)
       end
 
@@ -420,14 +423,16 @@ describe Kitchen::Driver::Vagrant do
       config[:vagrantfile_erb] = "/a/Vagrantfile.erb"
 
       expect(driver[:vagrantfile_erb]).to eq(
-        File.expand_path("/a/Vagrantfile.erb"))
+        File.expand_path("/a/Vagrantfile.erb")
+      )
     end
 
     it "expands path for :vagrantfile_erb" do
       config[:vagrantfile_erb] = "Yep.erb"
 
       expect(driver[:vagrantfile_erb]).to eq(
-        File.expand_path("/kroot/Yep.erb"))
+        File.expand_path("/kroot/Yep.erb")
+      )
     end
 
     it "sets :vagrantfiles to an empty array by default" do
@@ -1101,21 +1106,21 @@ describe Kitchen::Driver::Vagrant do
     it "sets vm.box_download_insecure to false
           if :box_download_insecure is false" do
 
-      config[:box_download_insecure] = false
-      cmd
+            config[:box_download_insecure] = false
+            cmd
 
-      expect(
-        vagrantfile).to match(regexify(%{c.vm.box_download_insecure = "false"})
-      )
-    end
+            expect(
+              vagrantfile
+            ).to match(regexify(%{c.vm.box_download_insecure = "false"}))
+          end
 
     it "sets vm.box_download_insecure if :box_download_insecure is set" do
       config[:box_download_insecure] = "um"
       cmd
 
       expect(
-        vagrantfile).to match(regexify(%{c.vm.box_download_insecure = "um"})
-      )
+        vagrantfile
+      ).to match(regexify(%{c.vm.box_download_insecure = "um"}))
     end
 
     it "sets no vm.communicator if missing" do
@@ -1348,7 +1353,8 @@ describe Kitchen::Driver::Vagrant do
         cmd
 
         expect(vagrantfile).to_not match(
-          regexify(%{p.linked_clone = }, :partial))
+          regexify(%{p.linked_clone = }, :partial)
+        )
       end
 
       it "sets :linked_clone to false if set" do
@@ -1570,7 +1576,8 @@ describe Kitchen::Driver::Vagrant do
         cmd
 
         expect(vagrantfile).to_not match(
-          regexify(%{p.linked_clone = }, :partial))
+          regexify(%{p.linked_clone = }, :partial)
+        )
       end
 
       it "sets :linked_clone to false if set" do
@@ -1992,8 +1999,8 @@ describe Kitchen::Driver::Vagrant do
 
       it "builds an array for security group ids in :customize" do
         config[:customize] = {
-          security_group_ids: ["aaaa-bbbb-cccc-dddd",
-                                  "1111-2222-3333-4444"],
+          security_group_ids: %w{aaaa-bbbb-cccc-dddd
+                                  1111-2222-3333-4444},
         }
         cmd
 
@@ -2114,7 +2121,7 @@ describe Kitchen::Driver::Vagrant do
   end
 
   def debug_lines
-    regex = %r{^D, .* : }
+    regex = /^D, .* : /
     logged_output.string.lines
       .select { |l| l =~ regex }.map { |l| l.sub(regex, "") }.join
   end
