@@ -108,7 +108,7 @@ Vagrant.configure("2") do |c|
     p.linked_clone = <%= config[:linked_clone] %>
 <%   end
    when "hyperv" %>
-    p.vmname = "kitchen-<%= File.basename(config[:kitchen_root]) %>-<%= instance.name %>-<%= SecureRandom.uuid %>"
+    p.vmname = "<%="kitchen-#{File.basename(config[:kitchen_root])}-#{instance.name}-#{SecureRandom.uuid}"[0..99].delete_suffix('-') %>"
 <%   if config[:linked_clone] == true || config[:linked_clone] == false %>
     p.linked_clone = <%= config[:linked_clone] %>
 <%   end
