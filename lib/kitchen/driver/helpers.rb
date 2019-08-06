@@ -76,6 +76,7 @@ module Kitchen
         sh.run_command
         debug("Local Command END #{Util.duration(sh.execution_time)}")
         raise "Failed: #{sh.stderr}" if sh.error?
+
         stdout = sanitize_stdout(sh.stdout)
         JSON.parse(stdout) if stdout.length > 2
       end
@@ -91,12 +92,13 @@ module Kitchen
             default_switch_object["Name"].empty?
           raise "Failed to find a default VM Switch."
         end
+
         default_switch_object["Name"]
       end
 
       def hyperv_default_switch_ps
         <<-VMSWITCH
-          Get-DefaultVMSwitch #{ENV['KITCHEN_HYPERV_SWITCH']} | ConvertTo-Json
+          Get-DefaultVMSwitch #{ENV["KITCHEN_HYPERV_SWITCH"]} | ConvertTo-Json
         VMSWITCH
       end
 
@@ -104,6 +106,7 @@ module Kitchen
 
       def ruby_array_to_ps_array(list)
         return "@()" if list.nil? || list.empty?
+
         list.to_s.tr("[]", "()").prepend("@")
       end
     end

@@ -26,9 +26,9 @@ task :stats do
 end
 
 desc "Run all quality tasks"
-task quality: [:style, :stats]
+task quality: %i{style stats}
 
-task default: [:test, :quality]
+task default: %i{test quality}
 
 begin
   require "github_changelog_generator/task"

@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.6.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.6.0) (2019-08-05)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.5.2...v1.6.0)
+
+- Don't fail when instance names become too long for Hyper-V [#404](https://github.com/test-kitchen/kitchen-vagrant/pull/404) ([@Xorima](https://github.com/Xorima))
+- Require Ruby 2.3 or later (Ruby < 2.3 are no longer supported Ruby releases)
+
 ## [1.5.2](https://github.com/test-kitchen/kitchen-vagrant/tree/1.5.2) (2019-05-02)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.5.1...v1.5.2)
 
