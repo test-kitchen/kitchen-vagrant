@@ -679,7 +679,7 @@ Apache 2.0 (see [LICENSE][license])
 [kvm]:                      https://www.linux-kvm.org/page/Main_Page
 [libvirt]:                  https://libvirt.org/
 [lxc]:                      https://linuxcontainers.org/
-[openstack]:                https://cloudstack.apache.org/
+[openstack]:                https://www.openstack.org/
 [rackspace]:                https://www.rackspace.com/
 [softlayer]:                http://www.softlayer.com/
 [vagrant_cloudstack]:       https://github.com/MissionCriticalCloud/vagrant-cloudstack
