@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.6.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.6.1) (2020-01-14)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.6.0...v1.6.1)
+
+- \[README\] fix openstack link [#409](https://github.com/test-kitchen/kitchen-vagrant/pull/409) ([@arthurlogilab](https://github.com/arthurlogilab))
+- Use require_relative instead of require [#414](https://github.com/test-kitchen/kitchen-vagrant/pull/414) ([@tas50](https://github.com/tas50))
+
 ## [1.6.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.6.0) (2019-08-05)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.5.2...v1.6.0)
 
