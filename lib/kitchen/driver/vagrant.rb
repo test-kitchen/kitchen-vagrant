@@ -21,8 +21,8 @@ require "fileutils"
 require "rubygems/version"
 
 require "kitchen"
-require "kitchen/driver/vagrant_version"
-require "kitchen/driver/helpers"
+require_relative "vagrant_version"
+require_relative "helpers"
 
 module Kitchen
 
