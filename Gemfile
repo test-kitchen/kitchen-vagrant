@@ -11,5 +11,5 @@ group :test do
 end
 
 group :changelog do
-  gem "github_changelog_generator", "1.15.0", require: nil
+  gem "github_changelog_generator", "1.15.1", require: nil
 end
