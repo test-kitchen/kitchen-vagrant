@@ -45,6 +45,10 @@ module Kitchen
 
       default_config :box_check_update, nil
 
+      default_config :box_auto_update, nil
+
+      default_config :box_auto_prune, nil
+
       default_config :box_download_insecure, nil
 
       default_config :box_download_ca_cert, nil
@@ -109,6 +113,8 @@ module Kitchen
       def create(state)
         create_vagrantfile
         run_pre_create_command
+        run_box_auto_update
+        run_box_auto_prune
         run_vagrant_up
         update_state(state)
         instance.transport.connection(state).wait_until_ready
@@ -172,6 +178,8 @@ module Kitchen
       def finalize_config!(instance)
         super
         finalize_vm_hostname!
+        finalize_box_auto_update!
+        finalize_box_auto_prune!
         finalize_pre_create_command!
         finalize_synced_folders!
         finalize_ca_cert!
@@ -297,6 +305,20 @@ module Kitchen
             config[:box_download_ca_cert], config[:kitchen_root]
           )
         end
+      end
+
+      # Create vagrant command to update box to the latest version
+      def finalize_box_auto_update!
+        return if config[:box_auto_update].nil?
+
+        config[:box_auto_update] = "vagrant box update #{'--insecure ' if config[:box_download_insecure]}--box #{config[:box]}"
+      end
+
+      # Create vagrant command to remove older versions of the box
+      def finalize_box_auto_prune!
+        return if config[:box_auto_prune].nil?
+
+        config[:box_auto_prune] = "vagrant box prune --name #{config[:box]}"
       end
 
       # Replaces any `{{vagrant_root}}` tokens in the pre create command.
@@ -460,6 +482,20 @@ module Kitchen
         super(cmd, merged)
       end
       # rubocop:enable Metrics/CyclomaticComplexity
+
+      # Tell vagrant to update vagrant box to latest version
+      def run_box_auto_update
+        if config[:box_auto_update]
+          run(config[:box_auto_update])
+        end
+      end
+
+      # Tell vagrant to remove older vagrant boxes
+      def run_box_auto_prune
+        if config[:box_auto_prune]
+          run(config[:box_auto_prune])
+        end
+      end
 
       # Runs a local command before `vagrant up` has been called.
       #
