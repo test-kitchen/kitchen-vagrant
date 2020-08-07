@@ -160,6 +160,14 @@ default `box` value of `bento/ubuntu-16.04`. Alternatively, a box called
 
 Whether to check for box updates (enabled by default).
 
+### <a name="config-box-auto-update"></a> box\_auto\_update
+
+Whether to update box to the latest version prior to vagrant up command
+
+### <a name="config-box-auto-prune"></a> box\_auto\_prune
+
+Whether to prune older versions of the box and only keep the newest version
+
 ### <a name="config-box-url"></a> box\_url
 
 A box_url is not required when using the Vagrant Cloud format of 
