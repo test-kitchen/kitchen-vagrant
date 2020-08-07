@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.7.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.7.0) (2020-07-04)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.6.1...v1.7.0)
+
+- Add new `box_auto_update` and `box_auto_prune` options to pull newer Vagrant base boxes [#421](https://github.com/test-kitchen/kitchen-vagrant/pull/421) ([@Stromweld](https://github.com/Stromweld))
+
 ## [1.6.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.6.1) (2020-01-14)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.6.0...v1.6.1)
 
