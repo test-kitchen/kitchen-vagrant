@@ -15,9 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "mixlib/shellout"
-require "fileutils"
-require "json"
+require "mixlib/shellout" unless defined?(Mixlib::ShellOut)
+require "fileutils" unless defined?(FileUtils)
+require "json" unless defined?(JSON)
 
 module Kitchen
   module Driver
