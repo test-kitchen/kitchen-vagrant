@@ -26,10 +26,10 @@ consequence, the minimum version of Vagrant required is 1.6 or higher.
 
 ### <a name="dependencies-virtualization"></a> Supported Virtualization Hypervisors
 
-| Provider                          | vagrant plugin              | Paid    
-| ---------                         | ---------                   | --------- 
-| [VirtualBox][virtualbox_dl]       | built-in                    | N 
-| [VMware Fusion][fusion_dl]        | vagrant-vmware-fusion       | Y   
+| Provider                          | vagrant plugin              | Paid
+| ---------                         | ---------                   | ---------
+| [VirtualBox][virtualbox_dl]       | built-in                    | N
+| [VMware Fusion][fusion_dl]        | vagrant-vmware-fusion       | Y
 | [VMware Workstation][ws_dl]       | vagrant-vmware-workstation  | Y
 | [Parallels Desktop][parallels_dl] | vagrant-parallels           | Y (plugin free)
 | Hyper-V                           | n/a                         | N
@@ -102,7 +102,7 @@ platforms:
 ```
 ### Hyper-V
 
-As Hyper-V is an exclusive hypervisor, it is recomended that the environment variable `VAGRANT_DEFAULT_PROVIDER` be set to `hyperv`. Vagrant currently requires user input to choose a virtual switch so we try to detect this automatically and use a workaround. If no network configuration is provided, we check:
+As Hyper-V is an exclusive hypervisor, it is recommended that the environment variable `VAGRANT_DEFAULT_PROVIDER` be set to `hyperv`. Vagrant currently requires user input to choose a virtual switch so we try to detect this automatically and use a workaround. If no network configuration is provided, we check:
 
 1) environment variable `KITCHEN_HYPERV_SWITCH`
 2) If on Windows 10 Fall Creators Update, use the built-in 'Default Switch'
@@ -148,8 +148,8 @@ The default is `nil`, indicating unset.
 details, please read the Vagrant [machine settings][vagrant_machine_settings]
 page.
 
-The default will be computed from the platform name of the instance. However, 
-for a number of common platforms in the [Bento][bento] project, the default will 
+The default will be computed from the platform name of the instance. However,
+for a number of common platforms in the [Bento][bento] project, the default will
 prefix the name with `bento/` in accordance with Vagrant Cloud naming standards.
 
 For example, a platform with name `ubuntu-16.04` will produce a
@@ -170,7 +170,7 @@ Whether to prune older versions of the box and only keep the newest version
 
 ### <a name="config-box-url"></a> box\_url
 
-A box_url is not required when using the Vagrant Cloud format of 
+A box_url is not required when using the Vagrant Cloud format of
 `bento/ubuntu-16.04` assuming the organization and box referenced
 exist. If using a custom box this can be an `https://` or `file://`
 URL.
@@ -193,7 +193,7 @@ then SSL certs will be verified.
 
 ### <a name="config-box-version"></a> box\_version
 
-The [version][vagrant_versioning] of the configured box. 
+The [version][vagrant_versioning] of the configured box.
 
 The default is `nil`, indicating unset.
 
@@ -623,8 +623,8 @@ section of the Vagrant documentation.
 
 The following providers are reported to work but are unsupported:
 
-- [CloudStack][cloudstack] via [vagrant-cloudstack][vagrant_cloudstack] 
-- [KVM][kvm]/[Libvirt][libvirt] via [vagrant-libvirt][vagrant_libvirt] 
+- [CloudStack][cloudstack] via [vagrant-cloudstack][vagrant_cloudstack]
+- [KVM][kvm]/[Libvirt][libvirt] via [vagrant-libvirt][vagrant_libvirt]
 - [LXC][lxc] via [vagrant-lxc][vagrant_lxc]
 - [OpenStack][openstack]
 - [RackSpace][rackspace] via [vagrant-rackspace][vagrant_rackspace]

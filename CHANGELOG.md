@@ -257,7 +257,7 @@
 
 ### Improvements
 
-* Pull request [#174][]: Correct grammer error in README. ([@albsOps][])
+* Pull request [#174][]: Correct grammar error in README. ([@albsOps][])
 * Support running unit test suite on Windows ([@ksubrama][])
 
 
@@ -343,7 +343,7 @@
 * Pull request [#137][]: Support SoftLayer `:disk_capacity` configuration. ([@hugespoon][])
 * Pull request [#102][]: Add `:box_version` & `:box_check_update` configuration options to support box versioning. ([@mconigliaro][])
 * Pull request [#129][]: Add `:provision` configuration option. ([@gouketsu][])
-* Pull reqwuest [#112][]: Add configuration option for user Vagrantfiles with `:vagrantfiles` configuration option. ([@byggztryng][])
+* Pull request [#112][]: Add configuration option for user Vagrantfiles with `:vagrantfiles` configuration option. ([@byggztryng][])
 * Pull request [#95][]: Add SSH ProxyCommand to state if present. ([@bdclark][])
 * Pull request [#121][]: Add `:ssh` configuration hash. ([@Igorshp][])
 * Pull request [#104][]: Add `:communicator` configuration option to support overriding underlying base box's communicator setting. ([@RobertRehberg][])
@@ -380,7 +380,7 @@
 
 * Add `config[:vm_hostname]` to set config.vm.hostname in Vagrantfile. ([@fnichol][])
 
-### Improvments
+### Improvements
 
 * Add `config[:guest]` documentation in README. ([@fnichol][])
 
@@ -403,7 +403,7 @@
 * Major refactor of Vagrantfile generation, to use an ERB template. For more details please consult the `vagrantfile_erb` section of the README. ([@fnichol][])
 * Add `pre_create_command` option to run optional setup such as Bindler. ([@fnichol][])
 
-### Improvments
+### Improvements
 
 * Pull request [#56][]: Enabled passing options to the synced folders. ([@antonio-osorio][])
 * Pull request [#55][]: Fix README badges. ([@arangamani][])
