@@ -317,7 +317,7 @@ module Kitchen
       def finalize_box_auto_prune!
         return if config[:box_auto_prune].nil?
 
-        config[:box_auto_prune] = "vagrant box prune --name #{config[:box]}"
+        config[:box_auto_prune] = "vagrant box prune --keep-active-boxes --name #{config[:box]}"
       end
 
       # Replaces any `{{vagrant_root}}` tokens in the pre create command.
