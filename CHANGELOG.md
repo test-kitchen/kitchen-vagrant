@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.7.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.7.1) (2020-11-03)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.7.0...v1.7.1)
+
+- Don't fail if active boxes can't be pruned [#427](https://github.com/test-kitchen/kitchen-vagrant/pull/427) ([@tas50](https://github.com/tas50))
+- Remove redundant encoding comments [#426](https://github.com/test-kitchen/kitchen-vagrant/pull/426) ([@tas50](https://github.com/tas50))
+- Use match? when we don't need the match data [#424](https://github.com/test-kitchen/kitchen-vagrant/pull/424) ([@tas50](https://github.com/tas50))
+- Optimize our requires to improve performance [#423](https://github.com/test-kitchen/kitchen-vagrant/pull/423) ([@tas50](https://github.com/tas50))
+
 ## [1.7.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.7.0) (2020-07-04)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.6.1...v1.7.0)
 
