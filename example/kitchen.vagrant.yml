@@ -4,7 +4,7 @@
 driver:
   name: vagrant # test-kitchen default
 
-  # If not set, check for the environment variable `VAGRANT_DEFAULT_PROVIDER` 
+  # If not set, check for the environment variable `VAGRANT_DEFAULT_PROVIDER`
   # If that is unset, default to `virtualbox`
   # provider: virtualbox
 
@@ -30,17 +30,17 @@ driver:
   # that support this feature
   # gui: nil
 
-  # If `true`, use "Linked Clones" or "Differencing Disk" 
+  # If `true`, use "Linked Clones" or "Differencing Disk"
   # options for providers that support this feature
   # This can reduce disk usage and offer performance benefits.
   # linked_clone: nil
 
-  # An Array of network customizations for the virtual machine. 
-  # Each Array element is itself an Array of arguments to be passed to the 
+  # An Array of network customizations for the virtual machine.
+  # Each Array element is itself an Array of arguments to be passed to the
   # config.vm.network method
   # network: []
 
-  # An optional hook to run a command immediately prior to 
+  # An optional hook to run a command immediately prior to
   # the `vagrant up --no-provisioner` command being executed.
   # **CAUTION**
   # pre_create_command: nil
@@ -57,7 +57,7 @@ driver:
   # An array of arrays that configure a synced folder
   # This value is automatically configured if using
   # the `cache_directory` option. Otherwise, empty.
-  # synced_folders:    
+  # synced_folders:
   #   - ["data/%{instance_name}", "/opt/instance_data"]
   #   - ["/host_path", "/vm_path", "create: true, type: :nfs"]
 
@@ -83,7 +83,7 @@ driver:
   # Default is File.expand_path("~/.kitchen/cache")
   # kitchen_cache_directory: /Users/cheeseplus/.kitchen/cache
 
-  # If `box` or `machine`, sets the respective value for 
+  # If `box` or `machine`, sets the respective value for
   # config.cache.scope. Any other truthy value yields `box`
   # cachier: nil
 
@@ -96,8 +96,8 @@ verifier:
 platforms:
   # We will grab boxes from bento on Vagrant Cloud
   # for a set of common platforms
-  - name: ubuntu-16.04
-  - name: centos-7
+  - name: ubuntu-20.04
+  - name: centos-8
   # Otherwise for platforms we don't know, the box needs to exist locally
   # and be known to Vagrant, otherwise provide `box` or `box_url`
   - name: openbsd-5.6
@@ -109,7 +109,7 @@ platforms:
       # If not using Vagrant Cloud, the box can be fetched
       # remotely via `http(s)://` or locally via `file://`
       # `box` requires a value
-      box: openbsd-5.6 
+      box: openbsd-5.6
       box_url: http://url.tld/openbsd-5.6.box
 
 suites:
