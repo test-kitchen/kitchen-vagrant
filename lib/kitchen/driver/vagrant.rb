@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 #
 # Author:: Fletcher Nichol (<fnichol@nichol.ca>)
 #
@@ -311,7 +310,7 @@ module Kitchen
       def finalize_box_auto_update!
         return if config[:box_auto_update].nil?
 
-        config[:box_auto_update] = "vagrant box update #{'--insecure ' if config[:box_download_insecure]}--box #{config[:box]}"
+        config[:box_auto_update] = "vagrant box update #{"--insecure " if config[:box_download_insecure]}--box #{config[:box]}"
       end
 
       # Create vagrant command to remove older versions of the box
