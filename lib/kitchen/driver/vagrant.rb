@@ -485,7 +485,13 @@ module Kitchen
       # Tell vagrant to update vagrant box to latest version
       def run_box_auto_update
         if config[:box_auto_update]
-          run(config[:box_auto_update])
+          begin
+            run(config[:box_auto_update])
+          rescue Kitchen::ShellOut::ShellCommandFailed => e
+            # If the box has never been downloaded, the update command will fail with this message.
+            # Just ignore it and move on. Re-raise all other errors.
+            raise e unless e.message.match?(/The box '.*' does not exist/m)
+          end
         end
       end
 
