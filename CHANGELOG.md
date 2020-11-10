@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.7.2](https://github.com/test-kitchen/kitchen-vagrant/tree/1.7.2) (2020-11-10)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.7.1...v1.7.2)
+
+- Ignore error if box not found when updating [#428](https://github.com/test-kitchen/kitchen-vagrant/pull/428) ([@clintoncwolfe ](https://github.com/clintoncwolfe ))
+
 ## [1.7.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.7.1) (2020-11-03)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.7.0...v1.7.1)
 
