@@ -23,5 +23,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec",     "~> 3.2"
   gem.add_development_dependency "simplecov", "~> 0.9"
-  gem.add_development_dependency "chefstyle"
+  gem.add_development_dependency "chefstyle", "=  1.5.1"
 end
