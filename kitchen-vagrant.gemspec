@@ -15,7 +15,7 @@ Gem::Specification.new do |gem|
   gem.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR).grep(/LICENSE|^lib|^support|^templates/)
   gem.require_paths = ["lib"]
 
-  gem.required_ruby_version = ">= 2.3"
+  gem.required_ruby_version = ">= 2.5"
 
   gem.add_dependency "test-kitchen", ">= 1.4", "< 3"
 
@@ -23,5 +23,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec",     "~> 3.2"
   gem.add_development_dependency "simplecov", "~> 0.9"
-  gem.add_development_dependency "chefstyle"
+  gem.add_development_dependency "chefstyle", "=  1.5.1"
 end
