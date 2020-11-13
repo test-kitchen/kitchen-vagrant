@@ -3,7 +3,6 @@
 [![Gem Version](https://badge.fury.io/rb/kitchen-vagrant.svg)](http://badge.fury.io/rb/kitchen-vagrant)
 ![CI](https://github.com/test-kitchen/kitchen-vagrant/workflows/CI/badge.svg)
 [![Code Climate](https://codeclimate.com/github/test-kitchen/kitchen-vagrant.svg)](https://codeclimate.com/github/test-kitchen/kitchen-vagrant)
-[![Test Coverage](https://codeclimate.com/github/test-kitchen/kitchen-vagrant/coverage.svg)](https://codeclimate.com/github/test-kitchen/kitchen-vagrant)
 
 A Test Kitchen Driver for Vagrant.
 
