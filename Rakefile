@@ -15,30 +15,7 @@ RuboCop::RakeTask.new(:style) do |task|
   task.options << "--display-cop-names"
 end
 
-desc "Display LOC stats"
-task :stats do
-  puts "\n## Production Code Stats"
-  sh "countloc -r lib/kitchen"
-  puts "\n## Test Code Stats"
-  sh "countloc -r spec"
-end
-
 desc "Run all quality tasks"
 task quality: %i{style stats}
 
 task default: %i{test quality}
-
-begin
-  require "github_changelog_generator/task"
-
-  GitHubChangelogGenerator::RakeTask.new :changelog do |config|
-    config.future_release = Kitchen::Driver::VAGRANT_VERSION
-    config.enhancement_labels = "enhancement,Enhancement,New Feature,Feature,Improvement".split(",")
-    config.bug_labels = "bug,Bug".split(",")
-    config.exclude_labels = %w{Duplicate Question Discussion No_Changelog}
-  end
-rescue LoadError
-  task :changelog do
-    raise "github_changelog_generator not installed! gem install github_changelog_generator."
-  end
-end
