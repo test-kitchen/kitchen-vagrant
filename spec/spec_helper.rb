@@ -30,3 +30,4 @@ elsif ENV["COVERAGE"]
   end
   SimpleCov.start "gem"
 end
+require "securerandom"
