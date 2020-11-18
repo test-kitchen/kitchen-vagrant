@@ -16,6 +16,6 @@ RuboCop::RakeTask.new(:style) do |task|
 end
 
 desc "Run all quality tasks"
-task quality: %i{style stats}
+task quality: %i{style}
 
 task default: %i{test quality}
