@@ -14,20 +14,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+RSpec.configure do |config|
 
-if ENV["CODECLIMATE_REPO_TOKEN"]
-  require "simplecov"
-  SimpleCov.start
-elsif ENV["COVERAGE"]
-  require "simplecov"
-  SimpleCov.profiles.define "gem" do
-    command_name "Specs"
+  # Run specs in random order to surface order dependencies. If you find an
+  # order dependency and want to debug it, you can fix the order by providing
+  # the seed, which is printed after each run.
+  #     --seed 1234
+  config.order = :random
 
-    add_filter ".gem/"
-    add_filter "/spec/"
+  # Seed global randomization in this process using the `--seed` CLI option.
+  # Setting this allows you to use `--seed` to deterministically reproduce
+  # test failures related to randomization by passing the same `--seed` value
+  # as the one that triggered the failure.
+  Kernel.srand config.seed
 
-    add_group "Libraries", "/lib/"
-  end
-  SimpleCov.start "gem"
+  config.expose_dsl_globally = true
+
 end
 require "securerandom"

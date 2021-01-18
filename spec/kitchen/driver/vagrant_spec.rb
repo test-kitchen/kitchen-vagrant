@@ -34,10 +34,10 @@ describe Kitchen::Driver::Vagrant do
   let(:suite)         { Kitchen::Suite.new(name: "suitey") }
   let(:verifier)      { Kitchen::Verifier::Dummy.new }
   let(:provisioner)   { Kitchen::Provisioner::Dummy.new }
-  let(:lifecycle_hooks) { Kitchen::LifecycleHooks.new({}) }
+  let(:state)         { {} }
+  let(:lifecycle_hooks) { Kitchen::LifecycleHooks.new(config, state) }
   let(:transport)     { Kitchen::Transport::Dummy.new }
   let(:state_file)    { double("state_file") }
-  let(:state)         { {} }
   let(:env)           { {} }
 
   let(:driver_object) { Kitchen::Driver::Vagrant.new(config) }

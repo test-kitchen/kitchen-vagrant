@@ -2,7 +2,6 @@
 
 [![Gem Version](https://badge.fury.io/rb/kitchen-vagrant.svg)](http://badge.fury.io/rb/kitchen-vagrant)
 ![CI](https://github.com/test-kitchen/kitchen-vagrant/workflows/CI/badge.svg)
-[![Code Climate](https://codeclimate.com/github/test-kitchen/kitchen-vagrant.svg)](https://codeclimate.com/github/test-kitchen/kitchen-vagrant)
 
 A Test Kitchen Driver for Vagrant.
 
@@ -52,7 +51,7 @@ on [Vagrant Cloud][vagrant_cloud] which serve as the default boxes for common pl
 ```yaml
 ---
 platforms:
-  - name: ubuntu-16.04
+  - name: ubuntu-20.04
   - name: centos-7
   - name: freebsd-11
 ```
@@ -62,9 +61,9 @@ This will effectively generate a configuration similar to:
 ```yaml
 ---
 platforms:
-  - name: ubuntu-16.04
+  - name: ubuntu-20.04
     driver:
-      box: bento/ubuntu-16.04
+      box: bento/ubuntu-20.04
   - name: centos-7
     driver:
       box: bento/centos-7
@@ -151,8 +150,8 @@ The default will be computed from the platform name of the instance. However,
 for a number of common platforms in the [Bento][bento] project, the default will
 prefix the name with `bento/` in accordance with Vagrant Cloud naming standards.
 
-For example, a platform with name `ubuntu-16.04` will produce a
-default `box` value of `bento/ubuntu-16.04`. Alternatively, a box called
+For example, a platform with name `ubuntu-20.04` will produce a
+default `box` value of `bento/ubuntu-20.04`. Alternatively, a box called
 `slackware-14.1` will produce a default `box` value of `slackware-14.1`.
 
 ### <a name="config-box-check-update"></a> box\_check\_update
@@ -170,7 +169,7 @@ Whether to prune older versions of the box and only keep the newest version
 ### <a name="config-box-url"></a> box\_url
 
 A box_url is not required when using the Vagrant Cloud format of
-`bento/ubuntu-16.04` assuming the organization and box referenced
+`bento/ubuntu-20.04` assuming the organization and box referenced
 exist. If using a custom box this can be an `https://` or `file://`
 URL.
 
@@ -349,7 +348,7 @@ providers.
 ```yaml
 ---
 platforms:
-  - name: ubuntu-16.04
+  - name: ubuntu-20.04
     driver:
       gui: true
 ```
@@ -375,7 +374,7 @@ Allows to use linked clones to import boxes for VirtualBox, VMware, Parallels De
 ```yaml
 ---
 platforms:
-  - name: ubuntu-16.04
+  - name: ubuntu-20.04
     driver:
       linked_clone: true
 ```
@@ -598,7 +597,7 @@ to save on boot time and potential rebooting.
 ```yaml
 ---
 platforms:
-  - name: ubuntu-16.04
+  - name: ubuntu-20.04
     driver:
       vm_hostname: server1.example.com
 ```

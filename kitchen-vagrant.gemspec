@@ -18,9 +18,4 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = ">= 2.5"
 
   gem.add_dependency "test-kitchen", ">= 1.4", "< 3"
-
-  gem.add_development_dependency "rake"
-  gem.add_development_dependency "rspec",     "~> 3.2"
-  gem.add_development_dependency "simplecov", "~> 0.9"
-  gem.add_development_dependency "chefstyle", "= 1.5.9"
 end
