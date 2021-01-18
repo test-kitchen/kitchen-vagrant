@@ -2,7 +2,7 @@
 # All the options for kitchen-vagrant enumerated and annotated
 # options are illustrated where they most commonly would be set
 driver:
-  name: vagrant # test-kitchen default
+  name: vagrant
 
   # If not set, check for the environment variable `VAGRANT_DEFAULT_PROVIDER`
   # If that is unset, default to `virtualbox`
@@ -115,8 +115,8 @@ platforms:
 suites:
   - name: default
     driver:
-      # If Windows, this is nil otherwise it's set to
-      # "#{driver.instance.name}.vagrantup.com"
-      # vm_hostname: "custom.tld"
+    # If Windows, this is nil otherwise it's set to
+    # "#{driver.instance.name}.vagrantup.com"
+    # vm_hostname: "custom.tld"
     run_list:
       - recipe[cookbook::default]
