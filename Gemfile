@@ -1,8 +1,17 @@
 source "https://rubygems.org"
 
+# Specify your gem"s dependencies in kitchen-vagrant.gemspec
 gemspec
 
-group :guard do
-  gem "guard-rspec",    require: nil
-  gem "guard-rubocop",  require: nil
+group :test do
+  gem "rake"
+  gem "rspec", "~> 3.2"
+end
+
+group :debug do
+  gem "pry"
+end
+
+group :chefstyle do
+  gem "chefstyle", "=1.5.9"
 end
