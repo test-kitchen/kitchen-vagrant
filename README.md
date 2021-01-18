@@ -1,7 +1,7 @@
 # <a name="title"></a> Kitchen::Vagrant
 
 [![Gem Version](https://badge.fury.io/rb/kitchen-vagrant.svg)](http://badge.fury.io/rb/kitchen-vagrant)
-![CI](https://github.com/test-kitchen/kitchen-vagrant/workflows/CI/badge.svg)
+![CI](https://github.com/test-kitchen/kitchen-vagrant/workflows/CI/badge.svg?branch=master)
 
 A Test Kitchen Driver for Vagrant.
 
