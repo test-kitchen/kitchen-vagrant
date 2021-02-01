@@ -1,9 +1,20 @@
 # Change Log
 
+## [1.8.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.8.0) (2021-02-02)
+
+- Require Ruby 2.5 or later (2.3/2.4 are EOL) ([@tas50](https://github.com/tas50))
+- Add support for our new Bento `almalinux` boxes [#444](https://github.com/test-kitchen/kitchen-vagrant/pull/444) ([@tas50](https://github.com/tas50))
+- Switch all testing to GitHub Actions [#430](https://github.com/test-kitchen/kitchen-vagrant/pull/430) ([@tas50](https://github.com/tas50))
+- Remove github changelog generator & countloc development dependencies [#431](https://github.com/test-kitchen/kitchen-vagrant/pull/431) ([@tas50](https://github.com/tas50))
+- Remove the Guardfile [#432](https://github.com/test-kitchen/kitchen-vagrant/pull/432) ([@tas50](https://github.com/tas50))
+- Add Ruby 3.0 testing [#440](https://github.com/test-kitchen/kitchen-vagrant/pull/440) ([@tas50](https://github.com/tas50))
+- Remove guard dev deps / move dev deps to the gemfile [#441](https://github.com/test-kitchen/kitchen-vagrant/pull/441) ([@tas50](https://github.com/tas50))
+- Add a Code of Conduct file + misc testing updates [#442](https://github.com/test-kitchen/kitchen-vagrant/pull/442) ([@tas50](https://github.com/tas50))
+
 ## [1.7.2](https://github.com/test-kitchen/kitchen-vagrant/tree/1.7.2) (2020-11-10)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.7.1...v1.7.2)
 
-- Ignore error if box not found when updating [#428](https://github.com/test-kitchen/kitchen-vagrant/pull/428) ([@clintoncwolfe ](https://github.com/clintoncwolfe ))
+- Ignore error if box not found when updating [#428](https://github.com/test-kitchen/kitchen-vagrant/pull/428) ([@clintoncwolfe](https://github.com/clintoncwolfe))
 
 ## [1.7.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.7.1) (2020-11-03)
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.7.0...v1.7.1)
