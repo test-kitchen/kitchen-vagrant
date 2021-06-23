@@ -78,6 +78,8 @@ module Kitchen
 
       default_config :synced_folders, []
 
+      default_config :use_cached_chef_client, false
+
       default_config :vagrant_binary, "vagrant"
 
       default_config :vagrantfile_erb,
@@ -264,7 +266,7 @@ module Kitchen
       def enable_cache?
         return false unless config[:cache_directory]
         return true if safe_share?(config[:box])
-
+        return true if config[:use_cached_chef_client]
         # Otherwise
         false
       end
