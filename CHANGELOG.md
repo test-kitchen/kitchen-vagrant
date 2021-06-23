@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.8.1]
+
+- Enable using the cached chef client on non bento vagrant boxes that have guest additions installed.
+
 ## [1.8.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.8.0) (2021-02-02)
 
 - Require Ruby 2.5 or later (2.3/2.4 are EOL) ([@tas50](https://github.com/tas50))
