@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.9.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.9.0) (2021-07-02)
+
+- Support Test Kitchen 3.0
+
 ## [1.8.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.8.0) (2021-02-02)
 
 - Require Ruby 2.5 or later (2.3/2.4 are EOL) ([@tas50](https://github.com/tas50))
