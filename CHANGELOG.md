@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.10.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.10.0) (2021-08-25)
+
+- Only create the virtual drive if it doesn't already exist locally
+
 ## [1.9.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.9.0) (2021-07-02)
 
 - Support Test Kitchen 3.0
