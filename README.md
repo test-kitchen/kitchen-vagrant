@@ -544,6 +544,21 @@ driver:
   kitchen_cache_directory: Z:\\custom\\kitchen_cache
 ```
 
+### <a name="use_cached_chef_client"></a> use_cached_chef_client
+
+Allows for use of Chef Infra Client installers downloaded during previous Test Kitchen runs from the cache folder on a non-Bento customized build Vagrant box image.
+The `Guest Additions` tools must be installed in the box image to support shared folder.
+
+The default is `false`
+
+The example:
+
+```yaml
+---
+driver:
+  use_cached_chef_client: true
+```
+
 ### <a name="config-vagrantfile-erb"></a> vagrantfile\_erb
 
 An alternate Vagrantfile ERB template that will be rendered for use by this
