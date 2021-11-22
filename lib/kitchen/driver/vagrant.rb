@@ -267,6 +267,7 @@ module Kitchen
         return false unless config[:cache_directory]
         return true if safe_share?(config[:box])
         return true if config[:use_cached_chef_client]
+
         # Otherwise
         false
       end
