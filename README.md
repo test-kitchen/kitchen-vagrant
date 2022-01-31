@@ -14,34 +14,25 @@ required.
 
 ### <a name="dependencies-vagrant"></a> Vagrant
 
-A Vagrant version of 1.1.0 or higher is required for this driver which means
-that a [native package][vagrant_dl] must be installed on the system running
-Test Kitchen.
-
-If you are creating Windows VMs over a WinRM Transport, then the
-[vagrant-winrm][vagrant_winrm] Vagrant plugin must be installed. As a
-consequence, the minimum version of Vagrant required is 1.6 or higher.
-
-### <a name="dependencies-virtualization"></a> Supported Virtualization Hypervisors
-
-| Provider                          | vagrant plugin              | Paid
-| ---------                         | ---------                   | ---------
-| [VirtualBox][virtualbox_dl]       | built-in                    | N
-| [VMware Fusion][fusion_dl]        | vagrant-vmware-fusion       | Y
-| [VMware Workstation][ws_dl]       | vagrant-vmware-workstation  | Y
-| [Parallels Desktop][parallels_dl] | vagrant-parallels           | Y (plugin free)
-| Hyper-V                           | n/a                         | N
-
-If you would like to use VMware Fusion or Workstation you must purchase the
-software from VMware and also purchase the corresponding [Vagrant VMware Plugin][vmware_plugin].
+A Vagrant version of 1.6 or later.
 
 ## <a name="installation"></a> Installation
 
-If using the ChefDK, kitchen-vagrant is already installed. If using an existing Ruby install:
+The kitchen-vagrant driver ships as part of Chef Workstation. The easiest way to use this driver is to [Download Chef Workstation](https://www.chef.io/downloads/tools/workstation).
 
-```
+If you want to install the driver directly into a Ruby installation:
+
+```sh
 gem install kitchen-vagrant
 ```
+
+If you're using Bundler, simply add it to your Gemfile:
+
+```ruby
+gem "kitchen-vagrant"
+```
+
+... and then run `bundle install`.
 
 ## <a name="default-config"></a> Default Configuration
 
@@ -674,7 +665,6 @@ Apache 2.0 (see [LICENSE][license])
 [driver_usage]:     http://kitchen.ci/docs/getting-started/adding-platform
 
 [bento]:                    https://github.com/chef/bento
-[vagrant_dl]:               http://www.vagrantup.com/downloads.html
 [vagrant_machine_settings]: http://docs.vagrantup.com/v2/vagrantfile/machine_settings.html
 [vagrant_networking]:       http://docs.vagrantup.com/v2/networking/basic_usage.html
 [virtualbox_dl]:            https://www.virtualbox.org/wiki/Downloads
@@ -687,9 +677,6 @@ Apache 2.0 (see [LICENSE][license])
 [vagrant_winrm]:            https://github.com/criteo/vagrant-winrm
 [vagrant_wrapper]:          https://github.com/org-binbab/gem-vagrant-wrapper
 [vagrant_wrapper_background]: https://github.com/org-binbab/gem-vagrant-wrapper#background---aka-the-vagrant-gem-enigma
-[vmware_plugin]:            http://www.vagrantup.com/vmware
-[fusion_dl]:                http://www.vmware.com/products/fusion/overview.html
-[ws_dl]:                    http://www.vmware.com/products/workstation/
 [bento_org]:                https://app.vagrantup.com/bento
 [vagrant_cloud]:            https://app.vagrantup.com/boxes/search
 [parallels_dl]:             http://www.parallels.com/products/desktop/download/
