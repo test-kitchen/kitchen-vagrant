@@ -1,9 +1,9 @@
---- 
-updates: 
-  - 
+---
+updates:
+  -
     directory: /
     open-pull-requests-limit: 10
     package-ecosystem: bundler
-    schedule: 
+    schedule:
       interval: daily
 version: 2
