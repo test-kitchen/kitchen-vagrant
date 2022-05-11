@@ -24,11 +24,13 @@
 - Add a Code of Conduct file + misc testing updates [#442](https://github.com/test-kitchen/kitchen-vagrant/pull/442) ([@tas50](https://github.com/tas50))
 
 ## [1.7.2](https://github.com/test-kitchen/kitchen-vagrant/tree/1.7.2) (2020-11-10)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.7.1...v1.7.2)
 
 - Ignore error if box not found when updating [#428](https://github.com/test-kitchen/kitchen-vagrant/pull/428) ([@clintoncwolfe](https://github.com/clintoncwolfe))
 
 ## [1.7.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.7.1) (2020-11-03)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.7.0...v1.7.1)
 
 - Don't fail if active boxes can't be pruned [#427](https://github.com/test-kitchen/kitchen-vagrant/pull/427) ([@tas50](https://github.com/tas50))
@@ -37,38 +39,45 @@
 - Optimize our requires to improve performance [#423](https://github.com/test-kitchen/kitchen-vagrant/pull/423) ([@tas50](https://github.com/tas50))
 
 ## [1.7.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.7.0) (2020-07-04)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.6.1...v1.7.0)
 
 - Add new `box_auto_update` and `box_auto_prune` options to pull newer Vagrant base boxes [#421](https://github.com/test-kitchen/kitchen-vagrant/pull/421) ([@Stromweld](https://github.com/Stromweld))
 
 ## [1.6.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.6.1) (2020-01-14)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.6.0...v1.6.1)
 
 - \[README\] fix openstack link [#409](https://github.com/test-kitchen/kitchen-vagrant/pull/409) ([@arthurlogilab](https://github.com/arthurlogilab))
 - Use require_relative instead of require [#414](https://github.com/test-kitchen/kitchen-vagrant/pull/414) ([@tas50](https://github.com/tas50))
 
 ## [1.6.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.6.0) (2019-08-05)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.5.2...v1.6.0)
 
 - Don't fail when instance names become too long for Hyper-V [#404](https://github.com/test-kitchen/kitchen-vagrant/pull/404) ([@Xorima](https://github.com/Xorima))
 - Require Ruby 2.3 or later (Ruby < 2.3 are no longer supported Ruby releases)
 
 ## [1.5.2](https://github.com/test-kitchen/kitchen-vagrant/tree/1.5.2) (2019-05-02)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.5.1...v1.5.2)
 
 - Restores vm name uniqueness [#399](https://github.com/test-kitchen/kitchen-vagrant/pull/399) ([@fretb](https://github.com/fretb))
 
 ## [1.5.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.5.1) (2019-03-19)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.5.0...v1.5.1)
 
 - Loosen the Test Kitchen dep to allow 2.0 [#398](https://github.com/test-kitchen/kitchen-vagrant/pull/398) ([@tas50](https://github.com/tas50))
 
 ## [1.5.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.5.0) (2019-03-14)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.4.0...v1.5.0)
 
 - Support using bento/amazonlinux-2 when specifying just amazonlinux-2 platform [#397](https://github.com/test-kitchen/kitchen-vagrant/pull/397) ([@tas50](https://github.com/tas50))
 
 ## [1.4.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.4.0) (2019-01-28)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.6...v1.4.0)
 
 - Add usage of vm_hostname to Readme.md [#386](https://github.com/test-kitchen/kitchen-vagrant/pull/386) ([@f9n](https://github.com/f9n))
@@ -76,6 +85,7 @@
 - Added WSL support [#384](https://github.com/test-kitchen/kitchen-vagrant/pull/384) ([@BCarley](https://github.com/BCarley))
 
 ## [1.3.6](https://github.com/test-kitchen/kitchen-vagrant/tree/1.3.6) (2018-10-26)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.5...v1.3.6)
 
 **Merged pull requests:**
@@ -84,6 +94,7 @@
 - Newest vagrant no long requires vagrant-winrm plugin [\#379](https://github.com/test-kitchen/kitchen-vagrant/pull/379) ([tyler-ball](https://github.com/tyler-ball))
 
 ## [v1.3.5](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.5) (2018-10-23)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.4...v1.3.5)
 
 **Closed issues:**
@@ -95,6 +106,7 @@
 - Slim the size of the gem by removing spec files [\#377](https://github.com/test-kitchen/kitchen-vagrant/pull/377) ([tas50](https://github.com/tas50))
 
 ## [v1.3.4](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.4) (2018-09-15)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.3...v1.3.4)
 
 **Merged pull requests:**
@@ -103,6 +115,7 @@
 - Vagrantfile Template: Hyper-v Differencing\_disk deprecation [\#370](https://github.com/test-kitchen/kitchen-vagrant/pull/370) ([cocazoulou](https://github.com/cocazoulou))
 
 ## [v1.3.3](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.3) (2018-08-13)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.2...v1.3.3)
 
 **Closed issues:**
@@ -120,6 +133,7 @@
 - Fix disk examples [\#360](https://github.com/test-kitchen/kitchen-vagrant/pull/360) ([espoelstra](https://github.com/espoelstra))
 
 ## [v1.3.2](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.2) (2018-04-23)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.1...v1.3.2)
 
 **Merged pull requests:**
@@ -129,6 +143,7 @@
 - Hyper-V: Ensure default switch name is always wrapped in quotes [\#345](https://github.com/test-kitchen/kitchen-vagrant/pull/345) ([stuartpreston](https://github.com/stuartpreston))
 
 ## [v1.3.1](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.1) (2018-02-20)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.0...v1.3.1)
 
 **Merged pull requests:**
@@ -136,22 +151,26 @@
 - Adding support for HyperV Differencing\_disk [\#342](https://github.com/test-kitchen/kitchen-vagrant/pull/342) ([cocazoulou](https://github.com/cocazoulou))
 
 ## [1.3.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.3.0) (2018-01-17)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.2.2...1.3.0)
 
 - Improve Hyper-V defaults and support [\#338](https://github.com/test-kitchen/kitchen-vagrant/pull/338)
 
 ## [1.2.2](https://github.com/test-kitchen/kitchen-vagrant/tree/1.2.2) (2017-11-07)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.2.1...1.2.2)
 
 - For WinRM options, only treat strings as strings. [\#330](https://github.com/test-kitchen/kitchen-vagrant/pull/330)
 
 ## [1.2.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.2.1) (2017-08-22)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.2.0...1.2.1)
 
 - Revert parallel virtualbox [\#325](https://github.com/test-kitchen/kitchen-vagrant/pull/325)
 - Shorten directory name for `vagrant_root` [\#323](https://github.com/test-kitchen/kitchen-vagrant/pull/323)
 
 ## [1.2.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.2.0) (2017-08-11)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.1.1...1.2.0)
 
 **Implemented enhancements:**
@@ -160,6 +179,7 @@
 - Parallel virtualbox [\#202](https://github.com/test-kitchen/kitchen-vagrant/pull/202) ([rveznaver](https://github.com/rveznaver))
 
 ## [v1.1.1](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.1.1) (2017-07-26)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.1.0...v1.1.1)
 
 **Fixed Bugs**
@@ -169,9 +189,11 @@
 - Disable caching, even for bento boxes. [\#313](https://github.com/test-kitchen/kitchen-vagrant/pull/313) ([robbkidd](https://github.com/robbkidd))
 
 ## [v1.1.0](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.1.0) (2017-03-31)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.0.2...v1.1.0)
 
 **New Features:**
+
 - Make kitchen package work [\#275](https://github.com/test-kitchen/kitchen-vagrant/pull/275) ([ccope](https://github.com/ccope))
 
 **Improvements:**
@@ -182,6 +204,7 @@
 - Add support for all misc vagrant providers [\#290](https://github.com/test-kitchen/kitchen-vagrant/pull/290) ([myoung34](https://github.com/myoung34))
 
 ## [v1.0.2](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.0.2) (2017-02-13)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.0.1...v1.0.2)
 
 **Fixed bugs:**
@@ -189,6 +212,7 @@
 - Fixed a bug that can occur when `instance` returns `nil` [\#285](https://github.com/test-kitchen/kitchen-vagrant/pull/285) ([Kuniwak](https://github.com/Kuniwak))
 
 ## [v1.0.1](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.0.1) (2017-02-10)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.0.0...v1.0.1)
 
 **Fixed bugs:**
@@ -196,6 +220,7 @@
 - Fixed cache folder disable for FreeBSD and MacOS/OSX [\#281](https://github.com/test-kitchen/kitchen-vagrant/pull/281) ([brentm5](https://github.com/brentm5)) [\#283](https://github.com/test-kitchen/kitchen-vagrant/pull/283) ([cheeseplus](https://github.com/cheeseplus))
 
 ## [1.0.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.0.0) (2017-01-10)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.21.1...v1.0.0)
 
 **Implemented enhancements:**
@@ -215,6 +240,7 @@
 - Fix quoting for cloud providers \(redux \#179\) [\#268](https://github.com/test-kitchen/kitchen-vagrant/pull/268) ([cheeseplus](https://github.com/cheeseplus))
 
 ## [0.21.1](https://github.com/test-kitchen/kitchen-vagrant/tree/0.21.1) (2016-12-05)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.21.0...v0.21.1)
 
 **Implemented enhancements:**
@@ -231,6 +257,7 @@
 - do not map the extra cache drive on non virtualbox windows [\#255](https://github.com/test-kitchen/kitchen-vagrant/pull/255) ([mwrock](https://github.com/mwrock))
 
 ## [0.21.0](https://github.com/test-kitchen/kitchen-vagrant/tree/0.21.0) (2016-11-29)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.20.0...v0.21.0)
 
 **Fixed bugs:**
@@ -247,6 +274,7 @@
 - Add support for ovirt3 vagrant provider [\#223](https://github.com/test-kitchen/kitchen-vagrant/pull/223) ([xiboy](https://github.com/xiboy))
 
 ## [0.20.0](https://github.com/test-kitchen/kitchen-vagrant/tree/v0.20.0) (2016-04-07)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.19.0...v0.20.0)
 
 **Implemented enhancements:**
@@ -284,28 +312,28 @@
 
 ### Bug fixes
 
-* Pull request [#163][]: Properly quote `config[:ssh]` values. ([@zuazo][])
-* Pull request [#191][], pull request [#197][], issue [#190][]: Escape Bundler environment when shelling out to `vagrant` command. ([@ksubrama][], [@tknerr][])
+- Pull request [#163][]: Properly quote `config[:ssh]` values. ([@zuazo][])
+- Pull request [#191][], pull request [#197][], issue [#190][]: Escape Bundler environment when shelling out to `vagrant` command. ([@ksubrama][], [@tknerr][])
 
 ### New features
 
-* Pull request 172, issue [#171][]: Add support for OpenStack provider. ([@xmik][])
+- Pull request 172, issue [#171][]: Add support for OpenStack provider. ([@xmik][])
 
 ### Improvements
 
-* Pull request [#174][]: Correct grammar error in README. ([@albsOps][])
-* Support running unit test suite on Windows ([@ksubrama][])
+- Pull request [#174][]: Correct grammar error in README. ([@albsOps][])
+- Support running unit test suite on Windows ([@ksubrama][])
 
 
 ## 0.18.0 / 2015-05-07
 
 ### Bug fixes
 
-* Pull request [#161][]: Add handling for winrm communicator in username & password handling. ([@atiniir][])
+- Pull request [#161][]: Add handling for winrm communicator in username & password handling. ([@atiniir][])
 
 ### Improvements
 
-* Pull request [#166][]: Allow a fuzzier match for known Bento box names. ([@fnichol][])
+- Pull request [#166][]: Allow a fuzzier match for known Bento box names. ([@fnichol][])
 
 
 ## 0.17.0 / 2015-04-28
@@ -314,249 +342,249 @@
 
 ### Bug fixes
 
-* Pull request [#156][]: Use RDPPort value from `vagrant winrm-config` for WinRM Transports. ([@fnichol][])
+- Pull request [#156][]: Use RDPPort value from `vagrant winrm-config` for WinRM Transports. ([@fnichol][])
 
 ### New features
 
-* Pull request [#154][]: Support for WinRM Transport and Windows-based instances. ([@fnichol][])
+- Pull request [#154][]: Support for WinRM Transport and Windows-based instances. ([@fnichol][])
 
 ### Improvements
 
-* Pull request [#152][]: Translate CPU count for VMWare provider. ([@whiteley][])
-* Pull request [#157][]: Close Transport connection in #destroy. ([@fnichol][])
-* Pull request [#158][]: Add plugin metadata to the Driver. ([@fnichol][])
+- Pull request [#152][]: Translate CPU count for VMWare provider. ([@whiteley][])
+- Pull request [#157][]: Close Transport connection in #destroy. ([@fnichol][])
+- Pull request [#158][]: Add plugin metadata to the Driver. ([@fnichol][])
 
 
 ## 0.17.0.rc.1 / 2015-03-29
 
 ### Improvements
 
-* Pull request [#157][]: Close Transport connection in #destroy. ([@fnichol][])
-* Pull request [#158][]: Add plugin metadata to the Driver. ([@fnichol][])
+- Pull request [#157][]: Close Transport connection in #destroy. ([@fnichol][])
+- Pull request [#158][]: Add plugin metadata to the Driver. ([@fnichol][])
 
 
 ## 0.17.0.beta.4 / 2015-03-26
 
 ### Bug fixes
 
-* Pull request [#156][]: Use RDPPort value from `vagrant winrm-config` for WinRM Transports. ([@fnichol][])
+- Pull request [#156][]: Use RDPPort value from `vagrant winrm-config` for WinRM Transports. ([@fnichol][])
 
 ### Improvements
 
-* Pull request [#152][]: Translate CPU count for VMWare provider. ([@whiteley][])
+- Pull request [#152][]: Translate CPU count for VMWare provider. ([@whiteley][])
 
 
 ## 0.17.0.beta.3 / 2015-03-25
 
 ### Bug fixes
 
-* Pull request [#155][]: Use the vagrant-winrm Vagrant plugin to resolve VM IP address. See PR for details. ([@fnichol][])
+- Pull request [#155][]: Use the vagrant-winrm Vagrant plugin to resolve VM IP address. See PR for details. ([@fnichol][])
 
 
 ## 0.17.0.beta.2 / 2015-03-25
 
-* Relax version constraint on Test Kitchen. ([@fnichol][])
+- Relax version constraint on Test Kitchen. ([@fnichol][])
 
 
 ## 0.17.0.beta.1 / 2015-03-24
 
-* Pull request [#154][]: Support for WinRM Transport and Windows-based instances. ([@fnichol][])
+- Pull request [#154][]: Support for WinRM Transport and Windows-based instances. ([@fnichol][])
 
 
 ## 0.16.0 / 2015-03-23
 
 ### Bug fixes
 
-* Pull request [#122][], pull request [#151][]: Only set custom `:box` & `:box_url` values for known Bento boxes. ([@ashb][], [@fnichol][])
+- Pull request [#122][], pull request [#151][]: Only set custom `:box` & `:box_url` values for known Bento boxes. ([@ashb][], [@fnichol][])
 
 ### New features
 
-* Pull request [#84][]: Add support for Parallels provider. ([@jhx][])
-* Pull request [#107][]: Add support for libvirt provider. ([@bradleyd][])
-* Pull request [#128][]: Add support for LXC provider. ([@tknerr][])
-* Pull request [#142][]: Add support for managed-servers provider. ([@kbruner][])
-* Add `:gui` configuration attribute to override default GUI mode with VirtualBox and VMware-based providers. ([@fnichol][])
-* Pull request [#137][]: Support SoftLayer `:disk_capacity` configuration. ([@hugespoon][])
-* Pull request [#102][]: Add `:box_version` & `:box_check_update` configuration options to support box versioning. ([@mconigliaro][])
-* Pull request [#129][]: Add `:provision` configuration option. ([@gouketsu][])
-* Pull request [#112][]: Add configuration option for user Vagrantfiles with `:vagrantfiles` configuration option. ([@byggztryng][])
-* Pull request [#95][]: Add SSH ProxyCommand to state if present. ([@bdclark][])
-* Pull request [#121][]: Add `:ssh` configuration hash. ([@Igorshp][])
-* Pull request [#104][]: Add `:communicator` configuration option to support overriding underlying base box's communicator setting. ([@RobertRehberg][])
-* Pull request [#118][]: Vagrant config password (Not Vagrant recommended). ([@philcallister][])
+- Pull request [#84][]: Add support for Parallels provider. ([@jhx][])
+- Pull request [#107][]: Add support for libvirt provider. ([@bradleyd][])
+- Pull request [#128][]: Add support for LXC provider. ([@tknerr][])
+- Pull request [#142][]: Add support for managed-servers provider. ([@kbruner][])
+- Add `:gui` configuration attribute to override default GUI mode with VirtualBox and VMware-based providers. ([@fnichol][])
+- Pull request [#137][]: Support SoftLayer `:disk_capacity` configuration. ([@hugespoon][])
+- Pull request [#102][]: Add `:box_version` & `:box_check_update` configuration options to support box versioning. ([@mconigliaro][])
+- Pull request [#129][]: Add `:provision` configuration option. ([@gouketsu][])
+- Pull request [#112][]: Add configuration option for user Vagrantfiles with `:vagrantfiles` configuration option. ([@byggztryng][])
+- Pull request [#95][]: Add SSH ProxyCommand to state if present. ([@bdclark][])
+- Pull request [#121][]: Add `:ssh` configuration hash. ([@Igorshp][])
+- Pull request [#104][]: Add `:communicator` configuration option to support overriding underlying base box's communicator setting. ([@RobertRehberg][])
+- Pull request [#118][]: Vagrant config password (Not Vagrant recommended). ([@philcallister][])
 
 ### Improvements
 
-* Pull request [#148][]: Add full test coverage to the codebase. ([@fnichol][])
-* Pull request [#126][]: Disable vagrant-berkshelf plugin by default (this Driver does not need it and can cause confusing errors). ([@tknerr][])
-* Pull request [#101][]: Qualify VM names with project name. ([@petere][])
-* Pull request [#117][]: Change default hostname to be shorter and friendlier for Windows hosts. ([@Annih][])
-* Pull request [#106][], Use correct URLs to download vagrant in README. ([@alex-slynko-wonga][])
-* Pull request [#146][]: Freshen project quality (TravisCI, Tailor-for-Rubocop, Guard support, etc). ([@fnichol][])
-* Pull request [#147][]: Tidy default configuration attributes. ([@fnichol][])
-* Pull request [#134][]: CHANGELOG Champion, Mr. [@miketheman][]. ([@miketheman][])
-* Pull request [#127][]: README updates. ([@vinyar][], fnichol)
+- Pull request [#148][]: Add full test coverage to the codebase. ([@fnichol][])
+- Pull request [#126][]: Disable vagrant-berkshelf plugin by default (this Driver does not need it and can cause confusing errors). ([@tknerr][])
+- Pull request [#101][]: Qualify VM names with project name. ([@petere][])
+- Pull request [#117][]: Change default hostname to be shorter and friendlier for Windows hosts. ([@Annih][])
+- Pull request [#106][], Use correct URLs to download vagrant in README. ([@alex-slynko-wonga][])
+- Pull request [#146][]: Freshen project quality (TravisCI, Tailor-for-Rubocop, Guard support, etc). ([@fnichol][])
+- Pull request [#147][]: Tidy default configuration attributes. ([@fnichol][])
+- Pull request [#134][]: CHANGELOG Champion, Mr. [@miketheman][]. ([@miketheman][])
+- Pull request [#127][]: README updates. ([@vinyar][], fnichol)
 
 
 ## 0.15.0 / 2014-04-28
 
 ### New features
 
-* Support vagrant-softlayer plugin
+- Support vagrant-softlayer plugin
 
 ### Improvements
 
-* Improved/updated README documentation + typos
-* Remove default memory setting
-* Fix relative paths in synced folders
+- Improved/updated README documentation + typos
+- Remove default memory setting
+- Fix relative paths in synced folders
 
 ## 0.14.0 / 2013-12-09
 
 ### New features
 
-* Add `config[:vm_hostname]` to set config.vm.hostname in Vagrantfile. ([@fnichol][])
+- Add `config[:vm_hostname]` to set config.vm.hostname in Vagrantfile. ([@fnichol][])
 
 ### Improvements
 
-* Add `config[:guest]` documentation in README. ([@fnichol][])
+- Add `config[:guest]` documentation in README. ([@fnichol][])
 
 
 ## 0.13.0 / 2013-12-04
 
 ### New features
 
-* Use Opscode's new buckets for Virtual machines, allowing for downloads of VirtualBox and VMware Fusion/Workstation Bento boxes (Vagrant minimal base boxes). ([@sethvargo][])
+- Use Opscode's new buckets for Virtual machines, allowing for downloads of VirtualBox and VMware Fusion/Workstation Bento boxes (Vagrant minimal base boxes). ([@sethvargo][])
 
 
 ## 0.12.0 / 2013-11-29
 
 ### Breaking changes
 
-* Remove `use_vagrant_provision` configuration option.
+- Remove `use_vagrant_provision` configuration option.
 
 ### New features
 
-* Major refactor of Vagrantfile generation, to use an ERB template. For more details please consult the `vagrantfile_erb` section of the README. ([@fnichol][])
-* Add `pre_create_command` option to run optional setup such as Bindler. ([@fnichol][])
+- Major refactor of Vagrantfile generation, to use an ERB template. For more details please consult the `vagrantfile_erb` section of the README. ([@fnichol][])
+- Add `pre_create_command` option to run optional setup such as Bindler. ([@fnichol][])
 
 ### Improvements
 
-* Pull request [#56][]: Enabled passing options to the synced folders. ([@antonio-osorio][])
-* Pull request [#55][]: Fix README badges. ([@arangamani][])
+- Pull request [#56][]: Enabled passing options to the synced folders. ([@antonio-osorio][])
+- Pull request [#55][]: Fix README badges. ([@arangamani][])
 
 
 ## 0.11.3 / 2013-11-09
 
 ### Bug fixes
 
-* Revert `quiet` option used for Vagrant version checking. ([@fnichol][])
+- Revert `quiet` option used for Vagrant version checking. ([@fnichol][])
 
 
 ## 0.11.2 / 2013-11-05
 
 ### Bug fixes
 
-* Remove misleading `quiet` option ([@sethvargo][])
-* Relax dependency on Test Kitchen ([@sethvargo][])
-* Remove deprecated references to `vagrant-berkshelf` ([@sethvargo][])
+- Remove misleading `quiet` option ([@sethvargo][])
+- Relax dependency on Test Kitchen ([@sethvargo][])
+- Remove deprecated references to `vagrant-berkshelf` ([@sethvargo][])
 
 ### Improvements
 
-* Allow users to specify custom SSH private key ([@manul][])
-* Use platform to determine which vagrant box to download (assume Opscode) ([@sethvargo][])
+- Allow users to specify custom SSH private key ([@manul][])
+- Use platform to determine which vagrant box to download (assume Opscode) ([@sethvargo][])
 
 
 ## 0.11.1 / 2013-08-29
 
 ### Bug fixes
 
-* Pull request [#36][]: README fix for synched_folders. ([@mattray][])
+- Pull request [#36][]: README fix for synched_folders. ([@mattray][])
 
 ### Improvements
 
-* Pull request [#34][]: Disable synced folders by default. ([@dje][])
+- Pull request [#34][]: Disable synced folders by default. ([@dje][])
 
 
 ## 0.11.0 / 2013-07-23
 
 ### New features
 
-* Pull request [#30][]: Support computed defaults for a select list of pre-determined platforms (see pull request and readme for quick example). ([@fnichol][])
-* Pull request [#25][]: Add rackspace support. ([@josephholsten][])
+- Pull request [#30][]: Support computed defaults for a select list of pre-determined platforms (see pull request and readme for quick example). ([@fnichol][])
+- Pull request [#25][]: Add rackspace support. ([@josephholsten][])
 
 ### Improvements
 
-* Pull request [#20][]: Respect `VAGRANT_DEFAULT_PROVIDER` environment variable. ([@tmatilai][])
-* Pull request [#24][]: Allow to override Vagrant default SSH username. ([@gildegoma][])
-* Pull request [#21][]: Configure tailor to actually check the code style. ([@tmatilai][])
+- Pull request [#20][]: Respect `VAGRANT_DEFAULT_PROVIDER` environment variable. ([@tmatilai][])
+- Pull request [#24][]: Allow to override Vagrant default SSH username. ([@gildegoma][])
+- Pull request [#21][]: Configure tailor to actually check the code style. ([@tmatilai][])
 
 ### Bug fixes
 
-* Pull request [#29][], issue [#28][]: Allow the vagrant guest setting to be set in the generated Vagrantfile via the kitchen.yml. ([@keiths-osc][])
-* Pull request [#31][]: Add some quotes around Vagrantfile value. ([@albertsj1][])
+- Pull request [#29][], issue [#28][]: Allow the vagrant guest setting to be set in the generated Vagrantfile via the kitchen.yml. ([@keiths-osc][])
+- Pull request [#31][]: Add some quotes around Vagrantfile value. ([@albertsj1][])
 
 
 ## 0.10.0 / 2013-05-08
 
 ### New features
 
-* Pull request [#12][]: Use SSHBase functionality (using ChefDataUploader) to manage Chef provisioning in the converge action and make Vagrant's built in provisioning an optional mode by setting `use_vagrant_provision: true` in the `driver_config` section of the .kitchen.yml. As a consequence, the vagrant-berkshelf middleware is now also optional and off by default (can be re-enabled by setting `use_vagrant_berkshelf_plugin: true`). ([@fujin][])
-* Pull request [#18][]: Add VMware Fusion/Workstation support. ([@TheDude05][])
+- Pull request [#12][]: Use SSHBase functionality (using ChefDataUploader) to manage Chef provisioning in the converge action and make Vagrant's built in provisioning an optional mode by setting `use_vagrant_provision: true` in the `driver_config` section of the .kitchen.yml. As a consequence, the vagrant-berkshelf middleware is now also optional and off by default (can be re-enabled by setting `use_vagrant_berkshelf_plugin: true`). ([@fujin][])
+- Pull request [#18][]: Add VMware Fusion/Workstation support. ([@TheDude05][])
 
 ### Improvements
 
-* Issue [#19][]: Recommend the vagrant-wrapper gem in README. ([@fnichol][])
+- Issue [#19][]: Recommend the vagrant-wrapper gem in README. ([@fnichol][])
 
 
 ## 0.9.0 / 2013-04-19
 
 ### Upstream changes
 
-* Pull request [#16][]: Update Vagrant Berkshelf plugin detection for the vagrant-berkshelf and drop detection for berkshelf-vagrant. ([@martinisoft][])
+- Pull request [#16][]: Update Vagrant Berkshelf plugin detection for the vagrant-berkshelf and drop detection for berkshelf-vagrant. ([@martinisoft][])
 
 
 ## 0.8.0 / 2013-04-16
 
 ### Improvements
 
-* Pull request [#15][]: Support berkshelf-vagrant 1.1.0+ in Vagrantfiles. ([@petejkim][], [@fnichol][])
-* Add an explanation of how this driver works in the README. ([@fnichol][])
+- Pull request [#15][]: Support berkshelf-vagrant 1.1.0+ in Vagrantfiles. ([@petejkim][], [@fnichol][])
+- Add an explanation of how this driver works in the README. ([@fnichol][])
 
 
 ## 0.7.4 / 2013-03-28
 
 ### Improvements
 
-* Drop `vagrant ssh -c` & communicate directly via SSH. ([@fnichol][])
+- Drop `vagrant ssh -c` & communicate directly via SSH. ([@fnichol][])
 
 
 ## 0.7.3 / 2013-03-28
 
 ### Bug fixes
 
-* Calling #destroy should not memoize #create_vagrantfile. ([@fnichol][], [@sandfish8][])
+- Calling #destroy should not memoize #create_vagrantfile. ([@fnichol][], [@sandfish8][])
 
 
 ## 0.7.2 / 2013-03-23
 
 ### Bug fixes
 
-* Wrap strings for data_bags_path and roles_path in Vagrantfiles. ([@fnichol][])
+- Wrap strings for data_bags_path and roles_path in Vagrantfiles. ([@fnichol][])
 
 
 ## 0.7.1 / 2013-03-23
 
 ### Bug fixes
 
-* Depend on test-kitchen ~> 1.0.0.alpha.1 to get API updates. ([@fnichol][])
+- Depend on test-kitchen ~> 1.0.0.alpha.1 to get API updates. ([@fnichol][])
 
 
 ## 0.7.0 / 2013-03-22
 
 ### New features
 
-* Pull request [#7][]: [Breaking] Support Vagrant 1.1+ and remove vagrant gem dependency. ([@fnichol][])
-* Pull request [#8][]: Add dependency checks for Vagrant and berkshelf-vagrant plugin (if necessary). ([@fnichol][])
+- Pull request [#7][]: [Breaking] Support Vagrant 1.1+ and remove vagrant gem dependency. ([@fnichol][])
+- Pull request [#8][]: Add dependency checks for Vagrant and berkshelf-vagrant plugin (if necessary). ([@fnichol][])
 
 
 ## 0.6.0 / 2013-03-02

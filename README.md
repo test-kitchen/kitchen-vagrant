@@ -1,4 +1,4 @@
-# <a name="title"></a> Kitchen::Vagrant
+# kitchen-vagrant
 
 [![Gem Version](https://badge.fury.io/rb/kitchen-vagrant.svg)](http://badge.fury.io/rb/kitchen-vagrant)
 ![CI](https://github.com/test-kitchen/kitchen-vagrant/workflows/CI/badge.svg?branch=master)
@@ -10,13 +10,13 @@ sandboxed directory. Since the Vagrantfile is written out on disk, Vagrant
 needs absolutely no knowledge of Test Kitchen. So no Vagrant plugins are
 required.
 
-## <a name="requirements"></a> Requirements
+## Requirements
 
-### <a name="dependencies-vagrant"></a> Vagrant
+### Vagrant
 
 A Vagrant version of 1.6 or later.
 
-## <a name="installation"></a> Installation
+## Installation
 
 The kitchen-vagrant driver ships as part of Chef Workstation. The easiest way to use this driver is to [Download Chef Workstation](https://www.chef.io/downloads/tools/workstation).
 
@@ -38,7 +38,7 @@ gem "kitchen-vagrant"
 
 See the [kitchen.ci Vagrant Driver Page](https://kitchen.ci/docs/drivers/vagrant/) for documentation on configuring this driver.
 
-## <a name="development"></a> Development
+## Development
 
 * Source hosted at [GitHub][repo]
 * Report issues/questions/feature requests on [GitHub Issues][issues]
@@ -53,11 +53,11 @@ example:
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 
-## <a name="authors"></a> Authors
+## Authors
 
 Created by [Fletcher Nichol][author] (<fnichol@nichol.ca>)
 
-## <a name="license"></a> License
+## License
 
 Apache 2.0 (see [LICENSE][license])
 
