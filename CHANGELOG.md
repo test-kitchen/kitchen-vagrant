@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.12.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.12.0) (2022-06-09)
+
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.11.0...v1.12.0)
+
+- Support for Ruby 3.1
+- Using chefstyle linting
+
 ## [1.11.0]
 
 - Adds `use_cached_chef_client` option to enable using the cached Chef Infra Client installers on non-Bento Vagrant boxes that have `Guest Additions` installed.
