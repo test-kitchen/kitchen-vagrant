@@ -1241,8 +1241,8 @@ describe Kitchen::Driver::Vagrant do
       cmd
 
       expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {6}/, "").chomp))
-        c.vm.network(:forwarded_port, {:guest=>80, :host=>8080})
-        c.vm.network(:private_network, {:ip=>"192.168.33.33"})
+        c.vm.network(:forwarded_port, :guest=>80, :host=>8080)
+        c.vm.network(:private_network, :ip=>"192.168.33.33")
       RUBY
     end
 
