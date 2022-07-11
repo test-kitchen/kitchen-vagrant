@@ -1,8 +1,12 @@
 # Change Log
 
-## [1.12.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.12.0) (2022-06-09)
+## [1.12.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.12.1) (2022-07-11)
 
-[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.11.0...v1.12.0)
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.12.0...v1.12.1)
+
+- Fix for Ruby 3.0 compatibility when specifying Vagrantfile network configuration [#477](https://github.com/test-kitchen/kitchen-vagrant/pull/477) ([@PowerKiki](https://github.com/PowerKiKi))
+
+## [1.12.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.12.0) (2022-06-09)
 
 - Support for Ruby 3.1
 - Using chefstyle linting
