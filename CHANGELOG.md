@@ -4,7 +4,7 @@
 
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.12.0...v1.12.1)
 
-- Fix for Ruby 3.0 compatibility when specifying Vagrantfile network configuration specification [#477](https://github.com/test-kitchen/kitchen-vagrant/pull/477) ([@PowerKiki](https://github.com/PowerKiKi))
+- Fix for Ruby 3.0 compatibility when specifying Vagrantfile network configuration [#477](https://github.com/test-kitchen/kitchen-vagrant/pull/477) ([@PowerKiki](https://github.com/PowerKiKi))
 
 ## [1.12.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.12.0) (2022-06-09)
 
