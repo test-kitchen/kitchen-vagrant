@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.13.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.13.0) (2022-12-13)
+
+- Drop support for EOL Ruby 2.6 ([@tas50](https://github.com/tas50))
+- Avoid failures when the system has the same boxes for multiple providers on disk [#481](https://github.com/test-kitchen/kitchen-vagrant/pull/481) ([@Stromweld](https://github.com/Stromweld))
+
 ## [1.12.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.12.1) (2022-07-11)
 
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.12.0...v1.12.1)
