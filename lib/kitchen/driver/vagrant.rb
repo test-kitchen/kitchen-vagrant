@@ -313,14 +313,14 @@ module Kitchen
       def finalize_box_auto_update!
         return if config[:box_auto_update].nil?
 
-        config[:box_auto_update] = "vagrant box update #{"--insecure " if config[:box_download_insecure]}--box #{config[:box]}"
+        config[:box_auto_update] = "vagrant box update #{"--insecure " if config[:box_download_insecure]}--box #{config[:box]} --provider #{config[:provider]}"
       end
 
       # Create vagrant command to remove older versions of the box
       def finalize_box_auto_prune!
         return if config[:box_auto_prune].nil?
 
-        config[:box_auto_prune] = "vagrant box prune --keep-active-boxes --name #{config[:box]}"
+        config[:box_auto_prune] = "vagrant box prune --keep-active-boxes --name #{config[:box]} --provider #{config[:provider]}"
       end
 
       # Replaces any `{{vagrant_root}}` tokens in the pre create command.
