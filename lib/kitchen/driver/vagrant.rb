@@ -125,7 +125,7 @@ module Kitchen
       # @return [String,nil] the Vagrant box for this Instance
       def default_box
         if bento_box?(instance.platform.name)
-          "bento/#{instance.platform.name}"
+          "bento/#{instance.platform.name}#{"-arm64" if RbConfig::CONFIG["host_cpu"].eql?("arm64")}"
         else
           instance.platform.name
         end
