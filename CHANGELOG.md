@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.14.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.14.0) (2023-02-09)
+
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.13.0...v1.14.0)
+
+- Add arm64 to bento box name [#483](https://github.com/test-kitchen/kitchen-vagrant/pull/483) ([@Stromweld](https://github.com/Stromweld))
+
 ## [1.13.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.13.0) (2022-12-13)
 
 - Drop support for EOL Ruby 2.6 ([@tas50](https://github.com/tas50))
