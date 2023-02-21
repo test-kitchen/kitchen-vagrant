@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.14.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.14.1) (2023-02-21)
+
+[Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.14.0...v1.14.1)
+
+- Fix failures auto pruning box images that are in use elsewhere [#485](https://github.com/test-kitchen/kitchen-vagrant/pull/485) ([@Stromweld](https://github.com/Stromweld))
+
 ## [1.14.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.14.0) (2023-02-09)
 
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.13.0...v1.14.0)
