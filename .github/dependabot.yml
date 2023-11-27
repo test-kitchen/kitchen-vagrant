@@ -1,9 +1,8 @@
 ---
+version: 2
 updates:
-  -
-    directory: /
-    open-pull-requests-limit: 10
-    package-ecosystem: bundler
+  - package-ecosystem: bundler
+    directory: "/"
     schedule:
       interval: daily
-version: 2
+    open-pull-requests-limit: 10
