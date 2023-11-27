@@ -52,11 +52,13 @@
 - Add a Code of Conduct file + misc testing updates [#442](https://github.com/test-kitchen/kitchen-vagrant/pull/442) ([@tas50](https://github.com/tas50))
 
 ## [1.7.2](https://github.com/test-kitchen/kitchen-vagrant/tree/1.7.2) (2020-11-10)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.7.1...v1.7.2)
 
 - Ignore error if box not found when updating [#428](https://github.com/test-kitchen/kitchen-vagrant/pull/428) ([@clintoncwolfe](https://github.com/clintoncwolfe))
 
 ## [1.7.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.7.1) (2020-11-03)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.7.0...v1.7.1)
 
 - Don't fail if active boxes can't be pruned [#427](https://github.com/test-kitchen/kitchen-vagrant/pull/427) ([@tas50](https://github.com/tas50))
@@ -65,38 +67,45 @@
 - Optimize our requires to improve performance [#423](https://github.com/test-kitchen/kitchen-vagrant/pull/423) ([@tas50](https://github.com/tas50))
 
 ## [1.7.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.7.0) (2020-07-04)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.6.1...v1.7.0)
 
 - Add new `box_auto_update` and `box_auto_prune` options to pull newer Vagrant base boxes [#421](https://github.com/test-kitchen/kitchen-vagrant/pull/421) ([@Stromweld](https://github.com/Stromweld))
 
 ## [1.6.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.6.1) (2020-01-14)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.6.0...v1.6.1)
 
 - \[README\] fix openstack link [#409](https://github.com/test-kitchen/kitchen-vagrant/pull/409) ([@arthurlogilab](https://github.com/arthurlogilab))
 - Use require_relative instead of require [#414](https://github.com/test-kitchen/kitchen-vagrant/pull/414) ([@tas50](https://github.com/tas50))
 
 ## [1.6.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.6.0) (2019-08-05)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.5.2...v1.6.0)
 
 - Don't fail when instance names become too long for Hyper-V [#404](https://github.com/test-kitchen/kitchen-vagrant/pull/404) ([@Xorima](https://github.com/Xorima))
 - Require Ruby 2.3 or later (Ruby < 2.3 are no longer supported Ruby releases)
 
 ## [1.5.2](https://github.com/test-kitchen/kitchen-vagrant/tree/1.5.2) (2019-05-02)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.5.1...v1.5.2)
 
 - Restores vm name uniqueness [#399](https://github.com/test-kitchen/kitchen-vagrant/pull/399) ([@fretb](https://github.com/fretb))
 
 ## [1.5.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.5.1) (2019-03-19)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.5.0...v1.5.1)
 
 - Loosen the Test Kitchen dep to allow 2.0 [#398](https://github.com/test-kitchen/kitchen-vagrant/pull/398) ([@tas50](https://github.com/tas50))
 
 ## [1.5.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.5.0) (2019-03-14)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.4.0...v1.5.0)
 
 - Support using bento/amazonlinux-2 when specifying just amazonlinux-2 platform [#397](https://github.com/test-kitchen/kitchen-vagrant/pull/397) ([@tas50](https://github.com/tas50))
 
 ## [1.4.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.4.0) (2019-01-28)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.6...v1.4.0)
 
 - Add usage of vm_hostname to Readme.md [#386](https://github.com/test-kitchen/kitchen-vagrant/pull/386) ([@f9n](https://github.com/f9n))
@@ -104,6 +113,7 @@
 - Added WSL support [#384](https://github.com/test-kitchen/kitchen-vagrant/pull/384) ([@BCarley](https://github.com/BCarley))
 
 ## [1.3.6](https://github.com/test-kitchen/kitchen-vagrant/tree/1.3.6) (2018-10-26)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.5...v1.3.6)
 
 **Merged pull requests:**
@@ -112,6 +122,7 @@
 - Newest vagrant no long requires vagrant-winrm plugin [\#379](https://github.com/test-kitchen/kitchen-vagrant/pull/379) ([tyler-ball](https://github.com/tyler-ball))
 
 ## [v1.3.5](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.5) (2018-10-23)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.4...v1.3.5)
 
 **Closed issues:**
@@ -123,6 +134,7 @@
 - Slim the size of the gem by removing spec files [\#377](https://github.com/test-kitchen/kitchen-vagrant/pull/377) ([tas50](https://github.com/tas50))
 
 ## [v1.3.4](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.4) (2018-09-15)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.3...v1.3.4)
 
 **Merged pull requests:**
@@ -131,6 +143,7 @@
 - Vagrantfile Template: Hyper-v Differencing\_disk deprecation [\#370](https://github.com/test-kitchen/kitchen-vagrant/pull/370) ([cocazoulou](https://github.com/cocazoulou))
 
 ## [v1.3.3](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.3) (2018-08-13)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.2...v1.3.3)
 
 **Closed issues:**
@@ -148,6 +161,7 @@
 - Fix disk examples [\#360](https://github.com/test-kitchen/kitchen-vagrant/pull/360) ([espoelstra](https://github.com/espoelstra))
 
 ## [v1.3.2](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.2) (2018-04-23)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.1...v1.3.2)
 
 **Merged pull requests:**
@@ -157,6 +171,7 @@
 - Hyper-V: Ensure default switch name is always wrapped in quotes [\#345](https://github.com/test-kitchen/kitchen-vagrant/pull/345) ([stuartpreston](https://github.com/stuartpreston))
 
 ## [v1.3.1](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.3.1) (2018-02-20)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.3.0...v1.3.1)
 
 **Merged pull requests:**
@@ -164,22 +179,26 @@
 - Adding support for HyperV Differencing\_disk [\#342](https://github.com/test-kitchen/kitchen-vagrant/pull/342) ([cocazoulou](https://github.com/cocazoulou))
 
 ## [1.3.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.3.0) (2018-01-17)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.2.2...1.3.0)
 
 - Improve Hyper-V defaults and support [\#338](https://github.com/test-kitchen/kitchen-vagrant/pull/338)
 
 ## [1.2.2](https://github.com/test-kitchen/kitchen-vagrant/tree/1.2.2) (2017-11-07)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.2.1...1.2.2)
 
 - For WinRM options, only treat strings as strings. [\#330](https://github.com/test-kitchen/kitchen-vagrant/pull/330)
 
 ## [1.2.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.2.1) (2017-08-22)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.2.0...1.2.1)
 
 - Revert parallel virtualbox [\#325](https://github.com/test-kitchen/kitchen-vagrant/pull/325)
 - Shorten directory name for `vagrant_root` [\#323](https://github.com/test-kitchen/kitchen-vagrant/pull/323)
 
 ## [1.2.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.2.0) (2017-08-11)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.1.1...1.2.0)
 
 **Implemented enhancements:**
@@ -188,6 +207,7 @@
 - Parallel virtualbox [\#202](https://github.com/test-kitchen/kitchen-vagrant/pull/202) ([rveznaver](https://github.com/rveznaver))
 
 ## [v1.1.1](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.1.1) (2017-07-26)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.1.0...v1.1.1)
 
 **Fixed Bugs**
@@ -197,9 +217,11 @@
 - Disable caching, even for bento boxes. [\#313](https://github.com/test-kitchen/kitchen-vagrant/pull/313) ([robbkidd](https://github.com/robbkidd))
 
 ## [v1.1.0](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.1.0) (2017-03-31)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.0.2...v1.1.0)
 
 **New Features:**
+
 - Make kitchen package work [\#275](https://github.com/test-kitchen/kitchen-vagrant/pull/275) ([ccope](https://github.com/ccope))
 
 **Improvements:**
@@ -210,6 +232,7 @@
 - Add support for all misc vagrant providers [\#290](https://github.com/test-kitchen/kitchen-vagrant/pull/290) ([myoung34](https://github.com/myoung34))
 
 ## [v1.0.2](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.0.2) (2017-02-13)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.0.1...v1.0.2)
 
 **Fixed bugs:**
@@ -217,6 +240,7 @@
 - Fixed a bug that can occur when `instance` returns `nil` [\#285](https://github.com/test-kitchen/kitchen-vagrant/pull/285) ([Kuniwak](https://github.com/Kuniwak))
 
 ## [v1.0.1](https://github.com/test-kitchen/kitchen-vagrant/tree/v1.0.1) (2017-02-10)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.0.0...v1.0.1)
 
 **Fixed bugs:**
@@ -224,6 +248,7 @@
 - Fixed cache folder disable for FreeBSD and MacOS/OSX [\#281](https://github.com/test-kitchen/kitchen-vagrant/pull/281) ([brentm5](https://github.com/brentm5)) [\#283](https://github.com/test-kitchen/kitchen-vagrant/pull/283) ([cheeseplus](https://github.com/cheeseplus))
 
 ## [1.0.0](https://github.com/test-kitchen/kitchen-vagrant/tree/1.0.0) (2017-01-10)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.21.1...v1.0.0)
 
 **Implemented enhancements:**
@@ -243,6 +268,7 @@
 - Fix quoting for cloud providers \(redux \#179\) [\#268](https://github.com/test-kitchen/kitchen-vagrant/pull/268) ([cheeseplus](https://github.com/cheeseplus))
 
 ## [0.21.1](https://github.com/test-kitchen/kitchen-vagrant/tree/0.21.1) (2016-12-05)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.21.0...v0.21.1)
 
 **Implemented enhancements:**
@@ -259,6 +285,7 @@
 - do not map the extra cache drive on non virtualbox windows [\#255](https://github.com/test-kitchen/kitchen-vagrant/pull/255) ([mwrock](https://github.com/mwrock))
 
 ## [0.21.0](https://github.com/test-kitchen/kitchen-vagrant/tree/0.21.0) (2016-11-29)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.20.0...v0.21.0)
 
 **Fixed bugs:**
@@ -275,6 +302,7 @@
 - Add support for ovirt3 vagrant provider [\#223](https://github.com/test-kitchen/kitchen-vagrant/pull/223) ([xiboy](https://github.com/xiboy))
 
 ## [0.20.0](https://github.com/test-kitchen/kitchen-vagrant/tree/v0.20.0) (2016-04-07)
+
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v0.19.0...v0.20.0)
 
 **Implemented enhancements:**
