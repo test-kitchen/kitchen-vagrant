@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.14.2](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.14.1...v1.14.2) (2023-11-27)
+
+
+### Bug Fixes
+
+* Add New lint and publish workflows ([#488](https://github.com/test-kitchen/kitchen-vagrant/issues/488)) ([744fdc9](https://github.com/test-kitchen/kitchen-vagrant/commit/744fdc93d006ad32f80994b371c198e5a2a9deb6))
+
 ## [1.14.1](https://github.com/test-kitchen/kitchen-vagrant/tree/1.14.1) (2023-02-21)
 
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.14.0...v1.14.1)
