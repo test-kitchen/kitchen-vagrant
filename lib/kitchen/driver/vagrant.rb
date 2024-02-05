@@ -56,6 +56,8 @@ module Kitchen
 
       default_config :box_version, nil
 
+      default_config :box_arch, nil
+
       default_config :boot_timeout, nil
 
       default_config :customize, {}
@@ -125,7 +127,7 @@ module Kitchen
       # @return [String,nil] the Vagrant box for this Instance
       def default_box
         if bento_box?(instance.platform.name)
-          "bento/#{instance.platform.name}#{"-arm64" if RbConfig::CONFIG["host_cpu"].eql?("arm64")}"
+          "bento/#{instance.platform.name}"
         else
           instance.platform.name
         end
@@ -225,7 +227,7 @@ module Kitchen
       protected
 
       WEBSITE = "https://www.vagrantup.com/downloads.html".freeze
-      MIN_VER = "1.1.0".freeze
+      MIN_VER = "2.4.0".freeze
 
       class << self
 
@@ -313,14 +315,21 @@ module Kitchen
       def finalize_box_auto_update!
         return if config[:box_auto_update].nil?
 
-        config[:box_auto_update] = "vagrant box update #{"--insecure " if config[:box_download_insecure]}--box #{config[:box]} --provider #{config[:provider]}"
+        cmd = "#{config[:vagrant_binary]} box update --box #{config[:box]}"
+        cmd += " --architecture #{config[:box_arch]}" if config[:box_arch]
+        cmd += " --provider #{config[:provider]}" if config[:provider]
+        cmd += " --insecure" if config[:box_download_insecure]
+        config[:box_auto_update] = cmd
       end
 
       # Create vagrant command to remove older versions of the box
       def finalize_box_auto_prune!
         return if config[:box_auto_prune].nil?
 
-        config[:box_auto_prune] = "vagrant box prune --force --keep-active-boxes --name #{config[:box]} --provider #{config[:provider]}"
+        cmd = "#{config[:vagrant_binary]} box prune --force --keep-active-boxes --name #{config[:box]}"
+        cmd += " --architecture #{config[:box_arch]}" if config[:box_arch]
+        cmd += " --provider #{config[:provider]}" if config[:provider]
+        config[:box_auto_prune] = cmd
       end
 
       # Replaces any `{{vagrant_root}}` tokens in the pre create command.
