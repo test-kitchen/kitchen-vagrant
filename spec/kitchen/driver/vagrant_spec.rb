@@ -542,7 +542,7 @@ describe Kitchen::Driver::Vagrant do
       with_unsupported_vagrant
 
       expect { driver.verify_dependencies }.to raise_error(
-        Kitchen::UserError, /Please upgrade to version 1.1.0 or higher/
+        Kitchen::UserError, /Please upgrade to version 2.4.0 or higher/
       )
     end
 
@@ -551,7 +551,7 @@ describe Kitchen::Driver::Vagrant do
         .with("vagrant --version", any_args).and_raise(Errno::ENOENT)
 
       expect { driver.verify_dependencies }.to raise_error(
-        Kitchen::UserError, /Vagrant 1.1.0 or higher is not installed/
+        Kitchen::UserError, /Vagrant 2.4.0 or higher is not installed/
       )
     end
   end
