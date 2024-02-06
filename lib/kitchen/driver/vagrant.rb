@@ -226,7 +226,7 @@ module Kitchen
 
       protected
 
-      WEBSITE = "https://www.vagrantup.com/downloads.html".freeze
+      WEBSITE = "https://developer.hashicorp.com/vagrant/install".freeze
       MIN_VER = "2.4.0".freeze
 
       class << self
