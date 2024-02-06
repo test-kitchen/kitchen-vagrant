@@ -321,7 +321,6 @@ module Kitchen
         return if config[:box_auto_prune].nil?
 
         cmd = "#{config[:vagrant_binary]} box prune --force --keep-active-boxes --name #{config[:box]}"
-        cmd += " --architecture #{config[:box_arch]}" if config[:box_arch]
         cmd += " --provider #{config[:provider]}" if config[:provider]
         config[:box_auto_prune] = cmd
       end
