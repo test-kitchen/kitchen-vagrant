@@ -230,12 +230,6 @@ module Kitchen
       MIN_VER = "2.4.0".freeze
 
       class << self
-
-        # @return [true,false] whether or not the vagrant-winrm plugin is
-        #   installed
-        # @api private
-        attr_accessor :winrm_plugin_passed
-
         # @return [String] the version of Vagrant installed on the workstation
         # @api private
         attr_accessor :vagrant_version
@@ -397,19 +391,6 @@ module Kitchen
             "bridge: \"#{hyperv_switch}\"",
             ])
         end
-      end
-
-      # Loads any required third party Ruby libraries or runs any shell out
-      # commands to prepare the plugin. This method will be called in the
-      # context of the main thread of execution and so does not necessarily
-      # have to be thread safe.
-      #
-      # @raise [ClientError] if any library loading fails or any of the
-      #   dependency requirements cannot be satisfied
-      # @api private
-      def load_needed_dependencies!
-        super
-        verify_winrm_plugin if winrm_transport?
       end
 
       # Renders the Vagrantfile ERb template.
@@ -606,45 +587,11 @@ module Kitchen
           " Please download a package from #{WEBSITE}."
       end
 
-      # Verify that the vagrant-winrm plugin is installed and a suitable
-      #   version of Vagrant is installed
-      #
-      # @api private
-      def verify_winrm_plugin
-        if Gem::Version.new(vagrant_version) < Gem::Version.new("1.6")
-          raise UserError, "Detected an old version of Vagrant " \
-            "(#{vagrant_version}) that cannot support the vagrant-winrm " \
-            "Vagrant plugin." \
-            " Please upgrade to version 1.6 or higher from #{WEBSITE}."
-        end
-
-        if Gem::Version.new(vagrant_version) < Gem::Version.new("2.2.0") && !winrm_plugin_installed?
-          raise UserError, "Vagrant version #{vagrant_version} requires the " \
-            "vagrant-winrm plugin to properly communicate with this Vagrant VM " \
-            "over WinRM Transport. Please install this plugin with: " \
-            "`vagrant plugin install vagrant-winrm' and try again." \
-            "Alternatively upgrade to Vagrant >= 2.2.0 which does not " \
-            "require the vagrant-winrm plugin."
-        end
-      end
-
       # @return [true,false] whether or not the host is windows
       #
       # @api private
       def windows_host?
         RbConfig::CONFIG["host_os"] =~ /mswin|mingw/
-      end
-
-      # @return [true,false] whether or not the vagrant-winrm plugin is
-      #   installed
-      # @api private
-      def winrm_plugin_installed?
-        return true if self.class.winrm_plugin_passed
-
-        self.class.winrm_plugin_passed = run_silently(
-          "#{config[:vagrant_binary]} plugin list", cwd: Dir.pwd
-        )
-          .split("\n").find { |line| line =~ /vagrant-winrm\s+/ }
       end
     end
   end
