@@ -2139,7 +2139,7 @@ describe Kitchen::Driver::Vagrant do
   end
 
   def with_modern_vagrant
-    with_vagrant("1.7.2")
+    with_vagrant("2.4.1")
   end
 
   def with_unsupported_vagrant
