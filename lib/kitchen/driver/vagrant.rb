@@ -56,6 +56,8 @@ module Kitchen
 
       default_config :box_version, nil
 
+      default_config :box_arch, nil
+
       default_config :boot_timeout, nil
 
       default_config :customize, {}
@@ -125,7 +127,7 @@ module Kitchen
       # @return [String,nil] the Vagrant box for this Instance
       def default_box
         if bento_box?(instance.platform.name)
-          "bento/#{instance.platform.name}#{"-arm64" if RbConfig::CONFIG["host_cpu"].eql?("arm64")}"
+          "bento/#{instance.platform.name}"
         else
           instance.platform.name
         end
@@ -224,16 +226,10 @@ module Kitchen
 
       protected
 
-      WEBSITE = "https://www.vagrantup.com/downloads.html".freeze
-      MIN_VER = "1.1.0".freeze
+      WEBSITE = "https://developer.hashicorp.com/vagrant/install".freeze
+      MIN_VER = "2.4.0".freeze
 
       class << self
-
-        # @return [true,false] whether or not the vagrant-winrm plugin is
-        #   installed
-        # @api private
-        attr_accessor :winrm_plugin_passed
-
         # @return [String] the version of Vagrant installed on the workstation
         # @api private
         attr_accessor :vagrant_version
@@ -313,14 +309,20 @@ module Kitchen
       def finalize_box_auto_update!
         return if config[:box_auto_update].nil?
 
-        config[:box_auto_update] = "vagrant box update #{"--insecure " if config[:box_download_insecure]}--box #{config[:box]} --provider #{config[:provider]}"
+        cmd = "#{config[:vagrant_binary]} box update --box #{config[:box]}"
+        cmd += " --architecture #{config[:box_arch]}" if config[:box_arch]
+        cmd += " --provider #{config[:provider]}" if config[:provider]
+        cmd += " --insecure" if config[:box_download_insecure]
+        config[:box_auto_update] = cmd
       end
 
       # Create vagrant command to remove older versions of the box
       def finalize_box_auto_prune!
         return if config[:box_auto_prune].nil?
 
-        config[:box_auto_prune] = "vagrant box prune --force --keep-active-boxes --name #{config[:box]} --provider #{config[:provider]}"
+        cmd = "#{config[:vagrant_binary]} box prune --force --keep-active-boxes --name #{config[:box]}"
+        cmd += " --provider #{config[:provider]}" if config[:provider]
+        config[:box_auto_prune] = cmd
       end
 
       # Replaces any `{{vagrant_root}}` tokens in the pre create command.
@@ -388,19 +390,6 @@ module Kitchen
             "bridge: \"#{hyperv_switch}\"",
             ])
         end
-      end
-
-      # Loads any required third party Ruby libraries or runs any shell out
-      # commands to prepare the plugin. This method will be called in the
-      # context of the main thread of execution and so does not necessarily
-      # have to be thread safe.
-      #
-      # @raise [ClientError] if any library loading fails or any of the
-      #   dependency requirements cannot be satisfied
-      # @api private
-      def load_needed_dependencies!
-        super
-        verify_winrm_plugin if winrm_transport?
       end
 
       # Renders the Vagrantfile ERb template.
@@ -597,45 +586,11 @@ module Kitchen
           " Please download a package from #{WEBSITE}."
       end
 
-      # Verify that the vagrant-winrm plugin is installed and a suitable
-      #   version of Vagrant is installed
-      #
-      # @api private
-      def verify_winrm_plugin
-        if Gem::Version.new(vagrant_version) < Gem::Version.new("1.6")
-          raise UserError, "Detected an old version of Vagrant " \
-            "(#{vagrant_version}) that cannot support the vagrant-winrm " \
-            "Vagrant plugin." \
-            " Please upgrade to version 1.6 or higher from #{WEBSITE}."
-        end
-
-        if Gem::Version.new(vagrant_version) < Gem::Version.new("2.2.0") && !winrm_plugin_installed?
-          raise UserError, "Vagrant version #{vagrant_version} requires the " \
-            "vagrant-winrm plugin to properly communicate with this Vagrant VM " \
-            "over WinRM Transport. Please install this plugin with: " \
-            "`vagrant plugin install vagrant-winrm' and try again." \
-            "Alternatively upgrade to Vagrant >= 2.2.0 which does not " \
-            "require the vagrant-winrm plugin."
-        end
-      end
-
       # @return [true,false] whether or not the host is windows
       #
       # @api private
       def windows_host?
         RbConfig::CONFIG["host_os"] =~ /mswin|mingw/
-      end
-
-      # @return [true,false] whether or not the vagrant-winrm plugin is
-      #   installed
-      # @api private
-      def winrm_plugin_installed?
-        return true if self.class.winrm_plugin_passed
-
-        self.class.winrm_plugin_passed = run_silently(
-          "#{config[:vagrant_binary]} plugin list", cwd: Dir.pwd
-        )
-          .split("\n").find { |line| line =~ /vagrant-winrm\s+/ }
       end
     end
   end

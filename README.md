@@ -14,7 +14,7 @@ required.
 
 ### Vagrant
 
-A Vagrant version of 1.6 or later.
+A Vagrant version of 2.4 or later.
 
 ## Installation
 

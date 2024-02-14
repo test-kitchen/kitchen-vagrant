@@ -79,7 +79,6 @@ describe Kitchen::Driver::Vagrant do
   before(:each) { stub_const("ENV", env) }
 
   after do
-    driver_object.class.send(:winrm_plugin_passed=, nil)
     driver_object.class.send(:vagrant_version=, nil)
   end
 
@@ -542,7 +541,7 @@ describe Kitchen::Driver::Vagrant do
       with_unsupported_vagrant
 
       expect { driver.verify_dependencies }.to raise_error(
-        Kitchen::UserError, /Please upgrade to version 1.1.0 or higher/
+        Kitchen::UserError, /Please upgrade to version 2.4.0 or higher/
       )
     end
 
@@ -551,71 +550,8 @@ describe Kitchen::Driver::Vagrant do
         .with("vagrant --version", any_args).and_raise(Errno::ENOENT)
 
       expect { driver.verify_dependencies }.to raise_error(
-        Kitchen::UserError, /Vagrant 1.1.0 or higher is not installed/
+        Kitchen::UserError, /Vagrant 2.4.0 or higher is not installed/
       )
-    end
-  end
-
-  describe "#load_needed_dependencies!" do
-
-    describe "with winrm transport" do
-
-      before { allow(transport).to receive(:name).and_return("WinRM") }
-
-      it "old version of Vagrant raises UserError" do
-        with_vagrant("1.5.0")
-
-        expect { instance }.to raise_error(
-          Kitchen::Error, /Please upgrade to version 1.6 or higher/
-        )
-      end
-
-      it "modern vagrant without plugin installed raises UserError" do
-        with_modern_vagrant
-        allow(driver_object).to receive(:run_command)
-          .with("vagrant plugin list", any_args).and_return("nope (1.2.3)")
-
-        expect { instance }.to raise_error(
-          Kitchen::Error, /vagrant plugin install vagrant-winrm/
-        )
-      end
-
-      it "modern vagrant with plugin installed succeeds" do
-        with_modern_vagrant
-        allow(driver_object).to receive(:run_command)
-          .with("vagrant plugin list", any_args)
-          .and_return("vagrant-winrm (1.2.3)")
-
-        instance
-      end
-    end
-
-    describe "without winrm transport" do
-
-      before { allow(transport).to receive(:name).and_return("Anything") }
-
-      it "old version of Vagrant succeeds" do
-        with_vagrant("1.5.0")
-
-        instance
-      end
-
-      it "modern vagrant without plugin installed succeeds" do
-        with_modern_vagrant
-        allow(driver_object).to receive(:run_command)
-          .with("vagrant plugin list", any_args).and_return("nope (1.2.3)")
-
-        instance
-      end
-
-      it "modern vagrant with plugin installed succeeds" do
-        with_modern_vagrant
-        allow(driver_object).to receive(:run_command)
-          .with("vagrant plugin list", any_args)
-          .and_return("vagrant-winrm (1.2.3)")
-
-        instance
-      end
     end
   end
 
@@ -2139,7 +2075,7 @@ describe Kitchen::Driver::Vagrant do
   end
 
   def with_modern_vagrant
-    with_vagrant("1.7.2")
+    with_vagrant("2.4.1")
   end
 
   def with_unsupported_vagrant
