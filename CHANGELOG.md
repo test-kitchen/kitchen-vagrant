@@ -1,7 +1,13 @@
 # Change Log
 
-## [1.14.2](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.14.1...v1.14.2) (2023-11-27)
+## [2.0.0](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.14.2...v2.0.0) (2024-02-14)
 
+- Require Vagrant 2.4 or later
+- Drop support for EOL Ruby 2.7 release
+- Add a new `box_arch` configuration option for defining the architecture to use
+- Eliminate the need for the vagrant-winrm plugin on Windows boxes
+
+## [1.14.2](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.14.1...v1.14.2) (2023-11-27)
 
 ### Bug Fixes
 

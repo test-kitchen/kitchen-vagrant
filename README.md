@@ -3,7 +3,7 @@
 [![Gem Version](https://badge.fury.io/rb/kitchen-vagrant.svg)](http://badge.fury.io/rb/kitchen-vagrant)
 [![CI](https://github.com/test-kitchen/kitchen-vagrant/actions/workflows/lint.yml/badge.svg)](https://github.com/test-kitchen/kitchen-vagrant/actions/workflows/lint.yml)
 
-A Test Kitchen Driver for Vagrant.
+A Test Kitchen Driver for HashiCorp Vagrant.
 
 This driver works by generating a single Vagrantfile for each instance in a
 sandboxed directory. Since the Vagrantfile is written out on disk, Vagrant
@@ -14,11 +14,11 @@ required.
 
 ### Vagrant
 
-A Vagrant version of 2.4 or later.
+Vagrant version of 2.4 or later.
 
 ## Installation
 
-The kitchen-vagrant driver ships as part of Chef Workstation. The easiest way to use this driver is to [Download Chef Workstation](https://www.chef.io/downloads/tools/workstation).
+The kitchen-vagrant driver ships as part of Chef Workstation. The easiest way to use this driver is to use it with Chef Workstation.
 
 If you want to install the driver directly into a Ruby installation:
 
