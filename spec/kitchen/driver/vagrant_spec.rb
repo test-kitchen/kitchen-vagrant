@@ -1619,8 +1619,9 @@ describe Kitchen::Driver::Vagrant do
         }
         cmd
 
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+        expect(vagrantfile).to match(Regexp.new(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :libvirt do |p|
+            p.default_prefix = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
             p.a_key = "some value"
             p.something = "else"
             p.a_number_key = 1024
@@ -1634,8 +1635,9 @@ describe Kitchen::Driver::Vagrant do
         }
         cmd
 
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+        expect(vagrantfile).to match(Regexp.new(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :libvirt do |p|
+            p.default_prefix = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
             p.storage :file, :size => '32G'
           end
         RUBY
@@ -1651,8 +1653,9 @@ describe Kitchen::Driver::Vagrant do
         }
         cmd
 
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+        expect(vagrantfile).to match(Regexp.new(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :libvirt do |p|
+            p.default_prefix = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
             p.storage :file, :size => '1G'
             p.storage :file, :size => '128G', :bus => 'sata'
             p.storage :file, :size => '64G', :bus => 'sata'
