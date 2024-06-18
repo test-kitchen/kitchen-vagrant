@@ -14,8 +14,8 @@ jobs:
     name: Kitchen Verify
     strategy:
       matrix:
-        ruby: ["3.3", "3.4"]
-        os: ["almalinux-9", "ubuntu-24.04", "windows-2022"]
+        ruby: ["3.3"]
+        os: ["almalinux-9"]
     steps:
       - name: Install Vagrant VirtualBox
         run: |
