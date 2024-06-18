@@ -32,6 +32,7 @@ jobs:
           bundler-cache: true
       - name: Create & Validate containers
         run: |
+          export LOGNAME=$USER
           bundle exec kitchen verify default-${{ matrix.os}}
         env:
           CHEF_LICENSE: "accept-no-persist"
