@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint-unit
     name: Kitchen Verify
+    strategy:
+      matrix:
+        ruby: ["3.3", "3.4"]
+        os: ["almalinux-9", "ubuntu-24.04", "windows-2022"]
     steps:
       - name: Install Vagrant VirtualBox
         run: |
@@ -23,14 +27,11 @@ jobs:
           sudo apt-get install -y software-properties-common vagrant virtualbox-7.0
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
-        strategy:
-          matrix:
-            ruby: ["3.3", "3.4"]
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
       - name: Create & Validate containers
         run: |
-          bundle exec kitchen verify
+          bundle exec kitchen verify default-${{ matrix.os}}
         env:
           CHEF_LICENSE: "accept-no-persist"
