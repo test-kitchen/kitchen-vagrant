@@ -223,7 +223,7 @@
 
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.1.0...v1.1.1)
 
-**Fixed Bugs**
+### Fixed Bugs
 
 - Fix detection of vagrant-winrm plugin. [\#309](https://github.com/test-kitchen/kitchen-vagrant/pull/309) ([silverl](https://github.com/silverl))
 - Fix bug in Vagrantfile template related to WinRM options. [\#306](https://github.com/test-kitchen/kitchen-vagrant/pull/306) ([aleksey-hariton](https://github.com/aleksey-hariton))
