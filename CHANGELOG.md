@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.14.3](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.14.2...v1.14.3) (2024-06-19)
+
+
+### Bug Fixes
+
+* update release please configs ([#498](https://github.com/test-kitchen/kitchen-vagrant/issues/498)) ([823b495](https://github.com/test-kitchen/kitchen-vagrant/commit/823b49527ee8ddb69cdd52ca77a4cb3dc7946382))
+
 ## [2.0.0](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.14.2...v2.0.0) (2024-02-14)
 
 - Require Vagrant 2.4 or later
