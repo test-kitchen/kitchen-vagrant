@@ -30,7 +30,7 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      - name: Create & Validate containers
+      - name: Kitchen Verify
         run: |
           export LOGNAME=$USER
           bundle exec kitchen verify default-${{ matrix.os}}
