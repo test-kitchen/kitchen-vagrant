@@ -126,6 +126,7 @@ Vagrant.configure("2") do |c|
 <% config[:customize].each do |key, value| %>
   <% case config[:provider]
      when "libvirt" %>
+    p.default_prefix = "kitchen-<%= File.basename(config[:kitchen_root]) %>-<%= instance.name %>-<%= SecureRandom.uuid %>"
     <% if key == :storage %>
       <% if value.is_a? String %>
     p.storage <%= value %>
