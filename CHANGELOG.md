@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.14.3](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.14.2...v1.14.3) (2024-06-19)
+
+
+### Bug Fixes
+
+* update release please configs ([#498](https://github.com/test-kitchen/kitchen-vagrant/issues/498)) ([823b495](https://github.com/test-kitchen/kitchen-vagrant/commit/823b49527ee8ddb69cdd52ca77a4cb3dc7946382))
+
 ## [2.0.0](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.14.2...v2.0.0) (2024-02-14)
 
 - Require Vagrant 2.4 or later
@@ -223,7 +230,7 @@
 
 [Full Changelog](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.1.0...v1.1.1)
 
-**Fixed Bugs**
+### Fixed Bugs
 
 - Fix detection of vagrant-winrm plugin. [\#309](https://github.com/test-kitchen/kitchen-vagrant/pull/309) ([silverl](https://github.com/silverl))
 - Fix bug in Vagrantfile template related to WinRM options. [\#306](https://github.com/test-kitchen/kitchen-vagrant/pull/306) ([aleksey-hariton](https://github.com/aleksey-hariton))
