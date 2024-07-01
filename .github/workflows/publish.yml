@@ -1,20 +1,17 @@
 ---
+name: release-please
+
 "on":
   push:
-    branches:
-      - main
+    branches: [main]
 
-name: release-please
 jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: google-github-actions/release-please-action@v4
+      - uses: googleapis/release-please-action@v4
         id: release
         with:
-          release-type: ruby
-          package-name: kitchen-vagrant
-          version-file: lib/kitchen/driver/vagrant_version.rb
           token: ${{ secrets.PORTER_GITHUB_TOKEN }}
 
       - name: Checkout
