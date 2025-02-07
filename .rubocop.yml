@@ -1,6 +1,5 @@
 ---
-require:
-  - chefstyle
+TargetRubyVersion: 3.1
 
 AllCops:
   Include:
