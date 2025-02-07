@@ -16,4 +16,8 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.required_ruby_version = ">= 3.0"
+
+  unless ENV['CHEF_TEST_KITCHEN_ENTERPRISE']
+    gem.add_dependency "test-kitchen", ">= 1.4", "< 4"
+  end
 end
