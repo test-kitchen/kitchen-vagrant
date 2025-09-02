@@ -13,6 +13,6 @@ group :debug do
   gem "pry"
 end
 
-group :chefstyle do
-  gem "chefstyle", "2.2.3"
+group :cookstyle do
+  gem "cookstyle", "2.2.3"
 end
