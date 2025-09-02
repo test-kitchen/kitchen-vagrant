@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.1.0](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.0.2...v2.1.0) (2025-09-02)
+
+
+### Features
+
+* support setting extra data for VirtualBox ([#493](https://github.com/test-kitchen/kitchen-vagrant/issues/493)) ([46c9606](https://github.com/test-kitchen/kitchen-vagrant/commit/46c9606a8b08d738953e1e6c08bca848ad2b1e04))
+
 ## [2.0.2](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.0.1...v2.0.2) (2025-09-02)
 
 
