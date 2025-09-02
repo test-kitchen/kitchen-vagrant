@@ -201,6 +201,11 @@ Vagrant.configure("2") do |c|
            ids << "\"#{id}\""
          end %>
     p.customize ["modifyvm", :id, "--cpuidset", <%= ids.join(', ') %>]
+    <% elsif key == :setextradata %>
+      <% value.each do | data_key, data_value |  %>
+      <% data_value = "\"#{data_value}\"" if data_value.is_a? String %>
+    p.customize ["setextradata", :id, "<%= data_key %>", <%= data_value %>] 
+      <% end %>
     <% else %>
     p.customize ["modifyvm", :id, "--<%= key %>", "<%= value %>"]
     <% end %>
