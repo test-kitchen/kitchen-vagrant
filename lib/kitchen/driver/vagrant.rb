@@ -252,9 +252,9 @@ module Kitchen
       #   shared folders
       # @api private
       def safe_share?(box)
-        return false if /(hyperv|libvirt)/.match?(config[:provider])
+        return false if /(hyperv|libvirt|qemu|utm)/.match?(config[:provider])
 
-        box =~ %r{^bento/(centos|debian|fedora|opensuse|ubuntu|oracle|amazonlinux|almalinux|rockylinux|springdalelinux)-}
+        box =~ %r{^bento/(centos-stream|debian|fedora|opensuse|ubuntu|oraclelinux|amazonlinux|almalinux|rockylinux)-}
       end
 
       # Return true if we found the criteria to enable the cache_directory
