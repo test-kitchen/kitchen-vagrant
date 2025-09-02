@@ -14,5 +14,5 @@ group :debug do
 end
 
 group :cookstyle do
-  gem "cookstyle", "2.2.3"
+  gem "cookstyle"
 end
