@@ -1483,6 +1483,26 @@ describe Kitchen::Driver::Vagrant do
           end
         RUBY
       end
+
+      it "adds lines for multiple setextradata in :customize and quotes only string values" do
+        config[:customize] = {
+          setextradata: {
+            "VBoxInternal/Devices/smc/0/Config/GetKeyFromRealSMC": 0,
+            "VBoxInternal/Devices/efi/0/Config/DmiSystemVersion": "1.0"
+          },
+        }
+        cmd
+
+        expect(vagrantfile).to match(Regexp.new(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :virtualbox do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
+            p.customize ["modifyvm", :id, "--audio", "none"]
+            p.customize ["setextradata", :id, "VBoxInternal/Devices/smc/0/Config/GetKeyFromRealSMC", 0] 
+            p.customize ["setextradata", :id, "VBoxInternal/Devices/efi/0/Config/DmiSystemVersion", "1.0"] 
+          end
+        RUBY
+      end
+
     end
 
     context "for parallels provider" do

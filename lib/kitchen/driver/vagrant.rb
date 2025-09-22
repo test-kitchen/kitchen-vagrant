@@ -252,7 +252,7 @@ module Kitchen
       #   shared folders
       # @api private
       def safe_share?(box)
-        return false if /(hyperv|libvirt)/.match?(config[:provider])
+        return false if /(hyperv|libvirt|qemu|utm)/.match?(config[:provider])
 
         box =~ %r{^bento/(centos|debian|fedora|opensuse|ubuntu|oracle|amazonlinux|almalinux|rockylinux|springdalelinux)-}
       end

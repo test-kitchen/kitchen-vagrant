@@ -14,7 +14,7 @@ jobs:
     name: Kitchen Verify
     strategy:
       matrix:
-        ruby: ["3.3"]
+        ruby: ["3.4"]
         os: ["almalinux-9"]
     steps:
       - name: Install Vagrant VirtualBox
@@ -24,8 +24,8 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
           echo "deb [signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
           sudo apt-get update
-          sudo apt-get install -y software-properties-common vagrant virtualbox-7.0
-      - uses: actions/checkout@v4
+          sudo apt-get install -y software-properties-common vagrant virtualbox-7.2
+      - uses: actions/checkout@v5
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
