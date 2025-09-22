@@ -1177,8 +1177,8 @@ describe Kitchen::Driver::Vagrant do
       cmd
 
       expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {6}/, "").chomp))
-        c.vm.network(:forwarded_port, "guest": 80, "host": 8080)
-        c.vm.network(:private_network, "ip": "192.168.33.33")
+        c.vm.network(:forwarded_port, guest: 80, host: 8080)
+        c.vm.network(:private_network, ip: "192.168.33.33")
       RUBY
     end
 
@@ -1955,10 +1955,10 @@ describe Kitchen::Driver::Vagrant do
 
         expectation = <<-RUBY.gsub(/^ {8}/, "").gsub(/,\n     /, ",").chomp
           c.vm.provider :cloudstack do |p|
-            p.firewall_rules = [{"ipaddress": "A.A.A.A", "cidrlist": "B.B.B.B/24",
-              "protocol": "tcp", "startport": 2222,
-              "endport": 2222}, {"ipaddress": "C.C.C.C", "cidrlist": "D.D.D.D/32",
-              "protocol": "tcp", "startport": 80, "endport": 81}]
+            p.firewall_rules = [{ipaddress: "A.A.A.A", cidrlist: "B.B.B.B/24",
+              protocol: "tcp", startport: 2222,
+              endport: 2222}, {ipaddress: "C.C.C.C", cidrlist: "D.D.D.D/32",
+              protocol: "tcp", startport: 80, endport: 81}]
           end
         RUBY
 
@@ -2028,12 +2028,12 @@ describe Kitchen::Driver::Vagrant do
 
         expectation = <<-RUBY.gsub(/^ {8}/, "").gsub(/,\n     /, ",").chomp
           c.vm.provider :cloudstack do |p|
-            p.security_groups = [{"name": "Awesome_security_group",
-              "description": "Created from the Vagrantfile",
-              "rules": [{"type": "ingress", "protocol": "TCP", "startport": 22,
-              "endport": 22, "cidrlist": "0.0.0.0/0"}, {"type": "egress",
-              "protocol": "TCP", "startport": 81, "endport": 82,
-              "cidrlist": "1.2.3.4/24"}]}]
+            p.security_groups = [{name: "Awesome_security_group",
+              description: "Created from the Vagrantfile",
+              rules: [{type: "ingress", protocol: "TCP", startport: 22,
+              endport: 22, cidrlist: "0.0.0.0/0"}, {type: "egress",
+              protocol: "TCP", startport: 81, endport: 82,
+              cidrlist: "1.2.3.4/24"}]}]
           end
         RUBY
 
@@ -2048,7 +2048,7 @@ describe Kitchen::Driver::Vagrant do
 
         expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
           c.vm.provider :cloudstack do |p|
-            p.static_nat = [{"idaddress": "A.A.A.A"}]
+            p.static_nat = [{idaddress: "A.A.A.A"}]
           end
         RUBY
       end
@@ -2076,10 +2076,10 @@ describe Kitchen::Driver::Vagrant do
 
         expectation = <<-RUBY.gsub(/^ {8}/, "").gsub(/,\n     /, ",").chomp
           c.vm.provider :cloudstack do |p|
-            p.port_forwarding_rules = [{"ipaddress": "X.X.X.X",
-              "protocol": "tcp", "publicport": 22, "privateport": 22,
-              "openfirewall": false}, {"ipaddress": "X.X.X.X", "protocol": "tcp",
-              "publicport": 80, "privateport": 80, "openfirewall": false}]
+            p.port_forwarding_rules = [{ipaddress: "X.X.X.X",
+              protocol: "tcp", publicport: 22, privateport: 22,
+              openfirewall: false}, {ipaddress: "X.X.X.X", protocol: "tcp",
+              publicport: 80, privateport: 80, openfirewall: false}]
           end
         RUBY
 

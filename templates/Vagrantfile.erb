@@ -131,7 +131,7 @@ Vagrant.configure("2") do |c|
     p.storage <%= value %>
       <% elsif value.is_a? Array %>
         <% value.each do |v| %>
-          p.storage <%= v %>
+    p.storage <%= v %>
         <% end %>
       <% end %>
     <% else %>
