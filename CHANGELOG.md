@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.1.2](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.1.1...v2.1.2) (2025-09-22)
+
+
+### Bug Fixes
+
+* update test-kitchen dependency to support test-kitchen and chef-test-kitchen-enterprise ([#502](https://github.com/test-kitchen/kitchen-vagrant/issues/502)) ([55be0e9](https://github.com/test-kitchen/kitchen-vagrant/commit/55be0e90f6d53d13a5c401726e9f61c734372af7))
+
 ## [2.1.1](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.1.0...v2.1.1) (2025-09-22)
 
 
