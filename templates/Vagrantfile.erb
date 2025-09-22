@@ -85,7 +85,7 @@ Vagrant.configure("2") do |c|
 <% end %>
 
 <% Array(config[:network]).each do |opts| %>
-  c.vm.network(:<%= opts[0] %>, <%= opts[1].to_s.delete_prefix('{').delete_suffix('}') %>)
+  c.vm.network(:<%= opts[0] %>, <%= opts[1].map { |k, v| "#{k}: #{v.inspect}" }.join(', ') %>)
 <% end %>
 
   c.vm.synced_folder ".", "/vagrant", disabled: true
@@ -169,7 +169,11 @@ Vagrant.configure("2") do |c|
     <% end %>
   <% when "softlayer" %>
     <% if key == :disk_capacity %>
+      <% if value.is_a? Hash %>
+    p.<%= key %> = {<%= value.map { |k, v| "\"#{k}\": #{v}" }.join(', ') %>}
+      <% else %>
     p.<%= key %> = <%= value %>
+      <% end %>
     <% else %>
     p.<%= key %> = "<%= value %>"
     <% end %>
@@ -204,7 +208,7 @@ Vagrant.configure("2") do |c|
     <% elsif key == :setextradata %>
       <% value.each do | data_key, data_value |  %>
       <% data_value = "\"#{data_value}\"" if data_value.is_a? String %>
-    p.customize ["setextradata", :id, "<%= data_key %>", <%= data_value %>] 
+    p.customize ["setextradata", :id, "<%= data_key %>", <%= data_value %>]
       <% end %>
     <% else %>
     p.customize ["modifyvm", :id, "--<%= key %>", "<%= value %>"]
@@ -224,11 +228,29 @@ Vagrant.configure("2") do |c|
   <% else %>
     <% if value.is_a? String %>
     p.<%= key %> = "<%= value%>"
+    <% elsif value.is_a? Array %>
+      <% if value.all? { |item| item.is_a? Hash } %>
+        <%
+          def format_hash_recursively(hash)
+            hash.map do |k, v|
+              if v.is_a?(Array) && v.all? { |item| item.is_a? Hash }
+                # Handle nested array of hashes
+                formatted_array = v.map { |nested_hash| "{" + format_hash_recursively(nested_hash) + "}" }.join(", ")
+                "#{k}: [#{formatted_array}]"
+              else
+                "#{k}: #{v.inspect}"
+              end
+            end.join(", ")
+          end
+        %>
+    p.<%= key %> = [<%= value.map { |hash| "{" + format_hash_recursively(hash) + "}" }.join(", ") %>]
+      <% else %>
+    p.<%= key %> = <%= value%>
+      <% end %>
     <% else  %>
     p.<%= key %> = <%= value%>
     <% end  %>
   <% end %>
 <% end %>
   end
-
 end
