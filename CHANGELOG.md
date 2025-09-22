@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.1.1](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.1.0...v2.1.1) (2025-09-22)
+
+
+### Bug Fixes
+
+* update hash syntax for Ruby 3.4 compatibility ([#508](https://github.com/test-kitchen/kitchen-vagrant/issues/508)) ([091cdb7](https://github.com/test-kitchen/kitchen-vagrant/commit/091cdb766d1b0ac89d5d5460d05452b46d383e38))
+
 ## [2.1.0](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.0.2...v2.1.0) (2025-09-02)
 
 
