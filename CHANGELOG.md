@@ -1,5 +1,19 @@
 # Change Log
 
+## [2.1.0](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.0.2...v2.1.0) (2025-09-02)
+
+
+### Features
+
+* support setting extra data for VirtualBox ([#493](https://github.com/test-kitchen/kitchen-vagrant/issues/493)) ([46c9606](https://github.com/test-kitchen/kitchen-vagrant/commit/46c9606a8b08d738953e1e6c08bca848ad2b1e04))
+
+## [2.0.2](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.0.1...v2.0.2) (2025-09-02)
+
+
+### Bug Fixes
+
+* Add utm provider to list of not safe providers for omnibus cache ([#505](https://github.com/test-kitchen/kitchen-vagrant/issues/505)) ([b8b3c44](https://github.com/test-kitchen/kitchen-vagrant/commit/b8b3c44de7e9b803c0edc7fc26832d4d048f115e))
+
 ## [1.14.3](https://github.com/test-kitchen/kitchen-vagrant/compare/v1.14.2...v1.14.3) (2024-06-19)
 
 
