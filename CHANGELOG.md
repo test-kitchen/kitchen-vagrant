@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.1.3](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.1.2...v2.1.3) (2025-09-29)
+
+
+### Bug Fixes
+
+* add oracle linux to bento box list ([#513](https://github.com/test-kitchen/kitchen-vagrant/issues/513)) ([9b466ae](https://github.com/test-kitchen/kitchen-vagrant/commit/9b466ae759c5932b6515d2632adea59ba7ee6521))
+
 ## [2.1.2](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.1.1...v2.1.2) (2025-09-22)
 
 
