@@ -563,12 +563,12 @@ module Kitchen
       # @api private
       def wsl?
         # Check for WSL via environment variables
-        return true if ENV['WSL_DISTRO_NAME']
-        return true if ENV['VAGRANT_WSL_ENABLE_WINDOWS_ACCESS']
+        return true if ENV["WSL_DISTRO_NAME"]
+        return true if ENV["VAGRANT_WSL_ENABLE_WINDOWS_ACCESS"]
 
         # Check for WSL via /proc/version
-        if File.exist?('/proc/version')
-          version_content = File.read('/proc/version')
+        if File.exist?("/proc/version")
+          version_content = File.read("/proc/version")
           return true if version_content.match?(/microsoft|wsl/i)
         end
 
@@ -585,7 +585,7 @@ module Kitchen
         # Only convert if it looks like a Windows path
         if path.match?(%r{^[A-Za-z]:/})
           # Convert C:/path to /mnt/c/path
-          path.gsub(%r{^([A-Za-z]):}, '/mnt/\1').downcase
+          path.gsub(/^([A-Za-z]):/, '/mnt/\1').downcase
         else
           path
         end
@@ -599,10 +599,10 @@ module Kitchen
       def vagrant_config(type)
         lines = run_silently("#{config[:vagrant_binary]} #{type}-config")
           .split("\n").map do |line|
-            tokens = line.strip.partition(' ')
+            tokens = line.strip.partition(" ")
             value = tokens.last.delete('"')
             # Convert Windows paths to WSL paths when running in WSL
-            value = windows_to_wsl_path(value) if wsl? && tokens.first == 'IdentityFile'
+            value = windows_to_wsl_path(value) if wsl? && tokens.first == "IdentityFile"
             [tokens.first, value]
           end
         Hash[lines]
