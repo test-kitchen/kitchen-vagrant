@@ -559,6 +559,38 @@ module Kitchen
         @vagrant_root
       end
 
+      # @return [true,false] whether or not we're running in WSL
+      # @api private
+      def wsl?
+        # Check for WSL via environment variables
+        return true if ENV["WSL_DISTRO_NAME"]
+        return true if ENV["VAGRANT_WSL_ENABLE_WINDOWS_ACCESS"]
+
+        # Check for WSL via /proc/version
+        if File.exist?("/proc/version")
+          version_content = File.read("/proc/version")
+          return true if version_content.match?(/microsoft|wsl/i)
+        end
+
+        false
+      rescue
+        false
+      end
+
+      # Converts a Windows path to a WSL path
+      # @param path [String] Windows path (e.g., "C:/Users/...")
+      # @return [String] WSL path (e.g., "/mnt/c/users/...")
+      # @api private
+      def windows_to_wsl_path(path)
+        # Only convert if it looks like a Windows path
+        if path.match?(%r{^[A-Za-z]:/})
+          # Convert C:/path to /mnt/c/path
+          path.gsub(/^([A-Za-z]):/, '/mnt/\1').downcase
+        else
+          path
+        end
+      end
+
       # @param type [Symbol] either `:ssh` or `:winrm`
       # @return [Hash] key/value pairs resulting from parsing a
       #   `vagrant ssh-config` or `vagrant winrm-config` local command
@@ -568,7 +600,10 @@ module Kitchen
         lines = run_silently("#{config[:vagrant_binary]} #{type}-config")
           .split("\n").map do |line|
             tokens = line.strip.partition(" ")
-            [tokens.first, tokens.last.delete('"')]
+            value = tokens.last.delete('"')
+            # Convert Windows paths to WSL paths when running in WSL
+            value = windows_to_wsl_path(value) if wsl? && tokens.first == "IdentityFile"
+            [tokens.first, value]
           end
         Hash[lines]
       end
