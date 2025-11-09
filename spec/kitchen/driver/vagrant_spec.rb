@@ -523,6 +523,84 @@ describe Kitchen::Driver::Vagrant do
     end
   end
 
+  describe '#wsl?' do
+    it 'returns true when WSL_DISTRO_NAME is set' do
+      stub_const('ENV', { 'WSL_DISTRO_NAME' => 'Ubuntu' })
+      expect(driver.send(:wsl?)).to eq(true)
+    end
+
+    it 'returns true when VAGRANT_WSL_ENABLE_WINDOWS_ACCESS is set' do
+      stub_const('ENV', { 'VAGRANT_WSL_ENABLE_WINDOWS_ACCESS' => '1' })
+      expect(driver.send(:wsl?)).to eq(true)
+    end
+
+    it 'returns true when /proc/version contains Microsoft' do
+      stub_const('ENV', {})
+      allow(File).to receive(:exist?).with('/proc/version').and_return(true)
+      allow(File).to receive(:read).with('/proc/version')
+        .and_return('Linux version 4.4.0-19041-Microsoft')
+      expect(driver.send(:wsl?)).to eq(true)
+    end
+
+    it 'returns true when /proc/version contains WSL' do
+      stub_const('ENV', {})
+      allow(File).to receive(:exist?).with('/proc/version').and_return(true)
+      allow(File).to receive(:read).with('/proc/version')
+        .and_return('Linux version 5.10.16.3-microsoft-standard-WSL2')
+      expect(driver.send(:wsl?)).to eq(true)
+    end
+
+    it 'returns false when not in WSL' do
+      stub_const('ENV', {})
+      allow(File).to receive(:exist?).with('/proc/version').and_return(false)
+      expect(driver.send(:wsl?)).to eq(false)
+    end
+
+    it "returns false when /proc/version exists but doesn't contain WSL markers" do
+      stub_const('ENV', {})
+      allow(File).to receive(:exist?).with('/proc/version').and_return(true)
+      allow(File).to receive(:read).with('/proc/version')
+        .and_return('Linux version 5.4.0-42-generic')
+      expect(driver.send(:wsl?)).to eq(false)
+    end
+
+    it 'returns false when an error occurs' do
+      stub_const('ENV', {})
+      allow(File).to receive(:exist?).and_raise(StandardError)
+      expect(driver.send(:wsl?)).to eq(false)
+    end
+  end
+
+  describe '#windows_to_wsl_path' do
+    it 'converts C: drive path to /mnt/c' do
+      path = 'C:/Users/username/.vagrant.d/insecure_private_key'
+      expected = '/mnt/c/users/username/.vagrant.d/insecure_private_key'
+      expect(driver.send(:windows_to_wsl_path, path)).to eq(expected)
+    end
+
+    it 'converts D: drive path to /mnt/d' do
+      path = 'D:/Projects/vagrant/.vagrant/machines/default/virtualbox/private_key'
+      expected = '/mnt/d/projects/vagrant/.vagrant/machines/default/virtualbox/private_key'
+      expect(driver.send(:windows_to_wsl_path, path)).to eq(expected)
+    end
+
+    it 'handles lowercase drive letters' do
+      path = 'c:/path/to/key'
+      expected = '/mnt/c/path/to/key'
+      expect(driver.send(:windows_to_wsl_path, path)).to eq(expected)
+    end
+
+    it 'leaves Unix paths unchanged' do
+      path = '/home/user/.vagrant.d/insecure_private_key'
+      expect(driver.send(:windows_to_wsl_path, path)).to eq(path)
+    end
+
+    it 'leaves relative paths unchanged' do
+      path = '.vagrant/machines/default/virtualbox/private_key'
+      expect(driver.send(:windows_to_wsl_path, path)).to eq(path)
+    end
+  end
+
   describe "#verify_dependencies" do
 
     it "passes for supported versions of Vagrant" do
