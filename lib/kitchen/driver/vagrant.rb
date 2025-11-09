@@ -487,27 +487,64 @@ module Kitchen
 
         begin
           output = run_silently(cmd)
-          # Parse the output to see if the box is outdated
-          # Vagrant outputs different messages depending on the version
-          # Look for "outdated" or "newer version" in the output
-          if output.match?(/is outdated/i) || output.match?(/newer version.*is\s+available/i) || output.match?(/newer version of the box/i)
-            # Extract version info if available
-            current_version = output.match(/Current:\s+v?(\S+)/i) || output.match(/currently have version\s+'?v?([^'.\s]+)/i)
-            latest_version = output.match(/Latest:\s+v?(\S+)/i) || output.match(/latest is version\s+'?v?([^'.\s]+)/i)
-            
-            warning_msg = "A new version of the '#{config[:box]}' box is available!"
-            if current_version && latest_version
-              warning_msg += " Current: #{current_version[1]}, Latest: #{latest_version[1]}."
-            end
-            warning_msg += " Run `vagrant box update --box #{config[:box]}` to update."
-            
-            warn(warning_msg)
-          end
+          warn_if_outdated(output)
         rescue Kitchen::ShellOut::ShellCommandFailed => e
           # If the box isn't installed yet or there's an error checking, silently continue
           # This can happen on first run before the box is downloaded
           debug("Unable to check if box is outdated: #{e.message}")
         end
+      end
+
+      # Parse vagrant box outdated output and warn if a new version is available
+      #
+      # @param output [String] output from vagrant box outdated command
+      # @api private
+      def warn_if_outdated(output)
+        return unless box_is_outdated?(output)
+
+        current_version = extract_current_version(output)
+        latest_version = extract_latest_version(output)
+
+        warning_msg = "A new version of the '#{config[:box]}' box is available!"
+        if current_version && latest_version
+          warning_msg += " Current: #{current_version}, Latest: #{latest_version}."
+        end
+        warning_msg += " Run `vagrant box update --box #{config[:box]}` to update."
+
+        warn(warning_msg)
+      end
+
+      # Check if the vagrant box outdated output indicates an outdated box
+      #
+      # @param output [String] output from vagrant box outdated command
+      # @return [Boolean] true if box is outdated
+      # @api private
+      def box_is_outdated?(output)
+        output.match?(/is outdated/i) ||
+          output.match?(/newer version.*is\s+available/i) ||
+          output.match?(/newer version of the box/i)
+      end
+
+      # Extract current version from vagrant box outdated output
+      #
+      # @param output [String] output from vagrant box outdated command
+      # @return [String, nil] current version or nil if not found
+      # @api private
+      def extract_current_version(output)
+        match = output.match(/Current:\s+v?(\S+)/i) ||
+                output.match(/currently have version\s+'?v?([^'.\s]+)/i)
+        match ? match[1] : nil
+      end
+
+      # Extract latest version from vagrant box outdated output
+      #
+      # @param output [String] output from vagrant box outdated command
+      # @return [String, nil] latest version or nil if not found
+      # @api private
+      def extract_latest_version(output)
+        match = output.match(/Latest:\s+v?(\S+)/i) ||
+                output.match(/latest is version\s+'?v?([^'.\s]+)/i)
+        match ? match[1] : nil
       end
 
       # Tell vagrant to update vagrant box to latest version
