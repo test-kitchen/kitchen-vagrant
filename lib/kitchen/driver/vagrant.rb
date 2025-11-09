@@ -116,6 +116,7 @@ module Kitchen
       def create(state)
         create_vagrantfile
         run_pre_create_command
+        check_box_outdated
         run_box_auto_update
         run_box_auto_prune
         run_vagrant_up
@@ -473,6 +474,81 @@ module Kitchen
         super(cmd, merged)
       end
       # rubocop:enable Metrics/CyclomaticComplexity
+
+      # Check if a newer version of the vagrant box is available and warn the user
+      #
+      # @api private
+      def check_box_outdated
+        # Skip if box_auto_update is enabled (they'll get the update anyway)
+        return if config[:box_auto_update]
+
+        cmd = "#{config[:vagrant_binary]} box outdated --box #{config[:box]}"
+        cmd += " --provider #{config[:provider]}" if config[:provider]
+
+        begin
+          output = run_silently(cmd)
+          warn_if_outdated(output)
+        rescue Kitchen::ShellOut::ShellCommandFailed => e
+          # If the box isn't installed yet or there's an error checking, silently continue
+          # This can happen on first run before the box is downloaded
+          debug("Unable to check if box is outdated: #{e.message}")
+        end
+      end
+
+      # Parse vagrant box outdated output and warn if a new version is available
+      #
+      # @param output [String] output from vagrant box outdated command
+      # @api private
+      def warn_if_outdated(output)
+        return unless box_is_outdated?(output)
+
+        current_version = extract_current_version(output)
+        latest_version = extract_latest_version(output)
+
+        warning_msg = "A new version of the '#{config[:box]}' box is available!"
+        if current_version && latest_version
+          warning_msg += " Current: #{current_version}, Latest: #{latest_version}."
+        end
+        warning_msg += " Run `vagrant box update --box #{config[:box]}` to update."
+
+        warn(warning_msg)
+      end
+
+      # Check if the vagrant box outdated output indicates an outdated box
+      #
+      # @param output [String] output from vagrant box outdated command
+      # @return [Boolean] true if box is outdated
+      # @api private
+      def box_is_outdated?(output)
+        # Check for various output patterns indicating an outdated box
+        # Use include? instead of complex regexes to avoid ReDoS vulnerabilities
+        output_downcase = output.downcase
+        output_downcase.include?("is outdated") ||
+          output_downcase.include?("newer version") && output_downcase.include?("available") ||
+          output_downcase.include?("newer version of the box")
+      end
+
+      # Extract current version from vagrant box outdated output
+      #
+      # @param output [String] output from vagrant box outdated command
+      # @return [String, nil] current version or nil if not found
+      # @api private
+      def extract_current_version(output)
+        match = output.match(/Current:\s+v?(\S+)/i) ||
+          output.match(/currently have version\s+'?v?([^'.\s]+)/i)
+        match ? match[1] : nil
+      end
+
+      # Extract latest version from vagrant box outdated output
+      #
+      # @param output [String] output from vagrant box outdated command
+      # @return [String, nil] latest version or nil if not found
+      # @api private
+      def extract_latest_version(output)
+        match = output.match(/Latest:\s+v?(\S+)/i) ||
+          output.match(/latest is version\s+'?v?([^'.\s]+)/i)
+        match ? match[1] : nil
+      end
 
       # Tell vagrant to update vagrant box to latest version
       def run_box_auto_update
