@@ -784,6 +784,91 @@ describe Kitchen::Driver::Vagrant do
         /I, .+ INFO -- : Vagrant instance \<suitey-fooos-99\> created\.$/
       )
     end
+
+    describe "box outdated check" do
+      it "warns when a newer box version is available" do
+        outdated_output = <<-OUTPUT
+Checking if box 'bento/ubuntu-20.04' version '202112.19.0' is up to date...
+A newer version of the box 'bento/ubuntu-20.04' for provider 'virtualbox' is
+available! You currently have version '202112.19.0'. The latest is version
+'202401.31.0'.
+        OUTPUT
+        
+        # Stub the run_command to return different outputs for different commands
+        allow(driver).to receive(:run_command) do |cmd, options|
+          case cmd
+          when /vagrant box outdated/
+            outdated_output
+          else
+            ""
+          end
+        end
+
+        cmd
+
+        expect(logged_output.string).to match(
+          /WARN -- : A new version of the 'fooos-99' box is available!/
+        )
+        expect(logged_output.string).to match(
+          /Run `vagrant box update --box fooos-99` to update\./
+        )
+      end
+
+      it "does not warn when box is up to date" do
+        uptodate_output = <<-OUTPUT
+Checking if box 'bento/ubuntu-20.04' version '202401.31.0' is up to date...
+You're running the latest version of this box.
+        OUTPUT
+        
+        # Stub the run_command to return different outputs for different commands
+        allow(driver).to receive(:run_command) do |cmd, options|
+          case cmd
+          when /vagrant box outdated/
+            uptodate_output
+          else
+            ""
+          end
+        end
+
+        cmd
+
+        expect(logged_output.string).to_not match(
+          /A new version of the 'fooos-99' box is available!/
+        )
+      end
+
+      it "does not check when box_auto_update is enabled" do
+        config[:box_auto_update] = "vagrant box update --box fooos-99"
+        
+        # Verify that outdated check is not called
+        allow(driver).to receive(:run_command) do |cmd, options|
+          if cmd.is_a?(String) && cmd.include?("vagrant box outdated")
+            raise "Should not call vagrant box outdated when box_auto_update is enabled"
+          end
+          ""
+        end
+
+        # Should not raise an error
+        expect { cmd }.to_not raise_error
+      end
+
+      it "handles errors gracefully when box is not yet installed" do
+        # Stub the run_command to raise an error for outdated check
+        allow(driver).to receive(:run_command) do |cmd, options|
+          if cmd.include?("vagrant box outdated")
+            raise Kitchen::ShellOut::ShellCommandFailed.new("Box not found")
+          end
+          ""
+        end
+
+        # Should not raise an error
+        expect { cmd }.to_not raise_error
+
+        expect(logged_output.string).to match(
+          /DEBUG -- : Unable to check if box is outdated/
+        )
+      end
+    end
   end
 
   describe "#destroy" do

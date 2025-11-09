@@ -116,6 +116,7 @@ module Kitchen
       def create(state)
         create_vagrantfile
         run_pre_create_command
+        check_box_outdated
         run_box_auto_update
         run_box_auto_prune
         run_vagrant_up
@@ -473,6 +474,41 @@ module Kitchen
         super(cmd, merged)
       end
       # rubocop:enable Metrics/CyclomaticComplexity
+
+      # Check if a newer version of the vagrant box is available and warn the user
+      #
+      # @api private
+      def check_box_outdated
+        # Skip if box_auto_update is enabled (they'll get the update anyway)
+        return if config[:box_auto_update]
+
+        cmd = "#{config[:vagrant_binary]} box outdated --box #{config[:box]}"
+        cmd += " --provider #{config[:provider]}" if config[:provider]
+
+        begin
+          output = run_silently(cmd)
+          # Parse the output to see if the box is outdated
+          # Vagrant outputs different messages depending on the version
+          # Look for "outdated" or "newer version" in the output
+          if output.match?(/is outdated/i) || output.match?(/newer version.*is\s+available/i) || output.match?(/newer version of the box/i)
+            # Extract version info if available
+            current_version = output.match(/Current:\s+v?(\S+)/i) || output.match(/currently have version\s+'?v?([^'.\s]+)/i)
+            latest_version = output.match(/Latest:\s+v?(\S+)/i) || output.match(/latest is version\s+'?v?([^'.\s]+)/i)
+            
+            warning_msg = "A new version of the '#{config[:box]}' box is available!"
+            if current_version && latest_version
+              warning_msg += " Current: #{current_version[1]}, Latest: #{latest_version[1]}."
+            end
+            warning_msg += " Run `vagrant box update --box #{config[:box]}` to update."
+            
+            warn(warning_msg)
+          end
+        rescue Kitchen::ShellOut::ShellCommandFailed => e
+          # If the box isn't installed yet or there's an error checking, silently continue
+          # This can happen on first run before the box is downloaded
+          debug("Unable to check if box is outdated: #{e.message}")
+        end
+      end
 
       # Tell vagrant to update vagrant box to latest version
       def run_box_auto_update
