@@ -520,9 +520,12 @@ module Kitchen
       # @return [Boolean] true if box is outdated
       # @api private
       def box_is_outdated?(output)
-        output.match?(/is outdated/i) ||
-          output.match?(/newer version[^\n]*is\s+available/i) ||
-          output.match?(/newer version of the box/i)
+        # Check for various output patterns indicating an outdated box
+        # Use include? instead of complex regexes to avoid ReDoS vulnerabilities
+        output_downcase = output.downcase
+        output_downcase.include?("is outdated") ||
+          output_downcase.include?("newer version") && output_downcase.include?("available") ||
+          output_downcase.include?("newer version of the box")
       end
 
       # Extract current version from vagrant box outdated output
