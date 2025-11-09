@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.2.0](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.1.3...v2.2.0) (2025-11-09)
+
+
+### Features
+
+* Warn users when new Vagrant box version is available ([#517](https://github.com/test-kitchen/kitchen-vagrant/issues/517)) ([8c05a0e](https://github.com/test-kitchen/kitchen-vagrant/commit/8c05a0ebd35b8570ce25e9578804c99ea14dd4dc))
+
+
+### Bug Fixes
+
+* SSH key path resolution in WSL2 environments ([#516](https://github.com/test-kitchen/kitchen-vagrant/issues/516)) ([69b942c](https://github.com/test-kitchen/kitchen-vagrant/commit/69b942c2579e8996f8faee143e84e82c2bed0786))
+
 ## [2.1.3](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.1.2...v2.1.3) (2025-09-29)
 
 
