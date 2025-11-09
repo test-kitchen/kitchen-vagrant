@@ -521,7 +521,7 @@ module Kitchen
       # @api private
       def box_is_outdated?(output)
         output.match?(/is outdated/i) ||
-          output.match?(/newer version.*is\s+available/i) ||
+          output.match?(/newer version[^\n]*is\s+available/i) ||
           output.match?(/newer version of the box/i)
       end
 
