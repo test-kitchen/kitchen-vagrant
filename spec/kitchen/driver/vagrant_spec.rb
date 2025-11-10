@@ -2270,15 +2270,19 @@ You're running the latest version of this box.
       config[:env] = ['AWS_REGION=us-east-1', 'AWS_ACCESS_KEY_ID=test123']
       cmd
 
-      expect(vagrantfile).to match(regexify(
-        %(c.vm.provision "shell", inline: "echo 'export AWS_REGION=us-east-1' >> /etc/profile.d/kitchen.sh", run: "once")
-      ))
-      expect(vagrantfile).to match(regexify(
-        %(c.vm.provision "shell", inline: "echo 'export AWS_ACCESS_KEY_ID=test123' >> /etc/profile.d/kitchen.sh", run: "once")
-      ))
+      expect(vagrantfile).to match(/c\.vm\.provision "shell", inline: <<-SHELL/)
+      expect(vagrantfile).to match(/echo 'export AWS_REGION=us-east-1' >> \/etc\/profile\.d\/kitchen\.sh/)
+      expect(vagrantfile).to match(/echo 'export AWS_ACCESS_KEY_ID=test123' >> \/etc\/profile\.d\/kitchen\.sh/)
       expect(vagrantfile).to match(regexify(
         %(c.vm.provision "shell", inline: "chmod +x /etc/profile.d/kitchen.sh", run: "once")
       ))
+    end
+
+    it 'properly escapes single quotes in environment variable values' do
+      config[:env] = ["TEST_VAR=value'with'quotes"]
+      cmd
+
+      expect(vagrantfile).to match(/echo 'export TEST_VAR=value'\\''with'\\''quotes' >> \/etc\/profile\.d\/kitchen\.sh/)
     end
   end
 
