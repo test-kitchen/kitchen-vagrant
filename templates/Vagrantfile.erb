@@ -253,4 +253,12 @@ Vagrant.configure("2") do |c|
   <% end %>
 <% end %>
   end
+
+<% if config[:env] && !config[:env].empty? %>
+  # Set environment variables
+  <% config[:env].each do |env_var| %>
+  c.vm.provision "shell", inline: "echo 'export <%= env_var %>' >> /etc/profile.d/kitchen.sh", run: "once"
+  <% end %>
+  c.vm.provision "shell", inline: "chmod +x /etc/profile.d/kitchen.sh", run: "once"
+<% end %>
 end
