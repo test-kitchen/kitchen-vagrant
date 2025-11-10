@@ -408,14 +408,14 @@ describe Kitchen::Driver::Vagrant do
       ])
     end
 
-    it "sets :env to an empty array by default" do
+    it 'sets :env to an empty array by default' do
       expect(driver[:env]).to eq([])
     end
 
-    it "sets :env to a custom value" do
-      config[:env] = ["AWS_REGION=us-east-1", "AWS_ACCESS_KEY_ID=test123"]
+    it 'sets :env to a custom value' do
+      config[:env] = ['AWS_REGION=us-east-1', 'AWS_ACCESS_KEY_ID=test123']
 
-      expect(driver[:env]).to eq(["AWS_REGION=us-east-1", "AWS_ACCESS_KEY_ID=test123"])
+      expect(driver[:env]).to eq(['AWS_REGION=us-east-1', 'AWS_ACCESS_KEY_ID=test123'])
     end
 
     it "sets :vagrant_binary to 'vagrant' by default" do
@@ -2260,24 +2260,24 @@ You're running the latest version of this box.
       end
     end
 
-    it "sets no environment variables by default" do
+    it 'sets no environment variables by default' do
       cmd
 
-      expect(vagrantfile).to_not match(regexify(%{c.vm.provision "shell"}, :partial))
+      expect(vagrantfile).to_not match(regexify(%(c.vm.provision "shell"), :partial))
     end
 
-    it "sets environment variables when :env is configured" do
-      config[:env] = ["AWS_REGION=us-east-1", "AWS_ACCESS_KEY_ID=test123"]
+    it 'sets environment variables when :env is configured' do
+      config[:env] = ['AWS_REGION=us-east-1', 'AWS_ACCESS_KEY_ID=test123']
       cmd
 
       expect(vagrantfile).to match(regexify(
-        %{c.vm.provision "shell", inline: "echo 'export AWS_REGION=us-east-1' >> /etc/profile.d/kitchen.sh", run: "once"}
+        %(c.vm.provision "shell", inline: "echo 'export AWS_REGION=us-east-1' >> /etc/profile.d/kitchen.sh", run: "once")
       ))
       expect(vagrantfile).to match(regexify(
-        %{c.vm.provision "shell", inline: "echo 'export AWS_ACCESS_KEY_ID=test123' >> /etc/profile.d/kitchen.sh", run: "once"}
+        %(c.vm.provision "shell", inline: "echo 'export AWS_ACCESS_KEY_ID=test123' >> /etc/profile.d/kitchen.sh", run: "once")
       ))
       expect(vagrantfile).to match(regexify(
-        %{c.vm.provision "shell", inline: "chmod +x /etc/profile.d/kitchen.sh", run: "once"}
+        %(c.vm.provision "shell", inline: "chmod +x /etc/profile.d/kitchen.sh", run: "once")
       ))
     end
   end
