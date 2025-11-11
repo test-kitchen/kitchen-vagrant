@@ -338,6 +338,25 @@ module Kitchen
           .gsub("{{vagrant_root}}", vagrant_root)
       end
 
+      # Formats synced folder options for use in the Vagrantfile.
+      # Accepts either a Hash (converts to Ruby hash syntax) or a String (returns as-is).
+      # Supports SMB options like smb_username, smb_password, etc.
+      #
+      # @param options [Hash, String, nil] synced folder options
+      # @return [String] formatted options string for Vagrantfile
+      # @api private
+      def format_synced_folder_options(options)
+        return "nil" if options.nil?
+        return options if options.is_a?(String)
+
+        # Convert Hash to Ruby hash literal syntax
+        if options.is_a?(Hash)
+          options.map { |k, v| "#{k}: #{v.inspect}" }.join(", ")
+        else
+          options.to_s
+        end
+      end
+
       # Replaces an `%{instance_name}` tokens in the synced folder items.
       #
       # @api private
@@ -350,7 +369,7 @@ module Kitchen
                 config[:kitchen_root]
               ),
               destination.gsub("%{instance_name}", instance.name),
-              options || "nil",
+              format_synced_folder_options(options),
             ]
           end
         add_extra_synced_folders!
