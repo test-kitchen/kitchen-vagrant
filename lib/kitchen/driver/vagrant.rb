@@ -80,6 +80,8 @@ module Kitchen
 
       default_config :synced_folders, []
 
+      default_config :env, []
+
       default_config :use_cached_chef_client, false
 
       default_config :vagrant_binary, "vagrant"

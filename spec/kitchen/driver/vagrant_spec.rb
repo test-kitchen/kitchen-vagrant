@@ -408,6 +408,16 @@ describe Kitchen::Driver::Vagrant do
       ])
     end
 
+    it 'sets :env to an empty array by default' do
+      expect(driver[:env]).to eq([])
+    end
+
+    it 'sets :env to a custom value' do
+      config[:env] = ['AWS_REGION=us-east-1', 'AWS_ACCESS_KEY_ID=test123']
+
+      expect(driver[:env]).to eq(['AWS_REGION=us-east-1', 'AWS_ACCESS_KEY_ID=test123'])
+    end
+
     it "converts Hash options to Ruby hash syntax in :synced_folders" do
       config[:synced_folders] = [
         ["/host_path", "/vm_path", { type: "smb", smb_username: "testuser", smb_password: "testpass" }],
@@ -1237,16 +1247,12 @@ You're running the latest version of this box.
       )
     end
 
-    it "sets vm.box_download_insecure to false
-          if :box_download_insecure is false" do
+    it "sets vm.box_download_insecure to false if :box_download_insecure is false" do
+      config[:box_download_insecure] = false
+      cmd
 
-            config[:box_download_insecure] = false
-            cmd
-
-            expect(
-              vagrantfile
-            ).to match(regexify(%{c.vm.box_download_insecure = "false"}))
-          end
+      expect(vagrantfile).to match(regexify(%{c.vm.box_download_insecure = "false"}))
+    end
 
     it "sets vm.box_download_insecure if :box_download_insecure is set" do
       config[:box_download_insecure] = "um"
@@ -2285,6 +2291,31 @@ You're running the latest version of this box.
 
         expect(vagrantfile).to match(regexify(expectation))
       end
+    end
+
+    it 'sets no environment variables by default' do
+      cmd
+
+      expect(vagrantfile).to_not match(regexify(%(c.vm.provision "shell"), :partial))
+    end
+
+    it 'sets environment variables when :env is configured' do
+      config[:env] = ['AWS_REGION=us-east-1', 'AWS_ACCESS_KEY_ID=test123']
+      cmd
+
+      expect(vagrantfile).to match(/c\.vm\.provision "shell", inline: <<-SHELL/)
+      expect(vagrantfile).to match(/echo 'export AWS_REGION=us-east-1' >> \/etc\/profile\.d\/kitchen\.sh/)
+      expect(vagrantfile).to match(/echo 'export AWS_ACCESS_KEY_ID=test123' >> \/etc\/profile\.d\/kitchen\.sh/)
+      expect(vagrantfile).to match(regexify(
+        %(c.vm.provision "shell", inline: "chmod +x /etc/profile.d/kitchen.sh", run: "once")
+      ))
+    end
+
+    it 'properly escapes single quotes in environment variable values' do
+      config[:env] = ["TEST_VAR=value'with'quotes"]
+      cmd
+
+      expect(vagrantfile).to match(/echo 'export TEST_VAR=value'\\''with'\\''quotes' >> \/etc\/profile\.d\/kitchen\.sh/)
     end
   end
 
