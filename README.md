@@ -38,6 +38,21 @@ gem "kitchen-vagrant"
 
 See the [kitchen.ci Vagrant Driver Page](https://kitchen.ci/docs/drivers/vagrant/) for documentation on configuring this driver.
 
+### Custom SSH Port Configuration
+
+If your VM's SSH daemon listens on a non-standard port (other than port 22), you can configure Test Kitchen to use the custom port:
+
+```yaml
+driver:
+  name: vagrant
+  ssh:
+    guest_port: 444  # SSH daemon listens on port 444 inside the VM
+  network:
+    - ["forwarded_port", {guest: 444, host: 2222, auto_correct: true}]
+```
+
+This configuration tells Vagrant that the SSH daemon inside the guest VM is listening on port 444 instead of the default port 22. Vagrant will handle the port forwarding appropriately.
+
 ## Development
 
 * Source hosted at [GitHub][repo]
