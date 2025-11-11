@@ -408,6 +408,36 @@ describe Kitchen::Driver::Vagrant do
       ])
     end
 
+    it "converts Hash options to Ruby hash syntax in :synced_folders" do
+      config[:synced_folders] = [
+        ["/host_path", "/vm_path", { type: "smb", smb_username: "testuser", smb_password: "testpass" }],
+      ]
+
+      expect(driver[:synced_folders]).to eq([
+        [File.expand_path("/host_path"), "/vm_path", 'type: "smb", smb_username: "testuser", smb_password: "testpass"'],
+      ])
+    end
+
+    it "handles Hash options with symbol keys in :synced_folders" do
+      config[:synced_folders] = [
+        ["/host_path", "/vm_path", { type: "smb", create: true }],
+      ]
+
+      expect(driver[:synced_folders]).to eq([
+        [File.expand_path("/host_path"), "/vm_path", 'type: "smb", create: true'],
+      ])
+    end
+
+    it "preserves String options for backward compatibility in :synced_folders" do
+      config[:synced_folders] = [
+        ["/host_path", "/vm_path", "type: :nfs, create: true"],
+      ]
+
+      expect(driver[:synced_folders]).to eq([
+        [File.expand_path("/host_path"), "/vm_path", "type: :nfs, create: true"],
+      ])
+    end
+
     it "sets :vagrant_binary to 'vagrant' by default" do
       expect(driver[:vagrant_binary]).to eq("vagrant")
     end
