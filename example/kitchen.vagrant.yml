@@ -57,9 +57,12 @@ driver:
   # An array of arrays that configure a synced folder
   # This value is automatically configured if using
   # the `cache_directory` option. Otherwise, empty.
+  # Options can be specified as a String (backward compatible) or Hash
   # synced_folders:
   #   - ["data/%{instance_name}", "/opt/instance_data"]
   #   - ["/host_path", "/vm_path", "create: true, type: :nfs"]
+  #   # For SMB shares (useful with Hyper-V), use Hash format:
+  #   - ["C:\\local\\path", "C:\\remote\\path", {type: "smb", smb_username: "user", smb_password: "pass"}]
 
   # This should only need to get set if the Vagrant binary
   # isn't in the PATH or there is a specific location desired
