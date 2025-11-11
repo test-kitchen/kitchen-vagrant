@@ -1368,6 +1368,13 @@ You're running the latest version of this box.
       RUBY
     end
 
+    it "sets ssh.guest_port if specified in :ssh config" do
+      config[:ssh] = { guest_port: 444 }
+      cmd
+
+      expect(vagrantfile).to match(regexify(%{c.ssh.guest_port = 444}))
+    end
+
     it "adds a vm.network line for each element in :network" do
       config[:network] = [
         ["forwarded_port", { guest: 80, host: 8080 }],
