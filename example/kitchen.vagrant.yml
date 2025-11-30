@@ -50,9 +50,19 @@ driver:
   # provision: false
 
   # Hash for passing k/v options to Vagrant's SSH
-  # configuration. Only needed for advanaced/custom
+  # configuration. Only needed for advanced/custom
   # configuration. **CAUTION**
   # ssh: {}
+  #
+  # Example: To use a custom SSH port inside the guest VM
+  # (useful when SSH daemon is configured to listen on a non-standard port):
+  # ssh:
+  #   guest_port: 444
+  #
+  # This tells Vagrant that SSH is listening on port 444 inside the VM
+  # instead of the default port 22. Vagrant will still forward this to
+  # a high port on the host (e.g., 2222), but will connect to port 444
+  # inside the guest.
 
   # An array of arrays that configure a synced folder
   # This value is automatically configured if using
@@ -75,6 +85,15 @@ driver:
   # An array of paths to Vagrantfiles
   # Empty by default
   # vagrantfiles: []
+
+  # An array of environment variables to set in the VM
+  # These are written to /etc/profile.d/kitchen.sh and are available
+  # to all users and processes including Chef runs
+  # Empty by default
+  # env:
+  #   - AWS_REGION=<%= ENV['AWS_REGION'] %>
+  #   - AWS_ACCESS_KEY_ID=<%= ENV['AWS_ACCESS_KEY_ID'] %>
+  #   - AWS_SECRET_ACCESS_KEY=<%= ENV['AWS_SECRET_ACCESS_KEY'] %>
 
   # We only set this to a path for a subset of known bento boxes
   # driver.windows_os? ? "/omnibus/cache" : "/tmp/omnibus/cache"
