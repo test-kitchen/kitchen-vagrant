@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.2.1](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.2.0...v2.2.1) (2026-01-22)
+
+
+### Bug Fixes
+
+* Add Hash-based synced folder options for SMB authentication with Hyper-V ([#520](https://github.com/test-kitchen/kitchen-vagrant/issues/520)) ([bd6b815](https://github.com/test-kitchen/kitchen-vagrant/commit/bd6b8157211ce287323c151bb59be5de0d1d10fc))
+* bump tk dep to &lt;5 ([#525](https://github.com/test-kitchen/kitchen-vagrant/issues/525)) ([9753a44](https://github.com/test-kitchen/kitchen-vagrant/commit/9753a445167957839e89bf3b8941a72117727bb3))
+* **credentials:** Fix AWS credentials not passing to Vagrant box ([#521](https://github.com/test-kitchen/kitchen-vagrant/issues/521)) ([b6da5d9](https://github.com/test-kitchen/kitchen-vagrant/commit/b6da5d94a9ca129fcd7a7e8f9eae4c8c7f3521cc))
+
 ## [2.2.0](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.1.3...v2.2.0) (2025-11-09)
 
 
