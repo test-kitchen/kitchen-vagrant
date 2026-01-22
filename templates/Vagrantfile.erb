@@ -97,6 +97,8 @@ Vagrant.configure("2") do |c|
 <% case config[:provider]
    when "virtualbox" %>
     p.name = "kitchen-<%= File.basename(config[:kitchen_root]) %>-<%= instance.name %>-<%= SecureRandom.uuid %>"
+<% when "tart" %>
+    p.name = "kitchen-<%= File.basename(config[:kitchen_root]) %>-<%= instance.name %>"
 <% end %>
 
 <% case config[:provider]
