@@ -51,10 +51,12 @@ jobs:
           export PATH="$(pwd)/bin:$PATH"
           # Verify vagrant works
           vagrant --version
+      - name: Verify Cinc gems are loaded
+        # Cinc republishes patched inspec gems under the same name and version as
+        # Chef's, so a stale bundler cache can leave Chef's licensed gems on disk
+        # even when the lockfile points at rubygems.cinc.sh. Fail loudly if so.
+        run: bundle exec ruby -e 'require "inspec/dist"; abort "Chef InSpec gems loaded instead of Cinc - clear the bundler cache" if Inspec::Dist::EXEC_NAME == "inspec"'
       - name: Verify Vagrant
-        env:
-          CHEF_LICENSE: accept-no-persist
-          CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
         run: |
           export PATH="$(pwd)/bin:$PATH"
           bundle exec kitchen verify ${{ matrix.os }}
