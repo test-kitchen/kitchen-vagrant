@@ -52,6 +52,8 @@ jobs:
           # Verify vagrant works
           vagrant --version
       - name: Verify Vagrant
+        env:
+          CHEF_LICENSE: accept-no-persist
         run: |
           export PATH="$(pwd)/bin:$PATH"
           bundle exec kitchen verify ${{ matrix.os }}
