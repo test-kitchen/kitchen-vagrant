@@ -1,107 +1,311 @@
-# Kitchen::Vagrant
+# kitchen-vagrant
 
 [![Gem Version](https://badge.fury.io/rb/kitchen-vagrant.svg)](http://badge.fury.io/rb/kitchen-vagrant)
 [![CI](https://github.com/test-kitchen/kitchen-vagrant/actions/workflows/lint.yml/badge.svg)](https://github.com/test-kitchen/kitchen-vagrant/actions/workflows/lint.yml)
 
-A Test Kitchen Driver for HashiCorp Vagrant.
+A [Test Kitchen](https://kitchen.ci/) driver for [HashiCorp Vagrant](https://www.vagrantup.com/). It creates and destroys local virtual machines, which makes it the usual choice for testing cookbooks on your own workstation.
 
-This driver works by generating a single Vagrantfile for each instance in a
-sandboxed directory. Since the Vagrantfile is written out on disk, Vagrant
-needs absolutely no knowledge of Test Kitchen. So no Vagrant plugins are
-required.
+The driver writes a self-contained `Vagrantfile` into a sandbox directory for each instance. Because everything Vagrant needs is in that file, Vagrant requires no knowledge of Test Kitchen and **no Vagrant plugins are required**.
+
+> This documentation uses [Cinc Workstation](https://cinc.sh/) and the `cinc` commands throughout. Everything here works identically with Chef Workstation — see [Using with Chef](#using-with-chef).
 
 ## Requirements
 
-### Vagrant
-
-Vagrant version of 2.4 or later.
+- [Vagrant](https://developer.hashicorp.com/vagrant/downloads) 2.4 or later
+- A Vagrant provider, most commonly [VirtualBox](https://www.virtualbox.org/). Others such as `hyperv`, `libvirt`, `vmware_desktop`, and `parallels` work too.
+- Ruby 3.1 or later (already satisfied if you use Cinc Workstation)
 
 ## Installation
 
-The kitchen-vagrant driver ships as part of Chef Workstation. The easiest way to use this driver is to use it with Chef Workstation.
+This driver ships as part of [Cinc Workstation](https://cinc.sh/start/workstation/). If you have Cinc Workstation installed, there is nothing else to install.
 
-If you want to install the driver directly into a Ruby installation:
+To install it into a standalone Ruby:
 
 ```sh
 gem install kitchen-vagrant
 ```
 
-If you're using Bundler, simply add it to your Gemfile:
+Or with Bundler, add it to your `Gemfile`:
 
 ```ruby
 gem "kitchen-vagrant"
 ```
 
-... and then run `bundle install`.
+...then run `bundle install`.
 
-## Configuration and Usage
+## Quick Start
 
-See the [kitchen.ci Vagrant Driver Page](https://kitchen.ci/docs/drivers/vagrant/) for documentation on configuring this driver.
+Vagrant is the default driver for Test Kitchen, so a minimal `kitchen.yml` is very short:
 
-### Custom SSH Port Configuration
+```yaml
+---
+driver:
+  name: vagrant
 
-If your VM's SSH daemon listens on a non-standard port (other than port 22), you can configure Test Kitchen to use the custom port:
+provisioner:
+  name: cinc_infra
+
+verifier:
+  name: cinc_auditor
+
+platforms:
+  - name: ubuntu-22.04
+  - name: rockylinux-9
+
+suites:
+  - name: default
+    run_list:
+      - recipe[my_cookbook::default]
+```
+
+Then run the full test cycle:
+
+```sh
+cinc kitchen test
+```
+
+Or step through it:
+
+```sh
+cinc kitchen create    # vagrant up the box
+cinc kitchen converge  # apply your cookbook
+cinc kitchen verify    # run your tests
+cinc kitchen destroy   # vagrant destroy the box
+```
+
+## How the box is chosen
+
+If you do not set `box`, the driver derives one from the platform name. When the
+platform matches a [Bento](https://github.com/chef/bento) box it uses
+`bento/<platform>`, so a platform of `ubuntu-22.04` becomes `bento/ubuntu-22.04`.
+Otherwise the platform name is used as the box name directly.
+
+Set `box` explicitly whenever you want a box that is not published by Bento.
+
+## Configuration
+
+All options below are set under the `driver:` key in `kitchen.yml`, or per platform under `platforms[].driver:`.
+
+### Box
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `box` | derived from the platform | Vagrant box to start from, e.g. `bento/ubuntu-22.04`. Required, but normally satisfied by the default. |
+| `box_url` | derived from `box` | URL or path to the box, for boxes not published on Vagrant Cloud. |
+| `box_version` | *latest* | Version constraint for the box. |
+| `box_arch` | *provider default* | Architecture to request, e.g. `amd64` or `arm64`. Passed to `vagrant box add --architecture`. |
+| `box_check_update` | *Vagrant default* | Check for a newer version of the box on every `vagrant up`. |
+| `box_auto_update` | *unset* | Run `vagrant box update` before creating the instance. |
+| `box_auto_prune` | *unset* | Run `vagrant box prune` before creating the instance, removing outdated box versions. |
+| `box_download_insecure` | *unset* | Skip TLS verification when downloading the box. |
+| `box_download_ca_cert` | *unset* | Path to a CA certificate used when downloading the box. |
+
+### Provider and machine
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `provider` | `$VAGRANT_DEFAULT_PROVIDER`, else `"virtualbox"` | Vagrant provider to use, e.g. `virtualbox`, `hyperv`, `libvirt`, `vmware_desktop`, `parallels`. |
+| `customize` | `{}` | Provider-specific settings, such as `memory` and `cpus`. See [Customizing the machine](#customizing-the-machine). |
+| `gui` | *unset* | Boot the machine with a GUI console attached. Useful for watching a stuck boot. |
+| `linked_clone` | *unset* | Create the machine as a linked clone, which is much faster and uses less disk. |
+| `vm_hostname` | `<instance>.vagrantup.com`, or unset on Windows | Hostname set inside the guest. Set to `false` to leave it alone. |
+| `boot_timeout` | *Vagrant default* | Seconds Vagrant waits for the machine to boot. |
+
+### Networking and folders
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `network` | `[]` | Array of Vagrant network definitions, each an array of arguments to Vagrant's `config.vm.network`. |
+| `synced_folders` | `[]` | Array of `[source, destination, options]` entries mounted into the guest. |
+| `ssh` | `{}` | Hash of Vagrant SSH settings, such as `guest_port` or `username`. See [Custom SSH port](#custom-ssh-port). |
+
+### Vagrantfile generation
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `vagrantfile_erb` | the bundled template | Path to a custom ERB template used to render the Vagrantfile. |
+| `vagrantfiles` | `[]` | Array of extra Vagrantfile fragments merged into the generated one. |
+| `provision` | `false` | Let Vagrant run its own provisioners during `vagrant up`. |
+| `pre_create_command` | *unset* | Shell command run before the machine is created. |
+| `env` | `[]` | Environment variables set for the Vagrant process. |
+| `vagrant_binary` | `"vagrant"` | Path to the Vagrant executable. |
+
+### Caching
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `cachier` | *unset* | Enable the `vagrant-cachier` plugin, if installed. Accepts a scope such as `machine` or `box`. |
+| `cache_directory` | `/tmp/omnibus/cache`, or `/omnibus/cache` on Windows | Directory inside the guest used to cache installer packages. |
+| `kitchen_cache_directory` | `~/.kitchen/cache` | Directory on the host holding the shared cache. Honours `VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH` for use under WSL. |
+| `use_cached_chef_client` | `false` | Reuse a cached client installer rather than downloading it each run. |
+
+### Debugging
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `dry_run` | `false` | Print the Vagrant commands instead of running them. |
+| `use_sudo` | *unset* | Run guest commands through sudo. |
+
+## Customizing the machine
+
+`customize` passes settings to the provider. The common keys work across
+providers:
+
+```yaml
+driver:
+  name: vagrant
+  customize:
+    memory: 4096
+    cpus: 2
+```
+
+Anything else is passed to the provider's own customization mechanism. For
+VirtualBox, keys become `VBoxManage modifyvm` arguments:
+
+```yaml
+driver:
+  name: vagrant
+  provider: virtualbox
+  customize:
+    memory: 2048
+    cpus: 2
+    natdnshostresolver1: "on"
+    audio: "none"
+```
+
+## Custom SSH port
+
+If the guest's SSH daemon listens on a non-standard port, tell the driver which
+port it is and forward it:
 
 ```yaml
 driver:
   name: vagrant
   ssh:
-    guest_port: 444  # SSH daemon listens on port 444 inside the VM
+    guest_port: 444
   network:
     - ["forwarded_port", {guest: 444, host: 2222, auto_correct: true}]
 ```
 
-This configuration tells Vagrant that the SSH daemon inside the guest VM is listening on port 444 instead of the default port 22. Vagrant will handle the port forwarding appropriately.
+This tells Vagrant the SSH daemon inside the guest listens on 444 rather than
+22, and Vagrant sets up the forwarding accordingly.
 
-## Development
+## Examples
 
-* Source hosted at [GitHub][repo]
-* Report issues/questions/feature requests on [GitHub Issues][issues]
+### Pinning a box and version
 
-### Running the tests
-
-```sh
-bundle install
-bundle exec rake        # unit tests + Chefstyle, the default task
-bundle exec rake test   # unit tests only
-bundle exec rake style  # Chefstyle only
+```yaml
+driver:
+  name: vagrant
+  box: bento/ubuntu-22.04
+  box_version: "202309.08.0"
+  box_check_update: false
 ```
 
-The unit suite enforces 100% line coverage of `lib/` via SimpleCov; an HTML
-report is written to `coverage/` on every run.
+### A box hosted somewhere other than Vagrant Cloud
 
-### Generating the documentation
-
-```sh
-bundle exec rake docs           # generate YARD docs into doc/
-bundle exec rake docs:coverage  # report undocumented objects
-bundle exec rake docs:serve     # browse them at http://localhost:8808
+```yaml
+driver:
+  name: vagrant
+  box: my-custom-box
+  box_url: https://boxes.example.com/my-custom-box.box
 ```
 
-Documentation is deliberately excluded from the default task and from CI, so
-it can never fail a build.
+### Faster local runs
 
-### Contributing
+Linked clones avoid copying the whole disk image for every instance, and pruning
+keeps old box versions from filling the disk.
 
-Pull requests are very welcome! Make sure your patches are well tested.
-Ideally create a topic branch for every separate change you make. For
-example:
+```yaml
+driver:
+  name: vagrant
+  linked_clone: true
+  box_auto_prune: true
+```
 
-1. Fork the repo
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+### Private network and a synced folder
+
+```yaml
+driver:
+  name: vagrant
+  network:
+    - ["private_network", {ip: "192.168.56.10"}]
+  synced_folders:
+    - ["test/fixtures", "/tmp/fixtures", {create: true}]
+```
+
+### A provider other than VirtualBox
+
+```yaml
+driver:
+  name: vagrant
+  provider: libvirt
+  customize:
+    memory: 4096
+    cpus: 4
+```
+
+### Per-platform overrides
+
+```yaml
+driver:
+  name: vagrant
+  customize:
+    memory: 2048
+
+platforms:
+  - name: ubuntu-22.04
+  - name: windows-2022
+    driver:
+      box: my-org/windows-2022
+      customize:
+        memory: 4096
+```
+
+### Extending the generated Vagrantfile
+
+```yaml
+driver:
+  name: vagrant
+  vagrantfiles:
+    - test/fixtures/Vagrantfile.extra
+```
+
+## Troubleshooting
+
+**The box cannot be found.** The default box is derived from the platform name,
+so a platform Bento does not publish will produce a box name that does not
+exist. Set `box`, and `box_url` if it is not on Vagrant Cloud.
+
+**The machine boots but Test Kitchen cannot connect.** Watch the boot with
+`gui: true`, and raise `boot_timeout` if it is simply slow.
+
+**You want to see what Vagrant is being asked to do.** Set `dry_run: true` to
+print the commands instead of running them, and look at the generated
+Vagrantfile in the instance's sandbox directory.
+
+## Using with Chef
+
+This driver is not tied to Cinc. The examples above use Cinc Workstation and the `cinc_infra` provisioner, but the driver works exactly the same with [Chef Workstation](https://www.chef.io/downloads/tools/workstation) — run `kitchen` instead of `cinc kitchen`, and use `chef_infra` instead of `cinc_infra`:
+
+```yaml
+provisioner:
+  name: chef_infra
+
+verifier:
+  name: inspec
+```
+
+No driver configuration changes are needed.
+
+## Contributing
+
+Bug reports and pull requests are welcome on [GitHub](https://github.com/test-kitchen/kitchen-vagrant). See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, how to run the tests, how to generate the documentation, and the release process.
 
 ## Authors
 
-Created by [Fletcher Nichol][author] (<fnichol@nichol.ca>)
+Created by [Fletcher Nichol](https://github.com/fnichol) (<fnichol@nichol.ca>).
 
 ## License
 
-Apache 2.0 (see [LICENSE][license])
-
-[author]:           https://github.com/test-kitchen
-[issues]:           https://github.com/test-kitchen/kitchen-vagrant/issues
-[license]:          https://github.com/test-kitchen/kitchen-vagrant/blob/master/LICENSE
-[repo]:             https://github.com/test-kitchen/kitchen-vagrant
+Licensed under the Apache License, Version 2.0. See [LICENSE](https://github.com/test-kitchen/kitchen-vagrant/blob/main/LICENSE) for details.
