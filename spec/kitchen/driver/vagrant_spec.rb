@@ -1711,6 +1711,22 @@ You're running the latest version of this box.
 
     end
 
+    context "for tart provider" do
+
+      before { config[:provider] = "tart" }
+
+      it "sets :name for tart provider without UUID" do
+        cmd
+
+        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
+          c.vm.provider :tart do |p|
+            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
+          end
+        RUBY
+      end
+
+    end
+
     context "for parallels provider" do
 
       before { config[:provider] = "parallels" }
