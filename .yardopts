@@ -1,0 +1,10 @@
+--markup markdown
+--output-dir doc
+--readme README.md
+--title "kitchen-vagrant"
+--protected
+--private
+lib/**/*.rb
+-
+CHANGELOG.md
+LICENSE

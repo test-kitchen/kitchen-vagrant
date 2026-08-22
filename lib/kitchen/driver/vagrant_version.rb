@@ -17,6 +17,7 @@
 
 module Kitchen
 
+  # Test Kitchen driver plugins.
   module Driver
 
     # Version string for Vagrant Kitchen driver

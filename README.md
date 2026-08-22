@@ -58,6 +58,31 @@ This configuration tells Vagrant that the SSH daemon inside the guest VM is list
 * Source hosted at [GitHub][repo]
 * Report issues/questions/feature requests on [GitHub Issues][issues]
 
+### Running the tests
+
+```sh
+bundle install
+bundle exec rake        # unit tests + Chefstyle, the default task
+bundle exec rake test   # unit tests only
+bundle exec rake style  # Chefstyle only
+```
+
+The unit suite enforces 100% line coverage of `lib/` via SimpleCov; an HTML
+report is written to `coverage/` on every run.
+
+### Generating the documentation
+
+```sh
+bundle exec rake docs           # generate YARD docs into doc/
+bundle exec rake docs:coverage  # report undocumented objects
+bundle exec rake docs:serve     # browse them at http://localhost:8808
+```
+
+Documentation is deliberately excluded from the default task and from CI, so
+it can never fail a build.
+
+### Contributing
+
 Pull requests are very welcome! Make sure your patches are well tested.
 Ideally create a topic branch for every separate change you make. For
 example:

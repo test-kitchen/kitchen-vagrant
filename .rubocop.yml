@@ -1,6 +1,14 @@
 ---
+# `require` loads the Chefstyle *cops*; `inherit_gem` is what actually applies
+# the Chefstyle *configuration* (which, for instance, allows this codebase's
+# double-quoted string style). Without it every run falls back to stock
+# RuboCop defaults and reports hundreds of irrelevant offenses.
 require:
   - cookstyle/chefstyle
+
+inherit_gem:
+  cookstyle:
+    - config/chefstyle.yml
 
 AllCops:
   TargetRubyVersion: 3.1
