@@ -22,7 +22,7 @@ driver:
   # boot_timeout: nil
   # Hash for passing k/v options to specific
   # providers for customization
-  # emtpy by default
+  # empty by default
   # customize:
   #   memory: 1024
   #   cpuexecutioncap: 50
@@ -101,7 +101,7 @@ driver:
   # cache_directory: /tmp/omnibus/cache
 
   # Path to kitchen's global cache directory, primarily for caching
-  # chef-client downlaods
+  # chef-client downloads
   # Default is File.expand_path("~/.kitchen/cache")
   # kitchen_cache_directory: /Users/cheeseplus/.kitchen/cache
 

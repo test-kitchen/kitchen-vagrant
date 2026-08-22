@@ -238,7 +238,7 @@ module Kitchen
         attr_accessor :vagrant_version
       end
 
-      # Retuns whether or not a platform name could have a correcponding Bento
+      # Returns whether or not a platform name could have a corresponding Bento
       # box produced by the Bento project.
       # (https://github.com/chef/bento).
       #
@@ -251,7 +251,7 @@ module Kitchen
 
       # Returns whether or not the we expect the box to work with shared folders
       # by matching against a whitelist of bento boxes
-      # @return [TrueClass,FalseClass] whether or not the box shoud work with
+      # @return [TrueClass,FalseClass] whether or not the box should work with
       #   shared folders
       # @api private
       def safe_share?(box)
@@ -479,10 +479,10 @@ module Kitchen
         # is passed to a windows process with a PATH, Vagrant's batch installer
         # (https://github.com/mitchellh/vagrant-installers/blob/master/substrate
         # /modules/vagrant_installer/templates/windows_vagrant.bat.erb)
-        # does not efectively prepend the vagrant ruby path in a persistent
+        # does not effectively prepend the vagrant ruby path in a persistent
         # manner which causes vagrant to use the same ruby as test-kitchen and
         # then the environment is essentially corrupted leading to many errors
-        # and dispair
+        # and despair
         unless windows_host?
           gem_home = ENV["GEM_HOME"]
           if gem_home && (env["PATH"] || ENV["PATH"])
