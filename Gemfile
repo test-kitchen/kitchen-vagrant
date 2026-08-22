@@ -4,7 +4,13 @@ source "https://rubygems.org"
 gemspec development_group: :test
 group :test do
   gem "rake"
-  gem "rspec", "~> 3.2"
+  gem "rspec", "~> 3.13"
+  gem "simplecov", "~> 0.22", require: false
+  gem "simplecov-lcov", "~> 0.8", require: false
+end
+
+group :docs do
+  gem "yard", "~> 0.9"
 end
 
 group :integration do

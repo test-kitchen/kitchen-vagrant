@@ -16,3 +16,5 @@ test/tmp
 test/version_tmp
 tmp
 vendor
+spec/examples.txt
+coverage/

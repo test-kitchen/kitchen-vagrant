@@ -127,6 +127,11 @@ module Kitchen
         info("Vagrant instance #{instance.to_str} created.")
       end
 
+      # The box this Instance should use when the user has not named one.
+      #
+      # Platforms the Bento project builds are mapped onto their `bento/`
+      # box; anything else is assumed to name a box directly.
+      #
       # @return [String,nil] the Vagrant box for this Instance
       def default_box
         if bento_box?(instance.platform.name)
@@ -136,6 +141,11 @@ module Kitchen
         end
       end
 
+      # The box URL this Instance should use when the user has not named one.
+      #
+      # Always nil: modern Vagrant resolves boxes through Vagrant Cloud, so an
+      # explicit URL is only needed for privately hosted boxes.
+      #
       # @return [String,nil] the Vagrant box URL for this Instance
       def default_box_url
         nil
@@ -157,6 +167,12 @@ module Kitchen
         state.delete(:hostname)
       end
 
+      # Packages a created instance into a redistributable `.box` file in the
+      # current working directory, then destroys the instance.
+      #
+      # @param state [Hash] mutable instance state
+      # @raise [UserError] if the instance has not been created
+      # @raise [ActionFailed] if the action could not be completed
       def package(state)
         if state[:hostname].nil?
           raise UserError, "Vagrant instance not created!"
@@ -216,9 +232,11 @@ module Kitchen
         instance.transport.name.downcase =~ /win_?rm/
       end
 
-      # Setting up the `cache_directory` to store omnibus packages in cache
-      # and share a local folder to that directory so that we don't pull them
-      # down every single time
+      # The guest-side directory that the host's omnibus package cache should
+      # be shared into, so repeated converges do not re-download packages.
+      #
+      # @return [String,false] the guest path, or false if caching does not
+      #   apply to this box and provider combination
       def cache_directory
         if enable_cache?
           config[:cache_directory]
@@ -229,7 +247,10 @@ module Kitchen
 
       protected
 
+      # Where users are pointed when Vagrant is missing or too old.
       WEBSITE = "https://developer.hashicorp.com/vagrant/install".freeze
+
+      # The oldest Vagrant this driver supports.
       MIN_VER = "2.4.0".freeze
 
       class << self
@@ -242,6 +263,7 @@ module Kitchen
       # box produced by the Bento project.
       # (https://github.com/chef/bento).
       #
+      # @param name [String] a Test Kitchen platform name
       # @return [TrueClass,FalseClass] whether or not the name could be a Bento
       #   box
       # @api private
@@ -250,7 +272,12 @@ module Kitchen
       end
 
       # Returns whether or not the we expect the box to work with shared folders
-      # by matching against a whitelist of bento boxes
+      # by matching against a whitelist of bento boxes.
+      #
+      # Providers without usable shared folder support are excluded outright,
+      # whatever the box.
+      #
+      # @param box [String] the Vagrant box name
       # @return [TrueClass,FalseClass] whether or not the box should work with
       #   shared folders
       # @api private
@@ -261,7 +288,11 @@ module Kitchen
       end
 
       # Return true if we found the criteria to enable the cache_directory
-      # functionality
+      # functionality.
+      #
+      # @return [TrueClass,FalseClass] whether the package cache should be
+      #   shared into the guest
+      # @api private
       def enable_cache?
         return false unless config[:cache_directory]
         return true if safe_share?(config[:box])
@@ -271,8 +302,10 @@ module Kitchen
         false
       end
 
-      # Renders and writes out a Vagrantfile dedicated to this instance.
+      # Renders and writes out a Vagrantfile dedicated to this instance. A
+      # no-op if this action has already written one.
       #
+      # @return [void]
       # @api private
       def create_vagrantfile
         return if @vagrantfile_created
@@ -288,6 +321,7 @@ module Kitchen
       # Logs the Vagrantfile's contents to the debug log level.
       #
       # @param vagrantfile [String] path to the Vagrantfile
+      # @return [void]
       # @api private
       def debug_vagrantfile(vagrantfile)
         return unless logger.debug?
@@ -297,8 +331,10 @@ module Kitchen
         debug("------------")
       end
 
-      # Setup path for CA cert
+      # Expands `:box_download_ca_cert` relative to the kitchen root, so a
+      # `.kitchen.yml` can refer to a cert alongside itself.
       #
+      # @return [void]
       # @api private
       def finalize_ca_cert!
         unless config[:box_download_ca_cert].nil?
@@ -308,9 +344,14 @@ module Kitchen
         end
       end
 
-      # Create vagrant command to update box to the latest version
+      # Replaces a truthy `:box_auto_update` with the `vagrant box update`
+      # command line that {#run_box_auto_update} should run. A falsey value is
+      # left alone so that `box_auto_update: false` stays disabled.
+      #
+      # @return [void]
+      # @api private
       def finalize_box_auto_update!
-        return if config[:box_auto_update].nil?
+        return unless config[:box_auto_update]
 
         cmd = "#{config[:vagrant_binary]} box update --box #{config[:box]}"
         cmd += " --architecture #{config[:box_arch]}" if config[:box_arch]
@@ -319,9 +360,14 @@ module Kitchen
         config[:box_auto_update] = cmd
       end
 
-      # Create vagrant command to remove older versions of the box
+      # Replaces a truthy `:box_auto_prune` with the `vagrant box prune`
+      # command line that {#run_box_auto_prune} should run. A falsey value is
+      # left alone so that `box_auto_prune: false` stays disabled.
+      #
+      # @return [void]
+      # @api private
       def finalize_box_auto_prune!
-        return if config[:box_auto_prune].nil?
+        return unless config[:box_auto_prune]
 
         cmd = "#{config[:vagrant_binary]} box prune --force --keep-active-boxes --name #{config[:box]}"
         cmd += " --provider #{config[:provider]}" if config[:provider]
@@ -357,8 +403,26 @@ module Kitchen
         end
       end
 
-      # Replaces an `%{instance_name}` tokens in the synced folder items.
+      # Formats network options for use in the Vagrantfile.
       #
+      # Accepts either a Hash (rendered as Ruby keyword syntax) or a String
+      # (passed through as-is, which is what {#finalize_network!} produces).
+      #
+      # @param options [Hash,String,#to_s] network options
+      # @return [String] formatted options string for Vagrantfile
+      # @api private
+      def format_network_options(options)
+        return options if options.is_a?(String)
+        return options.map { |k, v| "#{k}: #{v.inspect}" }.join(", ") if options.is_a?(Hash)
+
+        options.to_s
+      end
+
+      # Normalises every `:synced_folders` entry: expands the host path
+      # against the kitchen root, substitutes `%{instance_name}` tokens, and
+      # formats the options for the template.
+      #
+      # @return [void]
       # @api private
       def finalize_synced_folders!
         config[:synced_folders] = config[:synced_folders]
@@ -375,9 +439,11 @@ module Kitchen
         add_extra_synced_folders!
       end
 
-      # We would like to sync a local folder to the instance so we can
-      # take advantage of the packages that we might have in cache,
-      # therefore we wont download a package we already have
+      # Shares the host's omnibus package cache into the guest so a converge
+      # does not re-download packages it already has.
+      #
+      # @return [void]
+      # @api private
       def add_extra_synced_folders!
         if cache_directory
           FileUtils.mkdir_p(local_kitchen_cache)
@@ -389,9 +455,12 @@ module Kitchen
         end
       end
 
-      # Truncates the length of `:vm_hostname` to 12 characters for
-      # Windows-based operating systems.
+      # Truncates an over-long `:vm_hostname` on Windows guests, where the
+      # NetBIOS name is capped at 15 characters. The final character of the
+      # original is kept as a suffix so that names which differ only in their
+      # tail do not collapse onto each other.
       #
+      # @return [void]
       # @api private
       def finalize_vm_hostname!
         string = config[:vm_hostname]
@@ -401,17 +470,20 @@ module Kitchen
         end
       end
 
-      # If Hyper-V and no network configuration
-      # check KITCHEN_HYPERV_SWITCH and fallback to helper method
-      # to select the best switch
+      # Gives a Hyper-V instance a default `public_network` bridged onto the
+      # switch named by `KITCHEN_HYPERV_SWITCH`, or whichever switch
+      # {HypervHelpers#hyperv_switch} considers best. Instances that already
+      # configure a network, and every other provider, are left alone.
+      #
+      # @return [void]
       # @api private
       def finalize_network!
-        if config[:provider] == "hyperv" && config[:network].empty?
-          config[:network].push([
-            "public_network",
-            "bridge: \"#{hyperv_switch}\"",
-            ])
-        end
+        return unless config[:provider] == "hyperv" && config[:network].empty?
+
+        # Deliberately a new Array rather than a push: `default_config` hands
+        # every instance the *same* Array object, so mutating it in place would
+        # leak this network into every other instance in the process.
+        config[:network] = [["public_network", %{bridge: "#{hyperv_switch}"}]]
       end
 
       # Renders the Vagrantfile ERb template.
@@ -454,6 +526,9 @@ module Kitchen
       # any bundler environment should we detect one.  Otherwise, subcommands
       # will inherit our bundled environment.
       # @see https://github.com/test-kitchen/kitchen-vagrant/issues/190
+      # @param cmd [String] command to run locally
+      # @param options [Hash] options hash
+      # @return [String] the standard output of the command
       # @see Kitchen::ShellOut#run_command
       # rubocop:disable Metrics/CyclomaticComplexity
       def run_command(cmd, options = {})
@@ -496,8 +571,11 @@ module Kitchen
       end
       # rubocop:enable Metrics/CyclomaticComplexity
 
-      # Check if a newer version of the vagrant box is available and warn the user
+      # Check if a newer version of the vagrant box is available and warn the
+      # user. Skipped when `:box_auto_update` is on, since the update happens
+      # regardless.
       #
+      # @return [void]
       # @api private
       def check_box_outdated
         # Skip if box_auto_update is enabled (they'll get the update anyway)
@@ -519,6 +597,7 @@ module Kitchen
       # Parse vagrant box outdated output and warn if a new version is available
       #
       # @param output [String] output from vagrant box outdated command
+      # @return [void]
       # @api private
       def warn_if_outdated(output)
         return unless box_is_outdated?(output)
@@ -549,15 +628,20 @@ module Kitchen
           output_downcase.include?("newer version of the box")
       end
 
+      # Characters that may legitimately appear inside a box version. Vagrant
+      # quotes versions in prose ("version '202401.31.0'.") and separates them
+      # with punctuation in tabular output ("Current: 1.2.3, Latest: 4.5.6"),
+      # so the version has to end on an alphanumeric to avoid swallowing the
+      # trailing quote, comma or full stop.
+      VERSION_PATTERN = /v?(\w[\w.+-]*\w|\w)/
+
       # Extract current version from vagrant box outdated output
       #
       # @param output [String] output from vagrant box outdated command
       # @return [String, nil] current version or nil if not found
       # @api private
       def extract_current_version(output)
-        match = output.match(/Current:\s+v?(\S+)/i) ||
-          output.match(/currently have version\s+'?v?([^'.\s]+)/i)
-        match ? match[1] : nil
+        extract_version(output, /Current:\s+/i, /currently have version\s+'?/i)
       end
 
       # Extract latest version from vagrant box outdated output
@@ -566,12 +650,32 @@ module Kitchen
       # @return [String, nil] latest version or nil if not found
       # @api private
       def extract_latest_version(output)
-        match = output.match(/Latest:\s+v?(\S+)/i) ||
-          output.match(/latest is version\s+'?v?([^'.\s]+)/i)
-        match ? match[1] : nil
+        extract_version(output, /Latest:\s+/i, /latest is version\s+'?/i)
       end
 
-      # Tell vagrant to update vagrant box to latest version
+      # Finds the first version number that follows any of the given prefixes.
+      #
+      # @param output [String] output from vagrant box outdated command
+      # @param prefixes [Array<Regexp>] prefixes to look for, in priority order
+      # @return [String, nil] the version, or nil if no prefix matched
+      # @api private
+      def extract_version(output, *prefixes)
+        prefixes.each do |prefix|
+          match = output.match(/#{prefix.source}#{VERSION_PATTERN.source}/i)
+          return match[1] if match
+        end
+        nil
+      end
+
+      # Runs the `vagrant box update` command built by
+      # {#finalize_box_auto_update!}, if any.
+      #
+      # A box that has never been downloaded cannot be updated; that specific
+      # failure is expected on a first run and is swallowed.
+      #
+      # @return [void]
+      # @raise [Kitchen::ShellOut::ShellCommandFailed] for any other failure
+      # @api private
       def run_box_auto_update
         if config[:box_auto_update]
           begin
@@ -584,15 +688,21 @@ module Kitchen
         end
       end
 
-      # Tell vagrant to remove older vagrant boxes
+      # Runs the `vagrant box prune` command built by
+      # {#finalize_box_auto_prune!}, if any.
+      #
+      # @return [void]
+      # @api private
       def run_box_auto_prune
         if config[:box_auto_prune]
           run(config[:box_auto_prune])
         end
       end
 
-      # Runs a local command before `vagrant up` has been called.
+      # Runs `:pre_create_command`, if set, from the kitchen root -- before
+      # `vagrant up`, so it can prepare anything the Vagrantfile depends on.
       #
+      # @return [void]
       # @api private
       def run_pre_create_command
         if config[:pre_create_command]
@@ -603,6 +713,8 @@ module Kitchen
       # Runs a local command without streaming the stdout to the logger.
       #
       # @param cmd [String] command to run locally
+      # @param options [Hash] options hash
+      # @return [String] the standard output of the command
       # @api private
       def run_silently(cmd, options = {})
         merged = {
@@ -613,6 +725,7 @@ module Kitchen
 
       # Runs the `vagrant up` command locally.
       #
+      # @return [void]
       # @api private
       def run_vagrant_up
         cmd = "#{config[:vagrant_binary]} up"
@@ -621,9 +734,11 @@ module Kitchen
         run(cmd)
       end
 
-      # Updates any state after creation.
+      # Records the connection details Vagrant reports for the new machine
+      # into the instance state, so the transport can reach it.
       #
       # @param state [Hash] mutable instance state
+      # @return [void]
       # @api private
       def update_state(state)
         hash = winrm_transport? ? vagrant_config(:winrm) : vagrant_config(:ssh)

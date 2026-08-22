@@ -15,2352 +15,1297 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require_relative "../../spec_helper"
+require "tmpdir" unless defined?(Dir.mktmpdir)
 
-require "logger"
-require "stringio" unless defined?(StringIO)
+RSpec.describe Kitchen::Driver::Vagrant do
+  include_context "vagrant driver"
 
-require "kitchen/driver/vagrant"
-require "kitchen/provisioner/dummy"
-require "kitchen/transport/dummy"
-require "kitchen/verifier/dummy"
+  describe "plugin metadata" do
+    it "declares driver API version 2" do
+      expect(driver.diagnose_plugin[:api_version]).to eq(2)
+    end
 
-describe Kitchen::Driver::Vagrant do
+    it "reports the gem version as its plugin version" do
+      expect(driver.diagnose_plugin[:version]).to eq(Kitchen::Driver::VAGRANT_VERSION)
+    end
 
-  let(:logged_output) { StringIO.new }
-  let(:logger)        { Logger.new(logged_output) }
-  let(:config)        { { kitchen_root: "/kroot" } }
-  let(:platform)      { Kitchen::Platform.new(name: "fooos-99") }
-  let(:suite)         { Kitchen::Suite.new(name: "suitey") }
-  let(:verifier)      { Kitchen::Verifier::Dummy.new }
-  let(:provisioner)   { Kitchen::Provisioner::Dummy.new }
-  let(:state)         { {} }
-  let(:lifecycle_hooks) { Kitchen::LifecycleHooks.new(config, state) }
-  let(:transport)     { Kitchen::Transport::Dummy.new }
-  let(:state_file)    { double("state_file") }
-  let(:env)           { {} }
-
-  let(:driver_object) { Kitchen::Driver::Vagrant.new(config) }
-
-  let(:driver) do
-    d = driver_object
-    instance
-    d
-  end
-
-  let(:driver_with_no_instance) do
-    driver_object
-  end
-
-  let(:instance) do
-    Kitchen::Instance.new(
-      verifier: verifier,
-      driver: driver_object,
-      logger: logger,
-      suite: suite,
-      platform: platform,
-      provisioner: provisioner,
-      lifecycle_hooks: lifecycle_hooks,
-      transport: transport,
-      state_file: state_file
-    )
-  end
-
-  module RunCommandStub
-    def run_command(_cmd, options = {})
-      options
+    it "refuses to create or destroy in parallel, since Vagrant serialises anyway" do
+      expect(described_class.serial_actions).to include(:create, :destroy)
     end
   end
 
-  before(:all) do
-    Kitchen::Driver::Vagrant.instance_eval { include RunCommandStub }
-  end
+  describe "#default_box" do
+    %w{
+      almalinux amazonlinux centos debian fedora freebsd hardenedbsd opensuse
+      oracle oraclelinux rockylinux springdalelinux ubuntu
+    }.each do |name|
+      it "maps the #{name} platform onto a bento box" do
+        allow(platform).to receive(:name).and_return("#{name}-99.04")
 
-  before(:each) { stub_const("ENV", env) }
-
-  after do
-    driver_object.class.send(:vagrant_version=, nil)
-  end
-
-  it "driver api_version is 2" do
-    expect(driver.diagnose_plugin[:api_version]).to eq(2)
-  end
-
-  it "plugin_version is set to Kitchen::Vagrant::VERSION" do
-    expect(driver.diagnose_plugin[:version]).to eq(
-      Kitchen::Driver::VAGRANT_VERSION
-    )
-  end
-
-  describe "#run_command" do
-
-    context "when invoked from a clean environment" do
-
-      it "passes through environment variables" do
-        options = driver.send(
-          :run_command,
-          "cmd",
-          environment: { "EV1" => "Val1", "EV2" => "Val2" }
-        )
-        expect(options[:environment]["EV1"]).to eq("Val1")
-        expect(options[:environment]["EV2"]).to eq("Val2")
+        expect(driver[:box]).to eq("bento/#{name}-99.04")
       end
-
-      it "leaves path alone" do
-        path = "/foo/#{File::PATH_SEPARATOR}/bar"
-        options = driver.send(
-          :run_command,
-          "cmd",
-          environment: { "PATH" => path }
-        )
-        expect(options[:environment]["PATH"]).to eq(path)
-      end
-
     end
 
-    context "when invoked from a bundler[:environment]" do
+    it "uses the platform name verbatim when no bento box could exist" do
+      allow(platform).to receive(:name).and_return("slackware-14.1")
 
-      let(:bundler_env) do
-        {
-          "BUNDLE_BIN_PATH" => "bundle_bin_path",
-          "BUNDLE_GEMFILE" => "bundle_gem_file",
-          "GEM_HOME" => "gem_home",
-          "GEM_PATH" => "gem_path",
-          "GEM_ROOT" => "gem_root",
-          "RUBYLIB" => "ruby_lib",
-          "RUBYOPT" => "ruby_opt",
-          "_ORIGINAL_GEM_PATH" => "original_gem_path",
-        }
-      end
+      expect(driver[:box]).to eq("slackware-14.1")
+    end
 
-      it "removes all bundler related variables" do
-        env.merge!(bundler_env)
-        options = driver.send(:run_command, "cmd")
-        bundler_env.each do |k, _v|
-          expect(options[:environment]).to include(k)
-          expect(options[:environment][k]).to eq(nil)
-        end
-      end
+    it "requires the platform name to carry a version suffix to count as bento" do
+      allow(platform).to receive(:name).and_return("ubuntu")
 
-      it "fixes path if it notices gem_home in it" do
-        allow(RbConfig::CONFIG).to receive(:[]).with("host_os")
-          .and_return("linux")
-        env.merge!(bundler_env)
-        env["PATH"] = "gem_home/bin#{File::PATH_SEPARATOR}/something/else"
-        options = driver.send(:run_command, "cmd")
-        puts(options)
-        expect(options[:environment]["PATH"]).to eq("/something/else")
-      end
+      expect(driver[:box]).to eq("ubuntu")
+    end
+
+    it "never overrides an explicit :box" do
+      allow(platform).to receive(:name).and_return("ubuntu-24.04")
+      config[:box] = "booya"
+
+      expect(driver[:box]).to eq("booya")
     end
   end
 
-  describe "configuration" do
-
-    let(:cache_directory_array) do
-      [
-        File.expand_path("~/.kitchen/cache"),
-        "/tmp/omnibus/cache",
-        "create: true",
-      ]
+  describe "#default_box_url" do
+    it "is nil, because modern Vagrant resolves boxes through Vagrant Cloud" do
+      expect(driver[:box_url]).to be_nil
     end
+  end
 
-    %w{centos debian fedora opensuse ubuntu oracle freebsd hardenedbsd}.each do |name|
-
-      context "for known bento platform names starting with #{name}" do
-
-        before { allow(platform).to receive(:name) { "#{name}-99.04" } }
-
-        it "sets :box based on the platform name by default" do
-          expect(driver[:box]).to eq("bento/#{name}-99.04")
-        end
-
-        it "sets :box to a custom value" do
-          config[:box] = "booya"
-
-          expect(driver[:box]).to eq("booya")
-        end
-
-        it "sets :box_url to nil" do
-          config[:provider] = "the-next-coolness"
-
-          expect(driver[:box_url]).to eq(nil)
-        end
+  describe "configuration defaults" do
+    {
+      box_check_update: nil,
+      box_download_ca_cert: nil,
+      box_download_insecure: nil,
+      box_version: nil,
+      box_arch: nil,
+      boot_timeout: nil,
+      customize: {},
+      gui: nil,
+      linked_clone: nil,
+      network: [],
+      pre_create_command: nil,
+      provision: false,
+      ssh: {},
+      env: [],
+      use_cached_chef_client: false,
+      vagrant_binary: "vagrant",
+      vagrantfiles: [],
+      cachier: nil,
+    }.each do |key, value|
+      it "defaults :#{key} to #{value.inspect}" do
+        expect(driver[key]).to eq(value)
       end
     end
 
-    context "for unknown bento platform names" do
-
-      before { allow(platform).to receive(:name) { "slackware-14.1" } }
-
-      it "sets :box based on the platform name by default" do
-        expect(driver[:box]).to eq("slackware-14.1")
-      end
-
-      it "sets :box to a custom value" do
-        config[:box] = "booya"
-
-        expect(driver[:box]).to eq("booya")
-      end
-
-      it "sets :box_url to nil" do
-        expect(driver[:box_url]).to eq(nil)
-      end
-    end
-
-    it "sets :box_check_update to nil by default" do
-      expect(driver[:box_check_update]).to eq(nil)
-    end
-
-    it "sets :box_check_update to a custom value" do
-      config[:box_check_update] = true
-
-      expect(driver[:box_check_update]).to eq(true)
-    end
-
-    it "sets :box_download_ca_cert to nil by default" do
-      expect(driver[:box_download_ca_cert]).to eq(nil)
-    end
-
-    it "sets :box_download_ca_cert to a custom value" do
-      config[:box_download_ca_cert] = "cacert.pem"
-
-      expect(driver[:box_download_ca_cert]).to eq("/kroot/cacert.pem")
-    end
-
-    it "sets :box_download_insecure to nil by default" do
-      expect(driver[:box_download_insecure]).to eq(nil)
-    end
-
-    it "sets :box_download_insecure to a custom value" do
-      config[:box_download_insecure] = true
-
-      expect(driver[:box_download_insecure]).to eq(true)
-    end
-
-    it "sets :box_version to nil by default" do
-      expect(driver[:box_version]).to eq(nil)
-    end
-
-    it "sets :box_version to a custom value" do
-      config[:box_version] = "1.2.3"
-
-      expect(driver[:box_version]).to eq("1.2.3")
-    end
-
-    it "sets :boot_timeout to nil by default" do
-      expect(driver[:boot_timeout]).to eq(nil)
-    end
-
-    it "sets :boot_timeout to a custom value" do
-      config[:boot_timeout] = 600
-
-      expect(driver[:boot_timeout]).to eq(600)
-    end
-
-    it "sets :customize to an empty hash by default" do
-      expect(driver[:customize]).to eq({})
-    end
-
-    it "sets :customize to a custom value" do
-      config[:customize] = { a: "b", c: { d: "e" } }
-
-      expect(driver[:customize]).to eq(a: "b", c: { d: "e" })
-    end
-
-    it "sets :gui to nil by default" do
-      expect(driver[:gui]).to eq(nil)
-    end
-
-    it "sets :linked_clone to nil by default" do
-      expect(driver[:linked_clone]).to eq(nil)
-    end
-
-    it "sets :network to an empty array by default" do
-      expect(driver[:network]).to eq([])
-    end
-
-    it "sets :network to a custom value" do
-      config[:network] = [
-        ["forwarded_port", guest: 80, host: 8080],
-      ]
-
-      expect(driver[:network]).to eq([
-        ["forwarded_port", guest: 80, host: 8080],
-      ])
-    end
-
-    it "sets :pre_create_command to nil by default" do
-      expect(driver[:pre_create_command]).to eq(nil)
-    end
-
-    it "sets :pre_create_command to a custom value" do
-      config[:pre_create_command] = "execute yo"
-
-      expect(driver[:pre_create_command]).to eq("execute yo")
-    end
-
-    it "replaces {{vagrant_root}} in :pre_create_command" do
-      config[:pre_create_command] = "{{vagrant_root}}/candy"
-
-      expect(driver[:pre_create_command]).to eq(
-        "/kroot/.kitchen/kitchen-vagrant/suitey-fooos-99/candy"
-      )
-    end
-
-    it "sets :provision to false by default" do
-      expect(driver[:provision]).to eq(false)
-    end
-
-    it "sets :provision to a custom value" do
-      config[:provision] = true
-
-      expect(driver[:provision]).to eq(true)
-    end
-
-    it "sets :provider to virtualbox by default" do
+    it "defaults :provider to virtualbox" do
       expect(driver[:provider]).to eq("virtualbox")
     end
 
-    it "sets :provider to the value of VAGRANT_DEFAULT_PROVIDER from ENV" do
+    it "honours VAGRANT_DEFAULT_PROVIDER from the environment" do
       env["VAGRANT_DEFAULT_PROVIDER"] = "vcool"
 
       expect(driver[:provider]).to eq("vcool")
     end
 
-    it "sets :provider to a custom value" do
+    it "lets an explicit :provider beat the environment" do
+      env["VAGRANT_DEFAULT_PROVIDER"] = "vcool"
       config[:provider] = "mything"
 
       expect(driver[:provider]).to eq("mything")
     end
 
-    it "sets :ssh to an empty hash by default" do
-      expect(driver[:ssh]).to eq({})
+    it "ships a Vagrantfile template" do
+      expect(driver[:vagrantfile_erb]).to match(%r{/templates/Vagrantfile\.erb$})
+      expect(File).to exist(driver[:vagrantfile_erb])
     end
 
-    it "sets :ssh to a custom value" do
-      config[:ssh] = { a: "b", c: { d: "e" } }
-
-      expect(driver[:ssh]).to eq(a: "b", c: { d: "e" })
-    end
-
-    it "sets :synced_folders with the cache_directory for select bento boxes" do
-      config[:box] = "bento/centos-99"
-      expect(driver[:synced_folders]).to eq([cache_directory_array])
-    end
-
-    it "does not set :synced_folders when cache_directory is false" do
-      config[:box] = "bento/centos-99"
-      config[:cache_directory] = false
-      expect(driver[:synced_folders]).to eq([])
-    end
-
-    it "sets :synced_folders with the cache_directory when :use_cached_chef_client is `true`" do
-      config[:box] = "some_owner/centos-99"
-      config[:use_cached_chef_client] = true
-      expect(driver[:synced_folders]).to eq([cache_directory_array])
-    end
-
-    it "does not set :synced_folders to cache_directory on freebsd systems" do
-      allow(platform).to receive(:name).and_return("freebsd-99")
-      expect(driver[:synced_folders]).to eq([])
-    end
-
-    it "sets :synced_folders to a custom value" do
-      config[:synced_folders] = [
-        ["/host_path", "/vm_path", "create: true, type: :nfs"],
-      ]
-
-      expect(driver[:synced_folders]).to eq([
-        [
-          File.expand_path("/host_path"),
-          "/vm_path", "create: true, type: :nfs"
-        ],
-      ])
-    end
-
-    it "replaces %{instance_name} with instance name in :synced_folders" do
-      config[:synced_folders] = [
-        ["/root/%{instance_name}", "/vm_path", "stuff"],
-      ]
-
-      expect(driver[:synced_folders]).to eq([
-        [File.expand_path("/root/suitey-fooos-99"), "/vm_path", "stuff"],
-      ])
-    end
-
-    it "expands source paths relative to :kitchen_root in :synced_folders" do
-      config[:synced_folders] = [
-        ["./a", "/vm_path", "stuff"],
-      ]
-
-      expect(driver[:synced_folders]).to eq([
-        [File.expand_path("/kroot/a"), "/vm_path", "stuff"],
-      ])
-    end
-
-    it "sets options to 'nil' if not set in :synced_folders entry" do
-      config[:synced_folders] = [
-        ["/host_path", "/vm_path", nil],
-      ]
-
-      expect(driver[:synced_folders]).to eq([
-        [File.expand_path("/host_path"), "/vm_path", "nil"],
-      ])
-    end
-
-    it 'sets :env to an empty array by default' do
-      expect(driver[:env]).to eq([])
-    end
-
-    it 'sets :env to a custom value' do
-      config[:env] = ['AWS_REGION=us-east-1', 'AWS_ACCESS_KEY_ID=test123']
-
-      expect(driver[:env]).to eq(['AWS_REGION=us-east-1', 'AWS_ACCESS_KEY_ID=test123'])
-    end
-
-    it "converts Hash options to Ruby hash syntax in :synced_folders" do
-      config[:synced_folders] = [
-        ["/host_path", "/vm_path", { type: "smb", smb_username: "testuser", smb_password: "testpass" }],
-      ]
-
-      expect(driver[:synced_folders]).to eq([
-        [File.expand_path("/host_path"), "/vm_path", 'type: "smb", smb_username: "testuser", smb_password: "testpass"'],
-      ])
-    end
-
-    it "handles Hash options with symbol keys in :synced_folders" do
-      config[:synced_folders] = [
-        ["/host_path", "/vm_path", { type: "smb", create: true }],
-      ]
-
-      expect(driver[:synced_folders]).to eq([
-        [File.expand_path("/host_path"), "/vm_path", 'type: "smb", create: true'],
-      ])
-    end
-
-    it "preserves String options for backward compatibility in :synced_folders" do
-      config[:synced_folders] = [
-        ["/host_path", "/vm_path", "type: :nfs, create: true"],
-      ]
-
-      expect(driver[:synced_folders]).to eq([
-        [File.expand_path("/host_path"), "/vm_path", "type: :nfs, create: true"],
-      ])
-    end
-
-    it "sets :vagrant_binary to 'vagrant' by default" do
-      expect(driver[:vagrant_binary]).to eq("vagrant")
-    end
-
-    it "sets :vagrant_binary to a custom value" do
-      config[:vagrant_binary] = "vagrant.cmd"
-      expect(driver[:vagrant_binary]).to eq("vagrant.cmd")
-    end
-
-    it "sets :vagrantfile_erb to a default" do
-      expect(driver[:vagrantfile_erb]).to match(
-        %r{/kitchen-vagrant/templates/Vagrantfile\.erb$}
-      )
-    end
-
-    it "sets :vagrantfile_erb to a default value" do
-      config[:vagrantfile_erb] = "/a/Vagrantfile.erb"
-
-      expect(driver[:vagrantfile_erb]).to eq(
-        File.expand_path("/a/Vagrantfile.erb")
-      )
-    end
-
-    it "expands path for :vagrantfile_erb" do
+    it "expands a relative :vagrantfile_erb against the kitchen root" do
       config[:vagrantfile_erb] = "Yep.erb"
 
-      expect(driver[:vagrantfile_erb]).to eq(
-        File.expand_path("/kroot/Yep.erb")
-      )
+      expect(driver[:vagrantfile_erb]).to eq(File.expand_path("/kroot/Yep.erb"))
     end
 
-    it "sets :vagrantfiles to an empty array by default" do
-      expect(driver[:vagrantfiles]).to eq([])
-    end
-
-    it "sets and expands paths in :vagrantfiles" do
+    it "expands every entry in :vagrantfiles against the kitchen root" do
       config[:vagrantfiles] = %w{one two three}
 
-      expect(driver[:vagrantfiles]).to eq(
-        %w{/kroot/one /kroot/two /kroot/three}.map { |f| File.expand_path(f) }
+      expect(driver[:vagrantfiles])
+        .to eq(%w{/kroot/one /kroot/two /kroot/three}.map { |f| File.expand_path(f) })
+    end
+  end
+
+  # `default_config` stores one object per key on the *class*, so any finalize
+  # step that mutates a collection default in place corrupts every other
+  # instance in the process -- including ones built afterwards.
+  describe "isolation between driver instances" do
+    def build_driver(overrides = {})
+      d = described_class.new({ kitchen_root: "/kroot" }.merge(overrides))
+      Kitchen::Instance.new(
+        verifier: Kitchen::Verifier::Dummy.new,
+        driver: d,
+        logger: logger,
+        suite: Kitchen::Suite.new(name: "suitey"),
+        platform: Kitchen::Platform.new(name: "fooos-99"),
+        provisioner: Kitchen::Provisioner::Dummy.new,
+        lifecycle_hooks: Kitchen::LifecycleHooks.new({}, {}),
+        transport: Kitchen::Transport::Dummy.new,
+        state_file: instance_double(Kitchen::StateFile)
+      )
+      d
+    end
+
+    before do
+      allow_any_instance_of(described_class) # rubocop:disable RSpec/AnyInstance
+        .to receive(:hyperv_switch).and_return("Default Switch")
+    end
+
+    it "does not leak a hyperv default network into other instances" do
+      build_driver(provider: "hyperv")
+
+      expect(build_driver[:network]).to eq([])
+    end
+
+    it "does not leak a hyperv default network into instances built earlier" do
+      other = build_driver
+      build_driver(provider: "hyperv")
+
+      expect(other[:network]).to eq([])
+    end
+
+    it "still configures the hyperv instance itself" do
+      hyperv = build_driver(provider: "hyperv")
+
+      expect(hyperv[:network]).to eq([["public_network", %{bridge: "Default Switch"}]])
+    end
+  end
+
+  describe "#finalize_network!" do
+    before do
+      allow(driver_object).to receive(:hyperv_switch).and_return("Default Switch")
+    end
+
+    it "bridges hyperv onto the discovered default switch" do
+      config[:provider] = "hyperv"
+
+      expect(driver[:network]).to eq([["public_network", %{bridge: "Default Switch"}]])
+    end
+
+    it "leaves a user-supplied hyperv network alone" do
+      config[:provider] = "hyperv"
+      config[:network] = [["private_network", { ip: "192.168.33.33" }]]
+
+      expect(driver[:network]).to eq([["private_network", { ip: "192.168.33.33" }]])
+    end
+
+    it "adds nothing for other providers" do
+      config[:provider] = "virtualbox"
+
+      expect(driver[:network]).to eq([])
+    end
+  end
+
+  describe "#finalize_ca_cert!" do
+    it "leaves an unset cert alone" do
+      expect(driver[:box_download_ca_cert]).to be_nil
+    end
+
+    it "expands a relative cert path against the kitchen root" do
+      config[:box_download_ca_cert] = "cacert.pem"
+
+      expect(driver[:box_download_ca_cert]).to eq("/kroot/cacert.pem")
+    end
+
+    it "leaves an absolute cert path alone" do
+      config[:box_download_ca_cert] = "/etc/ssl/ca.pem"
+
+      expect(driver[:box_download_ca_cert]).to eq("/etc/ssl/ca.pem")
+    end
+  end
+
+  describe "#finalize_pre_create_command!" do
+    it "leaves an unset command alone" do
+      expect(driver[:pre_create_command]).to be_nil
+    end
+
+    it "passes a plain command straight through" do
+      config[:pre_create_command] = "execute yo"
+
+      expect(driver[:pre_create_command]).to eq("execute yo")
+    end
+
+    it "substitutes {{vagrant_root}}" do
+      config[:pre_create_command] = "{{vagrant_root}}/candy"
+
+      expect(driver[:pre_create_command])
+        .to eq("/kroot/.kitchen/kitchen-vagrant/suitey-fooos-99/candy")
+    end
+  end
+
+  describe "#finalize_box_auto_update!" do
+    it "leaves :box_auto_update unset when the user said nothing" do
+      expect(driver[:box_auto_update]).to be_nil
+    end
+
+    it "builds an update command when enabled" do
+      config[:box_auto_update] = true
+
+      expect(driver[:box_auto_update])
+        .to eq("vagrant box update --box fooos-99 --provider virtualbox")
+    end
+
+    it "includes the architecture when :box_arch is set" do
+      config[:box_auto_update] = true
+      config[:box_arch] = "arm64"
+
+      expect(driver[:box_auto_update])
+        .to eq("vagrant box update --box fooos-99 --architecture arm64 --provider virtualbox")
+    end
+
+    it "passes --insecure through" do
+      config[:box_auto_update] = true
+      config[:box_download_insecure] = true
+
+      expect(driver[:box_auto_update]).to end_with(" --insecure")
+    end
+
+    it "uses the configured vagrant binary" do
+      config[:box_auto_update] = true
+      config[:vagrant_binary] = "vagrant.cmd"
+
+      expect(driver[:box_auto_update]).to start_with("vagrant.cmd box update ")
+    end
+
+    it "lets vagrant pick the provider when :provider is explicitly cleared" do
+      config[:box_auto_update] = true
+      config[:provider] = nil
+
+      expect(driver[:box_auto_update]).to eq("vagrant box update --box fooos-99")
+    end
+
+    it "stays disabled when the user explicitly said false" do
+      config[:box_auto_update] = false
+
+      expect(driver[:box_auto_update]).to be(false)
+    end
+  end
+
+  describe "#finalize_box_auto_prune!" do
+    it "leaves :box_auto_prune unset when the user said nothing" do
+      expect(driver[:box_auto_prune]).to be_nil
+    end
+
+    it "builds a prune command that keeps boxes still in use" do
+      config[:box_auto_prune] = true
+
+      expect(driver[:box_auto_prune]).to eq(
+        "vagrant box prune --force --keep-active-boxes --name fooos-99 --provider virtualbox"
       )
     end
 
-    context "for unix os_types" do
+    it "lets vagrant pick the provider when :provider is explicitly cleared" do
+      config[:box_auto_prune] = true
+      config[:provider] = nil
 
+      expect(driver[:box_auto_prune])
+        .to eq("vagrant box prune --force --keep-active-boxes --name fooos-99")
+    end
+
+    it "stays disabled when the user explicitly said false" do
+      config[:box_auto_prune] = false
+
+      expect(driver[:box_auto_prune]).to be(false)
+    end
+  end
+
+  describe "#finalize_vm_hostname!" do
+    context "on a unix guest" do
       before { allow(platform).to receive(:os_type).and_return("unix") }
 
-      it "sets :vm_hostname to the instance name by default" do
+      it "derives a hostname from the instance name" do
         expect(driver[:vm_hostname]).to eq("suitey-fooos-99.vagrantup.com")
       end
 
-      it "sets :vm_hostname to a custom value" do
-        config[:vm_hostname] = "okay"
+      it "leaves a custom hostname alone, however long" do
+        config[:vm_hostname] = "a-really-quite-long-hostname"
 
-        expect(driver[:vm_hostname]).to eq("okay")
+        expect(driver[:vm_hostname]).to eq("a-really-quite-long-hostname")
       end
     end
 
-    context "for windows os_types" do
-
+    context "on a windows guest" do
       before { allow(platform).to receive(:os_type).and_return("windows") }
 
-      it "sets :vm_hostname to nil by default" do
-        expect(driver[:vm_hostname]).to eq(nil)
+      it "sets no hostname by default, because renaming reboots Windows" do
+        expect(driver[:vm_hostname]).to be_nil
       end
 
-      it "sets :vm_hostname to a custom value, truncated to 15 chars" do
+      it "leaves a NetBIOS-legal hostname alone" do
+        config[:vm_hostname] = "short-name"
+
+        expect(driver[:vm_hostname]).to eq("short-name")
+      end
+
+      it "truncates an over-long hostname, keeping the last character for uniqueness" do
         config[:vm_hostname] = "this-is-a-pretty-long-name-ya-think"
 
         expect(driver[:vm_hostname]).to eq("this-is-a-pr-k")
       end
 
-      it "replaces %{instance_name} with instance name in :synced_folders" do
-        config[:synced_folders] = [
-          ["/root/%{instance_name}", "/vm_path", "stuff"],
-        ]
+      it "keeps the truncated hostname within the 15 character NetBIOS limit" do
+        config[:vm_hostname] = "x" * 64
 
-        expect(driver[:synced_folders]).to eq([
-          [File.expand_path("/root/suitey-fooos-99"), "/vm_path", "stuff"],
-        ])
+        expect(driver[:vm_hostname].length).to be <= 15
       end
     end
+  end
 
-    context "when cache_directory is customized" do
+  describe "#finalize_synced_folders!" do
+    let(:cache_share) do
+      [File.expand_path("~/.kitchen/cache"), "/tmp/omnibus/cache", "create: true"]
+    end
 
-      let(:custom_cache_directory_array) do
-        [
-          File.expand_path("~/.kitchen/cache"),
-          "Z:\\awesome\\cache",
-          "create: true",
-        ]
-      end
+    it "shares nothing by default, because fooos-99 is not a known-safe box" do
+      expect(driver[:synced_folders]).to eq([])
+    end
 
-      before do
+    it "expands a relative source against the kitchen root" do
+      config[:synced_folders] = [["./a", "/vm_path", "stuff"]]
+
+      expect(driver[:synced_folders]).to eq([[File.expand_path("/kroot/a"), "/vm_path", "stuff"]])
+    end
+
+    it "substitutes %{instance_name} in both source and destination" do
+      config[:synced_folders] = [["/root/%{instance_name}", "/vm/%{instance_name}", "stuff"]]
+
+      expect(driver[:synced_folders])
+        .to eq([[File.expand_path("/root/suitey-fooos-99"), "/vm/suitey-fooos-99", "stuff"]])
+    end
+
+    it "keeps String options verbatim for backwards compatibility" do
+      config[:synced_folders] = [["/host_path", "/vm_path", "type: :nfs, create: true"]]
+
+      expect(driver[:synced_folders])
+        .to eq([[File.expand_path("/host_path"), "/vm_path", "type: :nfs, create: true"]])
+    end
+
+    it "renders Hash options as Ruby keyword syntax, which the template inlines" do
+      config[:synced_folders] = [
+        ["/host_path", "/vm_path", { type: "smb", smb_username: "u", smb_password: "p" }],
+      ]
+
+      expect(driver[:synced_folders]).to eq([
+        [File.expand_path("/host_path"), "/vm_path",
+         %{type: "smb", smb_username: "u", smb_password: "p"}],
+      ])
+    end
+
+    it "leaves booleans unquoted in Hash options" do
+      config[:synced_folders] = [["/host_path", "/vm_path", { type: "smb", create: true }]]
+
+      expect(driver[:synced_folders].first.last).to eq(%{type: "smb", create: true})
+    end
+
+    it "renders missing options as the literal nil the template expects" do
+      config[:synced_folders] = [["/host_path", "/vm_path", nil]]
+
+      expect(driver[:synced_folders].first.last).to eq("nil")
+    end
+
+    it "stringifies anything else rather than rendering a Ruby object literal" do
+      config[:synced_folders] = [["/host_path", "/vm_path", :create]]
+
+      expect(driver[:synced_folders].first.last).to eq("create")
+    end
+  end
+
+  describe "#format_network_options" do
+    it "passes a pre-formatted String through, as finalize_network! produces" do
+      expect(driver.send(:format_network_options, %{bridge: "Default Switch"}))
+        .to eq(%{bridge: "Default Switch"})
+    end
+
+    it "renders a Hash as Ruby keyword syntax" do
+      expect(driver.send(:format_network_options, { guest: 80, host: 8080 }))
+        .to eq("guest: 80, host: 8080")
+    end
+
+    it "quotes String values" do
+      expect(driver.send(:format_network_options, { ip: "192.168.33.33" }))
+        .to eq(%{ip: "192.168.33.33"})
+    end
+
+    it "stringifies anything else rather than rendering a Ruby object literal" do
+      expect(driver.send(:format_network_options, :auto_config)).to eq("auto_config")
+    end
+  end
+
+  describe "the omnibus package cache share" do
+    let(:cache_share) do
+      [File.expand_path("~/.kitchen/cache"), "/tmp/omnibus/cache", "create: true"]
+    end
+
+    before { allow(FileUtils).to receive(:mkdir_p) }
+
+    it "is shared for bento boxes known to support shared folders" do
+      config[:box] = "bento/centos-99"
+
+      expect(driver[:synced_folders]).to eq([cache_share])
+    end
+
+    it "is shared for any box once :use_cached_chef_client is set" do
+      config[:box] = "some_owner/centos-99"
+      config[:use_cached_chef_client] = true
+
+      expect(driver[:synced_folders]).to eq([cache_share])
+    end
+
+    it "is skipped when :cache_directory is disabled" do
+      config[:box] = "bento/centos-99"
+      config[:cache_directory] = false
+
+      expect(driver[:synced_folders]).to eq([])
+    end
+
+    it "is skipped on freebsd, which bento does not build with shared folders" do
+      config[:box] = "bento/freebsd-99"
+
+      expect(driver[:synced_folders]).to eq([])
+    end
+
+    %w{hyperv libvirt qemu utm}.each do |provider|
+      it "is skipped on #{provider}, which has no usable shared folder support" do
         config[:box] = "bento/centos-99"
-        config[:cache_directory] = "Z:\\awesome\\cache"
-      end
+        config[:provider] = provider
+        allow(driver_object).to receive(:hyperv_switch).and_return("Default Switch")
 
-      it "sets :synced_folders with the custom cache_directory" do
-        expect(driver[:synced_folders]).to eq([custom_cache_directory_array])
+        expect(driver[:synced_folders]).to eq([])
       end
+    end
 
-      it "replaces %{instance_name} with instance name in :synced_folders" do
-        config[:synced_folders] = [
-          ["/root/%{instance_name}", "/vm_path", "stuff"],
-        ]
+    it "honours a custom :cache_directory as the guest mount point" do
+      config[:box] = "bento/centos-99"
+      config[:cache_directory] = "Z:\\awesome\\cache"
 
-        expect(driver[:synced_folders]).to eq([
-          [File.expand_path("/root/suitey-fooos-99"), "/vm_path", "stuff"],
-          custom_cache_directory_array,
-        ])
-      end
+      expect(driver[:synced_folders])
+        .to eq([[File.expand_path("~/.kitchen/cache"), "Z:\\awesome\\cache", "create: true"]])
+    end
+
+    it "is appended after the user's own synced folders" do
+      config[:box] = "bento/centos-99"
+      config[:synced_folders] = [["/root/%{instance_name}", "/vm_path", "stuff"]]
+
+      expect(driver[:synced_folders]).to eq([
+        [File.expand_path("/root/suitey-fooos-99"), "/vm_path", "stuff"],
+        cache_share,
+      ])
+    end
+
+    it "creates the host-side cache directory so Vagrant does not have to" do
+      config[:box] = "bento/centos-99"
+
+      driver[:synced_folders]
+
+      expect(FileUtils).to have_received(:mkdir_p).with(File.expand_path("~/.kitchen/cache"))
+    end
+
+    it "defaults the guest mount point to a Windows-friendly path on Windows guests" do
+      allow(platform).to receive(:os_type).and_return("windows")
+
+      expect(driver[:cache_directory]).to eq("/omnibus/cache")
     end
   end
 
-  describe '#wsl?' do
-    it 'returns true when WSL_DISTRO_NAME is set' do
-      stub_const('ENV', { 'WSL_DISTRO_NAME' => 'Ubuntu' })
-      expect(driver.send(:wsl?)).to eq(true)
+  describe "#cache_directory" do
+    it "reports the configured directory when caching applies" do
+      config[:box] = "bento/centos-99"
+
+      expect(driver.cache_directory).to eq("/tmp/omnibus/cache")
     end
 
-    it 'returns true when VAGRANT_WSL_ENABLE_WINDOWS_ACCESS is set' do
-      stub_const('ENV', { 'VAGRANT_WSL_ENABLE_WINDOWS_ACCESS' => '1' })
-      expect(driver.send(:wsl?)).to eq(true)
-    end
+    it "reports false when caching does not apply" do
+      config[:box] = "randomguy/centos-99"
 
-    it 'returns true when /proc/version contains Microsoft' do
-      stub_const('ENV', {})
-      allow(File).to receive(:exist?).with('/proc/version').and_return(true)
-      allow(File).to receive(:read).with('/proc/version')
-        .and_return('Linux version 4.4.0-19041-Microsoft')
-      expect(driver.send(:wsl?)).to eq(true)
-    end
-
-    it 'returns true when /proc/version contains WSL' do
-      stub_const('ENV', {})
-      allow(File).to receive(:exist?).with('/proc/version').and_return(true)
-      allow(File).to receive(:read).with('/proc/version')
-        .and_return('Linux version 5.10.16.3-microsoft-standard-WSL2')
-      expect(driver.send(:wsl?)).to eq(true)
-    end
-
-    it 'returns false when not in WSL' do
-      stub_const('ENV', {})
-      allow(File).to receive(:exist?).with('/proc/version').and_return(false)
-      expect(driver.send(:wsl?)).to eq(false)
-    end
-
-    it "returns false when /proc/version exists but doesn't contain WSL markers" do
-      stub_const('ENV', {})
-      allow(File).to receive(:exist?).with('/proc/version').and_return(true)
-      allow(File).to receive(:read).with('/proc/version')
-        .and_return('Linux version 5.4.0-42-generic')
-      expect(driver.send(:wsl?)).to eq(false)
-    end
-
-    it 'returns false when an error occurs' do
-      stub_const('ENV', {})
-      allow(File).to receive(:exist?).and_raise(StandardError)
-      expect(driver.send(:wsl?)).to eq(false)
+      expect(driver.cache_directory).to be(false)
     end
   end
 
-  describe '#windows_to_wsl_path' do
-    it 'converts C: drive path to /mnt/c' do
-      path = 'C:/Users/username/.vagrant.d/insecure_private_key'
-      expected = '/mnt/c/users/username/.vagrant.d/insecure_private_key'
-      expect(driver.send(:windows_to_wsl_path, path)).to eq(expected)
+  describe "#winrm_transport?" do
+    it "recognises a WinRM transport" do
+      allow(transport).to receive(:name).and_return("WinRM")
+
+      expect(driver.winrm_transport?).to be_truthy
     end
 
-    it 'converts D: drive path to /mnt/d' do
-      path = 'D:/Projects/vagrant/.vagrant/machines/default/virtualbox/private_key'
-      expected = '/mnt/d/projects/vagrant/.vagrant/machines/default/virtualbox/private_key'
-      expect(driver.send(:windows_to_wsl_path, path)).to eq(expected)
+    it "recognises the underscored spelling too" do
+      allow(transport).to receive(:name).and_return("Win_RM")
+
+      expect(driver.winrm_transport?).to be_truthy
     end
 
-    it 'handles lowercase drive letters' do
-      path = 'c:/path/to/key'
-      expected = '/mnt/c/path/to/key'
-      expect(driver.send(:windows_to_wsl_path, path)).to eq(expected)
-    end
+    it "does not mistake ssh for winrm" do
+      allow(transport).to receive(:name).and_return("Ssh")
 
-    it 'leaves Unix paths unchanged' do
-      path = '/home/user/.vagrant.d/insecure_private_key'
-      expect(driver.send(:windows_to_wsl_path, path)).to eq(path)
-    end
-
-    it 'leaves relative paths unchanged' do
-      path = '.vagrant/machines/default/virtualbox/private_key'
-      expect(driver.send(:windows_to_wsl_path, path)).to eq(path)
+      expect(driver.winrm_transport?).to be_falsey
     end
   end
 
   describe "#verify_dependencies" do
-
-    it "passes for supported versions of Vagrant" do
+    it "accepts a supported Vagrant" do
       with_modern_vagrant
 
-      driver.verify_dependencies
+      expect { driver.verify_dependencies }.not_to raise_error
     end
 
-    it "passes for supported versions of Vagrant when it has no instances" do
+    it "works before an Instance has been attached" do
       with_modern_vagrant
 
-      driver_with_no_instance.verify_dependencies
+      expect { driver_with_no_instance.verify_dependencies }.not_to raise_error
     end
 
-    it "raises a UserError for unsupported versions of Vagrant" do
+    it "rejects a Vagrant older than the supported minimum" do
       with_unsupported_vagrant
 
-      expect { driver.verify_dependencies }.to raise_error(
-        Kitchen::UserError, /Please upgrade to version 2.4.0 or higher/
-      )
+      expect { driver.verify_dependencies }
+        .to raise_error(Kitchen::UserError, /Please upgrade to version 2\.4\.0 or higher/)
     end
 
-    it "raises a UserError for a missing Vagrant command" do
+    it "explains how to install when the vagrant binary is missing" do
       allow(driver_object).to receive(:run_command)
         .with("vagrant --version", any_args).and_raise(Errno::ENOENT)
 
-      expect { driver.verify_dependencies }.to raise_error(
-        Kitchen::UserError, /Vagrant 2.4.0 or higher is not installed/
-      )
+      expect { driver.verify_dependencies }
+        .to raise_error(Kitchen::UserError, /Vagrant 2\.4\.0 or higher is not installed/)
+    end
+
+    it "only shells out once, caching the version for the whole run" do
+      with_modern_vagrant
+
+      driver.verify_dependencies
+      driver.verify_dependencies
+
+      expect(driver_object).to have_received(:run_command).once
+    end
+  end
+
+  # The driver overrides ShellOut#run_command purely to scrub the environment
+  # before delegating with `super`. These specs let the real override -- and
+  # the real Kitchen::ShellOut behind it -- run, capturing what finally reaches
+  # Mixlib::ShellOut. Nothing is ever executed.
+  describe "#run_command" do
+    let(:shell) do
+      instance_double(Mixlib::ShellOut, run_command: nil, error!: nil, stdout: "", execution_time: 0)
+    end
+
+    let(:constructed_with) { [] }
+
+    before do
+      allow(Mixlib::ShellOut).to receive(:new) do |_cmd, opts|
+        constructed_with << opts
+        shell
+      end
+    end
+
+    # Returns the option hash Mixlib::ShellOut was constructed with.
+    def shell_options(cmd = "cmd", options = {}, via: :run_command)
+      driver.send(via, cmd, options)
+      constructed_with.last
+    end
+
+    # Vagrant must not inherit our bundler environment or it will try to run
+    # its own Ruby under our Gemfile. See issue #190.
+    %w{
+      BUNDLE_BIN_PATH BUNDLE_GEMFILE GEM_HOME GEM_PATH GEM_ROOT RUBYLIB RUBYOPT
+      _ORIGINAL_GEM_PATH
+    }.each do |var|
+      it "unsets #{var} so vagrant does not inherit our bundle" do
+        expect(shell_options[:environment]).to include(var => nil)
+      end
+    end
+
+    it "passes caller-supplied environment variables through untouched" do
+      options = shell_options("cmd", { environment: { "EV1" => "Val1", "EV2" => "Val2" } })
+
+      expect(options[:environment]).to include("EV1" => "Val1", "EV2" => "Val2")
+    end
+
+    it "runs in the instance's vagrant root by default" do
+      expect(shell_options("cmd", {}, via: :run)[:cwd])
+        .to eq("/kroot/.kitchen/kitchen-vagrant/suitey-fooos-99")
+    end
+
+    it "lets the caller override the working directory" do
+      expect(shell_options("cmd", { cwd: "/elsewhere" }, via: :run)[:cwd]).to eq("/elsewhere")
+    end
+
+    it "labels log output with the driver name" do
+      driver.send(:run_command, "cmd")
+
+      expect(logged_output.string).to include("[Vagrant command] BEGIN (cmd)")
+    end
+
+    it "echoes rather than executes under :dry_run" do
+      config[:dry_run] = true
+      commands = []
+      allow(driver).to receive(:run_command) { |cmd, _| commands << cmd }
+
+      driver.send(:run, "vagrant up")
+
+      expect(commands).to eq(["echo vagrant up"])
+    end
+
+    context "when a GEM_HOME bin directory is on the PATH" do
+      let(:gem_bin) { File.join("/gems", "bin") }
+
+      before { env["GEM_HOME"] = "/gems" }
+
+      it "strips the gem bin directory out of the PATH" do
+        path = "#{gem_bin}#{File::PATH_SEPARATOR}/usr/bin"
+        options = shell_options("cmd", { environment: { "PATH" => path } })
+
+        expect(options[:environment]["PATH"]).to eq("/usr/bin")
+      end
+
+      it "leaves a PATH without the gem bin directory alone" do
+        path = "/usr/bin#{File::PATH_SEPARATOR}/bin"
+        options = shell_options("cmd", { environment: { "PATH" => path } })
+
+        expect(options[:environment]["PATH"]).to eq(path)
+      end
+
+      it "seeds the PATH from the environment when the caller did not supply one" do
+        env["PATH"] = "/usr/bin"
+
+        expect(shell_options[:environment]["PATH"]).to eq("/usr/bin")
+      end
+    end
+
+    context "on a Windows host" do
+      before do
+        allow(driver_object).to receive(:windows_host?).and_return(true)
+        env["GEM_HOME"] = "/gems"
+        env["PATH"] = "/gems/bin;/usr/bin"
+      end
+
+      # Rewriting PATH breaks Vagrant's Windows batch launcher, which relies on
+      # prepending its own Ruby. See the comment in #run_command.
+      it "leaves the PATH completely alone" do
+        expect(shell_options[:environment]).not_to have_key("PATH")
+      end
     end
   end
 
   describe "#create" do
+    include_context "with a real kitchen root"
 
-    let(:cmd) { driver.create(state) }
+    it "writes a Vagrantfile into the instance's vagrant root" do
+      driver.create(state)
 
-    let(:vagrant_root) do
-      File.join(%W{
-        #{@dir} .kitchen kitchen-vagrant suitey-fooos-99
-      })
+      expect(File).to exist(File.join(vagrant_root, "Vagrantfile"))
     end
 
-    before do
-      @dir = Dir.mktmpdir("kitchen_root")
-      config[:kitchen_root] = @dir
+    it "writes the Vagrantfile only once per action" do
+      driver.create(state)
+      mtime = File.mtime(File.join(vagrant_root, "Vagrantfile"))
 
-      allow(driver).to receive(:run_command).and_return("")
-      with_modern_vagrant
+      driver.send(:create_vagrantfile)
+
+      expect(File.mtime(File.join(vagrant_root, "Vagrantfile"))).to eq(mtime)
     end
 
-    after do
-      FileUtils.remove_entry_secure(@dir)
+    it "says what it is doing at debug level" do
+      driver.create(state)
+
+      expect(debug_lines).to match(/Creating Vagrantfile for <suitey-fooos-99> /)
     end
 
-    it "logs a message on debug level for creating the Vagrantfile" do
-      cmd
+    it "dumps the rendered Vagrantfile at debug level, so failures are diagnosable" do
+      driver.create(state)
 
-      expect(logged_output.string).to match(
-        /^D, .+ DEBUG -- : Creating Vagrantfile for \<suitey-fooos-99\> /
-      )
+      expect(debug_lines).to match(/------------\nVagrant\.configure\("2"\) do \|c\|.*\n------------/m)
     end
 
-    it "creates a Vagrantfile in the vagrant root directory" do
-      cmd
+    it "does not dump the Vagrantfile when debug logging is off" do
+      logger.level = Logger::INFO
 
-      expect(File.exist?(File.join(vagrant_root, "Vagrantfile"))).to eq(true)
+      driver.create(state)
+
+      expect(debug_lines).not_to include("------------")
     end
 
-    it "calls Transport's #wait_until_ready" do
-      conn = double("connection")
-      allow(transport).to receive(:connection).with(state).and_return(conn)
-      expect(conn).to receive(:wait_until_ready)
-
-      cmd
-    end
-
-    it "logs the Vagrantfile contents on debug level" do
-      cmd
-
-      expect(debug_lines).to match(Regexp.new(<<-REGEXP.gsub(/^ {8}/, "")))
-        ------------
-        Vagrant.configure\("2"\) do \|c\|
-        .*
-        end
-        ------------
-      REGEXP
-    end
-
-    it "raises ActionFailed if a custom Vagrantfile template was not found" do
+    it "fails clearly when a custom template is missing" do
       config[:vagrantfile_erb] = "/a/bunch/of/nope"
 
-      expect { cmd }.to raise_error(
-        Kitchen::ActionFailed, /^Could not find Vagrantfile template/
-      )
+      expect { driver.create(state) }
+        .to raise_error(Kitchen::ActionFailed, /^Could not find Vagrantfile template/)
     end
 
-    it "runs the pre create command, if set" do
-      config[:pre_create_command] = "echo heya"
-      expect(driver).to receive(:run_command).with("echo heya", any_args)
+    it "waits for the transport to become ready" do
+      conn = instance_double(Kitchen::Transport::Dummy::Connection)
+      allow(transport).to receive(:connection).with(state).and_return(conn)
+      allow(conn).to receive(:wait_until_ready)
 
-      cmd
+      driver.create(state)
+
+      expect(conn).to have_received(:wait_until_ready)
     end
 
-    it "runs vagrant up with --no-provision if :provision is falsey" do
-      config[:provision] = false
-      expect(driver).to receive(:run_command)
-        .with("vagrant up --no-provision --provider virtualbox", any_args)
+    it "announces success at info level" do
+      driver.create(state)
 
-      cmd
+      expect(logged(:info)).to match(/Vagrant instance <suitey-fooos-99> created\.$/)
     end
 
-    it "runs vagrant up without --no-provision if :provision is truthy" do
-      config[:provision] = true
-      expect(driver).to receive(:run_command)
-        .with("vagrant up --provider virtualbox", any_args)
+    describe "the commands it runs" do
+      it "runs vagrant up with --no-provision by default" do
+        commands = stub_run_command!
 
-      cmd
-    end
+        driver.create(state)
 
-    it "runs vagrant up with a custom provider if :provider is set" do
-      config[:provider] = "bananas"
-      expect(driver).to receive(:run_command)
-        .with("vagrant up --no-provision --provider bananas", any_args)
-
-      cmd
-    end
-
-    describe "for state" do
-
-      context "for non-WinRM-based transports" do
-
-        let(:output) do
-          <<-OUTPUT.gsub(/^ {10}/, "")
-            Host hehe
-              HostName 192.168.32.64
-              User vagrant
-              Port 2022
-              UserKnownHostsFile /dev/null
-              StrictHostKeyChecking no
-              PasswordAuthentication no
-              IdentityFile /path/to/private_key
-              IdentitiesOnly yes
-              LogLevel FATAL
-          OUTPUT
-        end
-
-        before do
-          allow(transport).to receive(:name).and_return("Coolness")
-          allow(driver).to receive(:run_command)
-            .with("vagrant ssh-config", any_args).and_return(output)
-        end
-
-        it "sets :hostname from ssh-config" do
-          cmd
-
-          expect(state).to include(hostname: "192.168.32.64")
-        end
-
-        it "sets :port from ssh-config" do
-          cmd
-
-          expect(state).to include(port: "2022")
-        end
-
-        it "sets :username from ssh-config" do
-          cmd
-
-          expect(state).to include(username: "vagrant")
-        end
-
-        it "does not set :password by default" do
-          cmd
-
-          expect(state.keys).to_not include(:password)
-        end
-
-        it "sets :password if Password is in ssh-config" do
-          output.concat("  Password yep\n")
-          cmd
-
-          expect(state).to include(password: "yep")
-        end
-
-        it "sets :ssh_key from ssh-config" do
-          cmd
-
-          expect(state).to include(ssh_key: "/path/to/private_key")
-        end
-
-        it "does not set :proxy_command by default" do
-          cmd
-
-          expect(state.keys).to_not include(:proxy_command)
-        end
-
-        it "sets :proxy_command if ProxyCommand is in ssh-config" do
-          output.concat("  ProxyCommand echo proxy\n")
-          cmd
-
-          expect(state).to include(proxy_command: "echo proxy")
-        end
+        expect(commands).to include("vagrant up --no-provision --provider virtualbox")
       end
 
-      context "for WinRM-based transports" do
+      it "omits --no-provision when :provision is set" do
+        config[:provision] = true
+        commands = stub_run_command!
 
-        let(:output) do
-          <<-OUTPUT.gsub(/^ {10}/, "")
-            Host hehe
-              HostName 192.168.32.64
-              User vagrant
-              Password yep
-              Port 9999
-              RDPPort 5555
-          OUTPUT
-        end
+        driver.create(state)
 
-        before do
-          allow(transport).to receive(:name).and_return("WinRM")
-          allow(driver).to receive(:run_command)
-            .with("vagrant winrm-config", any_args).and_return(output)
-        end
-
-        it "sets :hostname from winrm-config" do
-          cmd
-
-          expect(state).to include(hostname: "192.168.32.64")
-        end
-
-        it "sets :port from winrm-config" do
-          cmd
-
-          expect(state).to include(port: "9999")
-        end
-
-        it "sets :username from winrm-config" do
-          cmd
-
-          expect(state).to include(username: "vagrant")
-        end
-
-        it "sets :password from winrm-config" do
-          cmd
-
-          expect(state).to include(password: "yep")
-        end
-
-        it "sets :rdp_port from winrm-config" do
-          cmd
-
-          expect(state).to include(rdp_port: "5555")
-        end
+        expect(commands).to include("vagrant up --provider virtualbox")
       end
-    end
 
-    it "logs a message on info level" do
-      cmd
+      it "passes a custom provider to vagrant up" do
+        config[:provider] = "bananas"
+        commands = stub_run_command!
 
-      expect(logged_output.string).to match(
-        /I, .+ INFO -- : Vagrant instance \<suitey-fooos-99\> created\.$/
-      )
-    end
+        driver.create(state)
 
-    describe "box outdated check" do
-      it "warns when a newer box version is available" do
-        outdated_output = <<-OUTPUT
-Checking if box 'bento/ubuntu-20.04' version '202112.19.0' is up to date...
-A newer version of the box 'bento/ubuntu-20.04' for provider 'virtualbox' is
-available! You currently have version '202112.19.0'. The latest is version
-'202401.31.0'.
-        OUTPUT
-        
-        # Stub the run_command to return different outputs for different commands
+        expect(commands).to include("vagrant up --no-provision --provider bananas")
+      end
+
+      it "lets vagrant pick the provider when :provider is explicitly cleared" do
+        config[:provider] = nil
+        commands = stub_run_command!
+
+        driver.create(state)
+
+        expect(commands).to include("vagrant up --no-provision")
+        expect(commands).to include("vagrant box outdated --box fooos-99")
+      end
+
+      it "runs the pre-create command before vagrant up" do
+        config[:pre_create_command] = "echo heya"
+        commands = stub_run_command!
+
+        driver.create(state)
+
+        expect(commands.index("echo heya")).to be < commands.index { |c| c.start_with?("vagrant up") }
+      end
+
+      it "runs the pre-create command from the kitchen root, not the vagrant root" do
+        config[:pre_create_command] = "echo heya"
+        cwd = nil
         allow(driver).to receive(:run_command) do |cmd, options|
-          case cmd
-          when /vagrant box outdated/
-            outdated_output
-          else
-            ""
-          end
-        end
-
-        cmd
-
-        expect(logged_output.string).to match(
-          /WARN -- : A new version of the 'fooos-99' box is available!/
-        )
-        expect(logged_output.string).to match(
-          /Run `vagrant box update --box fooos-99` to update\./
-        )
-      end
-
-      it "does not warn when box is up to date" do
-        uptodate_output = <<-OUTPUT
-Checking if box 'bento/ubuntu-20.04' version '202401.31.0' is up to date...
-You're running the latest version of this box.
-        OUTPUT
-        
-        # Stub the run_command to return different outputs for different commands
-        allow(driver).to receive(:run_command) do |cmd, options|
-          case cmd
-          when /vagrant box outdated/
-            uptodate_output
-          else
-            ""
-          end
-        end
-
-        cmd
-
-        expect(logged_output.string).to_not match(
-          /A new version of the 'fooos-99' box is available!/
-        )
-      end
-
-      it "does not check when box_auto_update is enabled" do
-        config[:box_auto_update] = "vagrant box update --box fooos-99"
-        
-        # Verify that outdated check is not called
-        allow(driver).to receive(:run_command) do |cmd, options|
-          if cmd.is_a?(String) && cmd.include?("vagrant box outdated")
-            raise "Should not call vagrant box outdated when box_auto_update is enabled"
-          end
+          cwd = options[:cwd] if cmd == "echo heya"
           ""
         end
 
-        # Should not raise an error
-        expect { cmd }.to_not raise_error
+        driver.create(state)
+
+        expect(cwd).to eq(kitchen_root)
       end
 
-      it "handles errors gracefully when box is not yet installed" do
-        # Stub the run_command to raise an error for outdated check
-        allow(driver).to receive(:run_command) do |cmd, options|
-          if cmd.include?("vagrant box outdated")
-            raise Kitchen::ShellOut::ShellCommandFailed.new("Box not found")
+      it "updates the box first when :box_auto_update is enabled" do
+        config[:box_auto_update] = true
+        commands = stub_run_command!
+
+        driver.create(state)
+
+        expect(commands).to include("vagrant box update --box fooos-99 --provider virtualbox")
+      end
+
+      it "tolerates updating a box that has never been downloaded" do
+        config[:box_auto_update] = true
+        allow(driver).to receive(:run_command) do |cmd, _|
+          if cmd.include?("box update")
+            raise Kitchen::ShellOut::ShellCommandFailed, "The box 'fooos-99' does not exist"
           end
+
           ""
         end
 
-        # Should not raise an error
-        expect { cmd }.to_not raise_error
+        expect { driver.create(state) }.not_to raise_error
+      end
 
-        expect(logged_output.string).to match(
-          /DEBUG -- : Unable to check if box is outdated/
+      it "re-raises any other failure from the box update" do
+        config[:box_auto_update] = true
+        allow(driver).to receive(:run_command) do |cmd, _|
+          raise Kitchen::ShellOut::ShellCommandFailed, "disk full" if cmd.include?("box update")
+
+          ""
+        end
+
+        expect { driver.create(state) }
+          .to raise_error(Kitchen::ShellOut::ShellCommandFailed, /disk full/)
+      end
+
+      it "prunes older boxes when :box_auto_prune is enabled" do
+        config[:box_auto_prune] = true
+        commands = stub_run_command!
+
+        driver.create(state)
+
+        expect(commands).to include(
+          "vagrant box prune --force --keep-active-boxes --name fooos-99 --provider virtualbox"
         )
       end
+
+      it "does not update or prune by default" do
+        commands = stub_run_command!
+
+        driver.create(state)
+
+        expect(commands).not_to include(a_string_matching(/box (update|prune)/))
+      end
+    end
+
+    describe "state from vagrant ssh-config" do
+      let(:ssh_config) do
+        <<~OUTPUT
+          Host hehe
+            HostName 192.168.32.64
+            User vagrant
+            Port 2022
+            UserKnownHostsFile /dev/null
+            StrictHostKeyChecking no
+            PasswordAuthentication no
+            IdentityFile /path/to/private_key
+            IdentitiesOnly yes
+            LogLevel FATAL
+        OUTPUT
+      end
+
+      before do
+        allow(transport).to receive(:name).and_return("Coolness")
+        allow(driver).to receive(:run_command) do |cmd, _|
+          cmd == "vagrant ssh-config" ? ssh_config : ""
+        end
+      end
+
+      it "records the hostname" do
+        driver.create(state)
+
+        expect(state).to include(hostname: "192.168.32.64")
+      end
+
+      it "records the port" do
+        driver.create(state)
+
+        expect(state).to include(port: "2022")
+      end
+
+      it "records the username" do
+        driver.create(state)
+
+        expect(state).to include(username: "vagrant")
+      end
+
+      it "records the identity file" do
+        driver.create(state)
+
+        expect(state).to include(ssh_key: "/path/to/private_key")
+      end
+
+      it "records no password when ssh-config offers none" do
+        driver.create(state)
+
+        expect(state).not_to have_key(:password)
+      end
+
+      it "records a password when ssh-config offers one" do
+        ssh_config << "  Password yep\n"
+
+        driver.create(state)
+
+        expect(state).to include(password: "yep")
+      end
+
+      it "records no proxy command when ssh-config offers none" do
+        driver.create(state)
+
+        expect(state).not_to have_key(:proxy_command)
+      end
+
+      it "records a proxy command when ssh-config offers one" do
+        ssh_config << "  ProxyCommand echo proxy\n"
+
+        driver.create(state)
+
+        expect(state).to include(proxy_command: "echo proxy")
+      end
+    end
+
+    describe "state from vagrant winrm-config" do
+      let(:winrm_config) do
+        <<~OUTPUT
+          Host hehe
+            HostName 192.168.32.64
+            User vagrant
+            Password yep
+            Port 9999
+            RDPPort 5555
+        OUTPUT
+      end
+
+      before do
+        allow(transport).to receive(:name).and_return("WinRM")
+        allow(driver).to receive(:run_command) do |cmd, _|
+          cmd == "vagrant winrm-config" ? winrm_config : ""
+        end
+      end
+
+      it "asks winrm-config rather than ssh-config" do
+        commands = []
+        allow(driver).to receive(:run_command) do |cmd, _|
+          commands << cmd
+          cmd == "vagrant winrm-config" ? winrm_config : ""
+        end
+
+        driver.create(state)
+
+        expect(commands).to include("vagrant winrm-config")
+        expect(commands).not_to include("vagrant ssh-config")
+      end
+
+      it "records the hostname, port, username and password" do
+        driver.create(state)
+
+        expect(state).to include(
+          hostname: "192.168.32.64", port: "9999", username: "vagrant", password: "yep"
+        )
+      end
+
+      it "records the RDP port" do
+        driver.create(state)
+
+        expect(state).to include(rdp_port: "5555")
+      end
+    end
+
+    describe "when running under WSL" do
+      before do
+        env["WSL_DISTRO_NAME"] = "Ubuntu"
+        allow(transport).to receive(:name).and_return("Coolness")
+        allow(driver).to receive(:run_command) do |cmd, _|
+          next "" unless cmd == "vagrant ssh-config"
+
+          "Host hehe\n  HostName 10.0.0.1\n  IdentityFile C:/Users/Bob/.vagrant.d/key\n"
+        end
+      end
+
+      it "translates the Windows identity file path into a WSL path" do
+        driver.create(state)
+
+        expect(state[:ssh_key]).to eq("/mnt/c/users/bob/.vagrant.d/key")
+      end
+
+      it "leaves other values untranslated" do
+        driver.create(state)
+
+        expect(state[:hostname]).to eq("10.0.0.1")
+      end
+    end
+  end
+
+  describe "the outdated box check" do
+    include_context "with a real kitchen root"
+
+    def create_with_outdated_output(output)
+      allow(driver).to receive(:run_command) do |cmd, _|
+        cmd.include?("box outdated") ? output : ""
+      end
+      driver.create(state)
+    end
+
+    it "warns when vagrant reports a newer version" do
+      create_with_outdated_output(<<~OUTPUT)
+        Checking if box 'fooos-99' version '202112.19.0' is up to date...
+        A newer version of the box 'fooos-99' for provider 'virtualbox' is
+        available! You currently have version '202112.19.0'. The latest is version
+        '202401.31.0'.
+      OUTPUT
+
+      expect(logged(:warn)).to match(/A new version of the 'fooos-99' box is available!/)
+      expect(logged(:warn)).to match(/Run `vagrant box update --box fooos-99` to update\./)
+    end
+
+    it "includes both versions in the warning when it can parse them" do
+      create_with_outdated_output(
+        "The box is outdated. Current: v1.2.3, Latest: v4.5.6\n"
+      )
+
+      expect(logged(:warn)).to match(/Current: 1\.2\.3, Latest: 4\.5\.6/)
+    end
+
+    it "reports whole versions from vagrant's prose output, not just the first segment" do
+      create_with_outdated_output(<<~OUTPUT)
+        A newer version of the box 'fooos-99' for provider 'virtualbox' is
+        available! You currently have version '202112.19.0'. The latest is version
+        '202401.31.0'.
+      OUTPUT
+
+      expect(logged(:warn)).to match(/Current: 202112\.19\.0, Latest: 202401\.31\.0/)
+    end
+
+    it "does not drag trailing punctuation into the version numbers" do
+      create_with_outdated_output("Box is outdated. Current: 1.2.3. Latest: 4.5.6.\n")
+
+      expect(logged(:warn)).to match(/Current: 1\.2\.3, Latest: 4\.5\.6\./)
+    end
+
+    it "still warns when it cannot parse the versions" do
+      create_with_outdated_output("This box is outdated.\n")
+
+      expect(logged(:warn)).to match(/A new version of the 'fooos-99' box is available!/)
+      expect(logged(:warn)).not_to match(/Current:/)
+    end
+
+    it "stays quiet when the box is current" do
+      create_with_outdated_output("You're running the latest version of this box.\n")
+
+      expect(logged(:warn)).to be_empty
+    end
+
+    it "asks vagrant about the configured provider" do
+      commands = stub_run_command!
+
+      driver.create(state)
+
+      expect(commands).to include("vagrant box outdated --box fooos-99 --provider virtualbox")
+    end
+
+    it "is skipped entirely when :box_auto_update is enabled, to save a round trip" do
+      config[:box_auto_update] = true
+      commands = stub_run_command!
+
+      driver.create(state)
+
+      expect(commands).not_to include(a_string_matching(/box outdated/))
+    end
+
+    it "degrades to a debug message when the box is not downloaded yet" do
+      allow(driver).to receive(:run_command) do |cmd, _|
+        raise Kitchen::ShellOut::ShellCommandFailed, "Box not found" if cmd.include?("box outdated")
+
+        ""
+      end
+
+      expect { driver.create(state) }.not_to raise_error
+      expect(debug_lines).to match(/Unable to check if box is outdated/)
     end
   end
 
   describe "#destroy" do
-
-    let(:cmd) { driver.destroy(state) }
-
-    let(:vagrant_root) do
-      File.join(%W{
-        #{@dir} .kitchen kitchen-vagrant suitey-fooos-99
-      })
-    end
+    include_context "with a real kitchen root"
 
     before do
-      @dir = Dir.mktmpdir("kitchen_root")
-      config[:kitchen_root] = @dir
-
-      allow(driver).to receive(:run_command).and_return("")
-      with_modern_vagrant
-
       FileUtils.mkdir_p(vagrant_root)
       state[:hostname] = "hosta"
     end
 
-    after do
-      FileUtils.remove_entry_secure(@dir)
-    end
-
-    it "logs a message on debug level for creating the Vagrantfile" do
-      cmd
-
-      expect(logged_output.string).to match(
-        /^D, .+ DEBUG -- : Creating Vagrantfile for \<suitey-fooos-99\> /
-      )
-    end
-
-    it "logs the Vagrantfile contents on debug level" do
-      cmd
-
-      expect(debug_lines).to match(Regexp.new(<<-REGEXP.gsub(/^ {8}/, "")))
-        ------------
-        Vagrant.configure\("2"\) do \|c\|
-        .*
-        end
-        ------------
-      REGEXP
-    end
-
-    it "does not run vagrant destroy if :hostname is not present in state" do
-      state.delete(:hostname)
-      expect(driver).to_not receive(:run_command)
-        .with("vagrant destroy -f", any_args)
-
-      cmd
-    end
-
-    it "closes the transport connection" do
-      connection = double(Kitchen::Transport::Base::Connection)
-      allow(transport).to receive(:connection).with(state) { connection }
-      expect(connection).to receive(:close)
-
-      cmd
-    end
-
     it "runs vagrant destroy" do
-      expect(driver).to receive(:run_command)
-        .with("vagrant destroy -f", any_args)
+      commands = stub_run_command!
 
-      cmd
+      driver.destroy(state)
+
+      expect(commands).to include("vagrant destroy -f")
     end
 
-    it "deletes the vagrant root directory" do
-      expect(File.directory?(vagrant_root)).to eq(true)
-      cmd
-      expect(File.directory?(vagrant_root)).to eq(false)
+    # Vagrant refuses to run without a Vagrantfile, even to destroy.
+    it "re-creates the Vagrantfile so vagrant destroy has something to work with" do
+      driver.destroy(state)
+
+      expect(debug_lines).to match(/Creating Vagrantfile for <suitey-fooos-99> /)
     end
 
-    it "logs a message on info level" do
-      cmd
+    it "closes the transport connection before destroying" do
+      conn = instance_double(Kitchen::Transport::Dummy::Connection)
+      allow(transport).to receive(:connection).with(state).and_return(conn)
+      allow(conn).to receive(:close)
 
-      expect(logged_output.string).to match(
-        /I, .+ INFO -- : Vagrant instance \<suitey-fooos-99\> destroyed\.$/
-      )
+      driver.destroy(state)
+
+      expect(conn).to have_received(:close)
     end
 
-    it "deletes :hostname from state" do
-      cmd
+    it "removes the vagrant root directory" do
+      driver.destroy(state)
 
-      expect(state.keys).to_not include(:hostname)
-    end
-  end
-
-  describe "Vagrantfile" do
-
-    let(:cmd) { driver.create(state) }
-
-    let(:vagrant_root) do
-      File.join(%W{
-        #{@dir} .kitchen kitchen-vagrant suitey-fooos-99
-      })
+      expect(File).not_to be_directory(vagrant_root)
     end
 
-    before do
-      @dir = Dir.mktmpdir("kitchen_root")
-      config[:kitchen_root] = @dir
+    it "clears :hostname from state" do
+      driver.destroy(state)
 
-      allow(driver).to receive(:run_command).and_return("")
-      with_modern_vagrant
+      expect(state).not_to have_key(:hostname)
     end
 
-    after do
-      FileUtils.remove_entry_secure(@dir)
+    it "announces success at info level" do
+      driver.destroy(state)
+
+      expect(logged(:info)).to match(/Vagrant instance <suitey-fooos-99> destroyed\.$/)
     end
 
-    it "disables the vagrant-berkshelf plugin is present" do
-      cmd
+    it "does nothing at all when the instance was never created" do
+      state.delete(:hostname)
+      commands = stub_run_command!
 
-      expect(vagrantfile).to match(regexify(
-        "c.berkshelf.enabled = false " \
-        "if Vagrant.has_plugin?(\"vagrant-berkshelf\")"
-      ))
-    end
+      driver.destroy(state)
 
-    it "sets no cache.scope if missing" do
-      config[:cachier] = nil
-      cmd
-
-      expect(vagrantfile).to_not match(regexify(%{c.cache.scope}, :partial))
-    end
-
-    it "sets cache.scope to :box if :cachier is set" do
-      config[:cachier] = true
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.cache.scope = :box}))
-    end
-
-    it "sets cache.scope if :cachier is set to a custom value" do
-      config[:cachier] = ":machine"
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.cache.scope = :machine}))
-    end
-
-    it "sets the vm.box" do
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.vm.box = "fooos-99"}))
-    end
-
-    it "sets the vm.hostname" do
-      config[:vm_hostname] = "charlie"
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.vm.hostname = "charlie"}))
-    end
-
-    it "disables the /vagrant synced folder by default" do
-      cmd
-
-      expect(vagrantfile).to match(regexify(
-        %{c.vm.synced_folder ".", "/vagrant", disabled: true}
-      ))
-    end
-
-    it "creates an empty provider block by default" do
-      config[:provider] = "wowza"
-      cmd
-
-      expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {6}/, "").chomp))
-        c.vm.provider :wowza do |p|
-        end
-      RUBY
-    end
-
-    it "requires no Vagrantfiles by default" do
-      cmd
-
-      expect(vagrantfile).to_not match(regexify("require"))
-    end
-
-    it "requires each entry in :vagranfiles" do
-      config[:vagrantfiles] = %w{/a /b /c}
-      cmd
-
-      expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-        load "/a"
-        load "/b"
-        load "/c"
-      RUBY
-    end
-
-    it "sets no vm.box_url if missing" do
-      config[:box_url] = nil
-      cmd
-
-      expect(vagrantfile).to_not match(regexify(%{c.vm.box_url}, :partial))
-    end
-
-    it "sets vm.box_url if :box_url is set" do
-      config[:box_url] = "dat.url"
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.vm.box_url = "dat.url"}))
-    end
-
-    it "sets no vm.box_version if missing" do
-      config[:box_version] = nil
-      cmd
-
-      expect(vagrantfile).to_not match(regexify(%{c.vm.box_version}, :partial))
-    end
-
-    it "sets vm.box_version if :box_version is set" do
-      config[:box_version] = "a.b.c"
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.vm.box_version = "a.b.c"}))
-    end
-
-    it "sets no vm.boot_timeout if missing" do
-      config[:boot_timeout] = nil
-      cmd
-
-      expect(vagrantfile).to_not match(regexify(%{c.vm.boot_timeout}, :partial))
-    end
-
-    it "sets no vm.boot_timeout if :boot_timeout is set" do
-      config[:boot_timeout] = 600
-      cmd
-
-      expect(vagrantfile).to match(
-        regexify(%{c.vm.boot_timeout = 600}, :partial)
-      )
-    end
-
-    it "sets no vm.box_check_update if missing" do
-      config[:box_check_update] = nil
-      cmd
-
-      expect(vagrantfile).to_not match(
-        regexify(%{c.vm.box_check_update}, :partial)
-      )
-    end
-
-    it "sets vm.box_check_update to false if :box_check_update is false" do
-      config[:box_check_update] = false
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.vm.box_check_update = false}))
-    end
-
-    it "sets no vm.box_download_insecure if missing" do
-      config[:box_download_insecure] = nil
-      cmd
-
-      expect(vagrantfile).to_not match(
-        regexify(%{c.vm.box_download_insecure}, :partial)
-      )
-    end
-
-    it "sets vm.box_download_insecure to false if :box_download_insecure is false" do
-      config[:box_download_insecure] = false
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.vm.box_download_insecure = "false"}))
-    end
-
-    it "sets vm.box_download_insecure if :box_download_insecure is set" do
-      config[:box_download_insecure] = "um"
-      cmd
-
-      expect(
-        vagrantfile
-      ).to match(regexify(%{c.vm.box_download_insecure = "um"}))
-    end
-
-    it "sets no vm.communicator if missing" do
-      config[:communicator] = nil
-      cmd
-
-      expect(vagrantfile).to_not match(regexify(%{c.vm.communicator}, :partial))
-    end
-
-    it "sets vm.communicator if :communicator is set" do
-      config[:communicator] = "wat"
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.vm.communicator = "wat"}))
-    end
-
-    it "sets no vm.guest if missing" do
-      config[:guest] = nil
-      cmd
-
-      expect(vagrantfile).to_not match(regexify(%{c.vm.guest}, :partial))
-    end
-
-    it "sets vm.guest if :guest is set" do
-      config[:guest] = "mac"
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.vm.guest = "mac"}))
-    end
-
-    it "sets no ssh.username if missing" do
-      config[:username] = nil
-      cmd
-
-      expect(vagrantfile).to_not match(regexify(%{c.ssh.username}, :partial))
-    end
-
-    it "sets ssh.username if :username is set" do
-      config[:username] = "jdoe"
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.ssh.username = "jdoe"}))
-    end
-
-    it "sets no ssh.password if missing" do
-      config[:password] = nil
-      cmd
-
-      expect(vagrantfile).to_not match(regexify(%{c.ssh.password}, :partial))
-    end
-
-    it "sets ssh.password if :password is set" do
-      config[:password] = "okay"
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.ssh.password = "okay"}))
-    end
-
-    it "sets communicator.username if :communicator and :username are set" do
-      config[:communicator] = "wat"
-      config[:username] = "jdoe"
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.wat.username = "jdoe"}))
-    end
-
-    it "sets communicator.password if :communicator and :password are set" do
-      config[:communicator] = "wat"
-      config[:password] = "okay"
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.wat.password = "okay"}))
-    end
-
-    it "sets no ssh.private_key_path if missing" do
-      config[:ssh_key] = nil
-      cmd
-
-      expect(vagrantfile).to_not match(
-        regexify(%{c.ssh.private_key_path}, :partial)
-      )
-    end
-
-    it "sets ssh.private_key_path if :ssh_key is set" do
-      config[:ssh_key] = "okay"
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.ssh.private_key_path = "okay"}))
-    end
-
-    it "adds a vm.ssh line for each key/value pair in :ssh" do
-      config[:ssh] = {
-        username: %{jdoe},
-        password: %{secret},
-        private_key_path: %{/key},
-        insert_key: false,
-      }
-      cmd
-
-      expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {6}/, "").chomp))
-        c.ssh.username = "jdoe"
-        c.ssh.password = "secret"
-        c.ssh.private_key_path = "/key"
-        c.ssh.insert_key = false
-      RUBY
-    end
-
-    it "sets ssh.guest_port if specified in :ssh config" do
-      config[:ssh] = { guest_port: 444 }
-      cmd
-
-      expect(vagrantfile).to match(regexify(%{c.ssh.guest_port = 444}))
-    end
-
-    it "adds a vm.network line for each element in :network" do
-      config[:network] = [
-        ["forwarded_port", { guest: 80, host: 8080 }],
-        ["private_network", { ip: "192.168.33.33" }],
-      ]
-      cmd
-
-      expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {6}/, "").chomp))
-        c.vm.network(:forwarded_port, guest: 80, host: 8080)
-        c.vm.network(:private_network, ip: "192.168.33.33")
-      RUBY
-    end
-
-    it "adds a vm.synced_folder line for each element in :synced_folders" do
-      config[:synced_folders] = [
-        ["/a/b", "/opt/instance_data", "nil"],
-        ["/host_path", "/vm_path", "create: true, type: :nfs"],
-      ]
-      cmd
-
-      expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {6}/, "").chomp))
-        c.vm.synced_folder "/a/b", "/opt/instance_data", nil
-        c.vm.synced_folder "/host_path", "/vm_path", create: true, type: :nfs
-      RUBY
-    end
-
-    it "vm.synced_folder scapes the back slashes for Windows paths" do
-      config[:synced_folders] = [
-        ["/a/b", "C:\\opt\\instance_data", "nil"],
-        ["Z:\\host_path", "/vm_path", "create: true"],
-      ]
-      cmd
-
-      expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {6}/, "").chomp))
-        c.vm.synced_folder "/a/b", "C:\\\\opt\\\\instance_data", nil
-        c.vm.synced_folder "Z:\\\\host_path", "/vm_path", create: true
-      RUBY
-    end
-
-    context "for virtualbox provider" do
-
-      before { config[:provider] = "virtualbox" }
-
-      it "sets :name for virtualbox GUI" do
-        cmd
-
-        expect(vagrantfile).to match(Regexp.new(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :virtualbox do |p|
-            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
-            p.customize ["modifyvm", :id, "--audio", "none"]
-          end
-        RUBY
-      end
-
-      it "disables audio by default" do
-        cmd
-
-        expect(vagrantfile).to include(%{p.customize ["modifyvm", :id, "--audio", "none"]})
-      end
-
-      it "allows audio to be enabled with :customize" do
-        config[:customize] = {
-          audio: "pulse",
-        }
-        cmd
-
-        expect(vagrantfile).to include(%{p.customize ["modifyvm", :id, "--audio", "pulse"]})
-        expect(vagrantfile).not_to include(%{p.customize ["modifyvm", :id, "--audio", "none"]})
-      end
-
-      it "adds a line for each element in :customize" do
-        config[:customize] = {
-          a_key: "some value",
-          something: "else",
-        }
-        cmd
-
-        expect(vagrantfile).to match(Regexp.new(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :virtualbox do |p|
-            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
-            p.customize ["modifyvm", :id, "--audio", "none"]
-            p.customize ["modifyvm", :id, "--a_key", "some value"]
-            p.customize ["modifyvm", :id, "--something", "else"]
-          end
-        RUBY
-      end
-
-      it "does not set :gui to nil" do
-        config[:gui] = nil
-        cmd
-
-        expect(vagrantfile).to_not match(regexify(%{p.gui = }, :partial))
-      end
-
-      it "sets :gui to false if set" do
-        config[:gui] = false
-        cmd
-
-        expect(vagrantfile).to match(Regexp.new(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :virtualbox do |p|
-            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
-            p.gui = false
-            p.customize ["modifyvm", :id, "--audio", "none"]
-          end
-        RUBY
-      end
-
-      it "sets :gui to true if set" do
-        config[:gui] = true
-        cmd
-
-        expect(vagrantfile).to match(Regexp.new(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :virtualbox do |p|
-            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
-            p.gui = true
-            p.customize ["modifyvm", :id, "--audio", "none"]
-          end
-        RUBY
-      end
-
-      it "does not set :linked_clone to nil" do
-        config[:linked_clone] = nil
-        cmd
-
-        expect(vagrantfile).to_not match(
-          regexify(%{p.linked_clone = }, :partial)
-        )
-      end
-
-      it "sets :linked_clone to false if set" do
-        config[:linked_clone] = false
-        cmd
-
-        expect(vagrantfile).to match(Regexp.new(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :virtualbox do |p|
-            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
-            p.linked_clone = false
-            p.customize ["modifyvm", :id, "--audio", "none"]
-          end
-        RUBY
-      end
-
-      it "sets :linked_clone to true if set" do
-        config[:linked_clone] = true
-        cmd
-
-        expect(vagrantfile).to match(Regexp.new(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :virtualbox do |p|
-            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
-            p.linked_clone = true
-            p.customize ["modifyvm", :id, "--audio", "none"]
-          end
-        RUBY
-      end
-
-      it "add line for single createhd in :customize" do
-        config[:customize] = {
-          createhd: {
-              filename: "./d1.vmdk",
-              size: 10 * 1024,
-          },
-        }
-        cmd
-
-        expect(vagrantfile).to include(<<-RUBY.gsub(/^ {8}/, "").chomp)
-          unless File.file?("./d1.vmdk")
-        RUBY
-
-        expect(vagrantfile).to include(<<-RUBY.gsub(/^ {8}/, "").chomp)
-          p.customize ["createhd", "--filename", "./d1.vmdk", "--size", 10240]
-        RUBY
-      end
-
-      it "adds lines for multiple createhd in :customize" do
-        config[:customize] = {
-          createhd: [
-            {
-              filename: "./d1.vmdk",
-              size: 10 * 1024,
-            },
-            {
-              filename: "./d2.vmdk",
-              size: 20 * 1024,
-            },
-          ],
-        }
-        cmd
-
-        expect(vagrantfile).to include(<<-RUBY.gsub(/^ {8}/, "").chomp)
-          unless File.file?("./d1.vmdk")
-        RUBY
-
-        expect(vagrantfile).to include(<<-RUBY.gsub(/^ {8}/, "").chomp)
-          p.customize ["createhd", "--filename", "./d1.vmdk", "--size", 10240]
-        RUBY
-
-        expect(vagrantfile).to include(<<-RUBY.gsub(/^ {8}/, "").chomp)
-          unless File.file?("./d2.vmdk")
-        RUBY
-
-        expect(vagrantfile).to include(<<-RUBY.gsub(/^ {8}/, "").chomp)
-          p.customize ["createhd", "--filename", "./d2.vmdk", "--size", 20480]
-        RUBY
-      end
-
-      it "adds lines for single storagectl in :customize" do
-        config[:customize] = {
-          storagectl: {
-            name: "Custom SATA Controller",
-            add: "sata",
-            controller: "IntelAHCI",
-            portcount: 4,
-          },
-        }
-        cmd
-
-        expect(vagrantfile).to match(Regexp.new(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :virtualbox do |p|
-            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
-            p.customize ["modifyvm", :id, "--audio", "none"]
-            p.customize ["storagectl", :id, "--name", "Custom SATA Controller", "--add", "sata", "--controller", "IntelAHCI", "--portcount", 4]
-          end
-        RUBY
-      end
-
-      it "adds lines for multiple storagectl in :customize" do
-        config[:customize] = {
-          storagectl: [
-            {
-              name: "Custom SATA Controller",
-              add: "sata",
-              controller: "IntelAHCI",
-            },
-            {
-              name: "Custom SATA Controller",
-              portcount: 4,
-            },
-          ],
-        }
-        cmd
-
-        expect(vagrantfile).to match(Regexp.new(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :virtualbox do |p|
-            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
-            p.customize ["modifyvm", :id, "--audio", "none"]
-            p.customize ["storagectl", :id, "--name", "Custom SATA Controller", "--add", "sata", "--controller", "IntelAHCI"]
-            p.customize ["storagectl", :id, "--name", "Custom SATA Controller", "--portcount", 4]
-          end
-        RUBY
-      end
-
-      it "adds lines for single storageattach in :customize" do
-        config[:customize] = {
-          storageattach: {
-            type: "hdd",
-            port: 1,
-          },
-        }
-        cmd
-
-        expect(vagrantfile).to match(Regexp.new(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :virtualbox do |p|
-            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
-            p.customize ["modifyvm", :id, "--audio", "none"]
-            p.customize ["storageattach", :id, "--type", "hdd", "--port", 1]
-          end
-        RUBY
-      end
-
-      it "adds lines for multiple storageattach in :customize" do
-        config[:customize] = {
-          storageattach: [
-            {
-              storagectl: "SATA Controller",
-              port: 1,
-              device: 0,
-              type: "hdd",
-              medium: "./d1.vmdk",
-            },
-            {
-              storagectl: "SATA Controller",
-              port: 1,
-              device: 1,
-              type: "hdd",
-              medium: "./d2.vmdk",
-            },
-          ],
-        }
-        cmd
-
-        expect(vagrantfile).to match(Regexp.new(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :virtualbox do |p|
-            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
-            p.customize ["modifyvm", :id, "--audio", "none"]
-            p.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", 1, "--device", 0, "--type", "hdd", "--medium", "./d1.vmdk"]
-            p.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", 1, "--device", 1, "--type", "hdd", "--medium", "./d2.vmdk"]
-          end
-        RUBY
-      end
-
-      it "adds a line for cpuidset in :customize" do
-        config[:customize] = {
-          cpuidset: %w{00000001 00000002},
-        }
-        cmd
-
-        expect(vagrantfile).to match(Regexp.new(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :virtualbox do |p|
-            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
-            p.customize ["modifyvm", :id, "--audio", "none"]
-            p.customize ["modifyvm", :id, "--cpuidset", "00000001", "00000002"]
-          end
-        RUBY
-      end
-
-      it "adds lines for multiple setextradata in :customize and quotes only string values" do
-        config[:customize] = {
-          setextradata: {
-            "VBoxInternal/Devices/smc/0/Config/GetKeyFromRealSMC": 0,
-            "VBoxInternal/Devices/efi/0/Config/DmiSystemVersion": "1.0"
-          },
-        }
-        cmd
-
-        expect(vagrantfile).to match(Regexp.new(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :virtualbox do |p|
-            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99-.*"
-            p.customize ["modifyvm", :id, "--audio", "none"]
-            p.customize ["setextradata", :id, "VBoxInternal/Devices/smc/0/Config/GetKeyFromRealSMC", 0] 
-            p.customize ["setextradata", :id, "VBoxInternal/Devices/efi/0/Config/DmiSystemVersion", "1.0"] 
-          end
-        RUBY
-      end
-
-    end
-
-    context "for tart provider" do
-
-      before { config[:provider] = "tart" }
-
-      it "sets :name for tart provider without UUID" do
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :tart do |p|
-            p.name = "kitchen-#{File.basename(config[:kitchen_root])}-suitey-fooos-99"
-          end
-        RUBY
-      end
-
-    end
-
-    context "for parallels provider" do
-
-      before { config[:provider] = "parallels" }
-
-      it "adds a line for each element in :customize" do
-        config[:customize] = {
-          a_key: "some value",
-          something: "else",
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :parallels do |p|
-            p.customize ["set", :id, "--a-key", "some value"]
-            p.customize ["set", :id, "--something", "else"]
-          end
-        RUBY
-      end
-
-      it "adds a short form of :memory and :cpus elements in :customize" do
-        config[:customize] = {
-          memory: 2048,
-          cpus: 4,
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :parallels do |p|
-            p.memory = 2048
-            p.cpus = 4
-          end
-        RUBY
-      end
-
-      it "does not set :linked_clone to nil" do
-        config[:linked_clone] = nil
-        cmd
-
-        expect(vagrantfile).to_not match(
-          regexify(%{p.linked_clone = }, :partial)
-        )
-      end
-
-      it "sets :linked_clone to false if set" do
-        config[:linked_clone] = false
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :parallels do |p|
-            p.linked_clone = false
-          end
-        RUBY
-      end
-
-      it "sets :linked_clone to true if set" do
-        config[:linked_clone] = true
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :parallels do |p|
-            p.linked_clone = true
-          end
-        RUBY
-      end
-    end
-
-    context "for rackspace provider" do
-
-      before { config[:provider] = "rackspace" }
-
-      it "adds a line for each element in :customize" do
-        config[:customize] = {
-          a_key: "some value",
-          something: "else",
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :rackspace do |p|
-            p.a_key = "some value"
-            p.something = "else"
-          end
-        RUBY
-      end
-    end
-
-    context "for softlayer provider" do
-
-      before { config[:provider] = "softlayer" }
-
-      it "adds a line for disk_capacity" do
-        config[:customize] = {
-          disk_capacity: {
-            "0": 25,
-            "2": 100,
-          },
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :softlayer do |p|
-            p.disk_capacity = {"0": 25, "2": 100}
-          end
-        RUBY
-      end
-
-      it "adds a line for each element in :customize" do
-        config[:customize] = {
-          a_key: "some value",
-          something: "else",
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :softlayer do |p|
-            p.a_key = "some value"
-            p.something = "else"
-          end
-        RUBY
-      end
-    end
-
-    context "for libvirt provider" do
-
-      before { config[:provider] = "libvirt" }
-
-      it "adds a line for each element in :customize" do
-        config[:customize] = {
-          a_key: "some value",
-          something: "else",
-          a_number_key: 1024,
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :libvirt do |p|
-            p.a_key = "some value"
-            p.something = "else"
-            p.a_number_key = 1024
-          end
-        RUBY
-      end
-
-      it "adds a single storage definition in :customize" do
-        config[:customize] = {
-          storage: ":file, :size => '32G'",
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :libvirt do |p|
-            p.storage :file, :size => '32G'
-          end
-        RUBY
-      end
-
-      it "adds a line for each additional storage definition in :customize" do
-        config[:customize] = {
-          storage: [
-            ":file, :size => '1G'",
-            ":file, :size => '128G', :bus => 'sata'",
-            ":file, :size => '64G', :bus => 'sata'",
-          ],
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :libvirt do |p|
-            p.storage :file, :size => '1G'
-            p.storage :file, :size => '128G', :bus => 'sata'
-            p.storage :file, :size => '64G', :bus => 'sata'
-          end
-        RUBY
-      end
-    end
-
-    context "for lxc provider" do
-
-      before { config[:provider] = "lxc" }
-
-      it "sets container_name to :machine if set" do
-        config[:customize] = {
-          container_name: ":machine",
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :lxc do |p|
-            p.container_name = :machine
-          end
-        RUBY
-      end
-
-      it "sets container_name to another value in quotes if set" do
-        config[:customize] = {
-          container_name: "beans",
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :lxc do |p|
-            p.container_name = "beans"
-          end
-        RUBY
-      end
-
-      it "sets backingstore if set" do
-        config[:customize] = {
-          backingstore: "lvm",
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :lxc do |p|
-            p.backingstore = "lvm"
-          end
-        RUBY
-      end
-
-      it "sets backingstore_option line for each backingstore_options" do
-        config[:customize] = {
-          backingstore_options: {
-            vgname: "schroots",
-            fstype: "xfs",
-          },
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :lxc do |p|
-            p.backingstore_option "--vgname", "schroots"
-            p.backingstore_option "--fstype", "xfs"
-          end
-        RUBY
-      end
-
-      it "sets all other options to customize lines" do
-        config[:customize] = {
-          cookies: "cream",
-          salt: "vinegar",
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :lxc do |p|
-            p.customize "cookies", "cream"
-            p.customize "salt", "vinegar"
-          end
-        RUBY
-      end
-    end
-
-    context "for vmware_* providers" do
-
-      before { config[:provider] = "vmware_desktop" }
-
-      it "does not set :gui to nil" do
-        config[:gui] = nil
-        cmd
-
-        expect(vagrantfile).to_not match(regexify(%{p.gui = }, :partial))
-      end
-
-      it "sets :gui to false if set" do
-        config[:gui] = false
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :vmware_desktop do |p|
-            p.gui = false
-          end
-        RUBY
-      end
-
-      it "sets :gui to true if set" do
-        config[:gui] = true
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :vmware_desktop do |p|
-            p.gui = true
-          end
-        RUBY
-      end
-
-      it "adds a line for each element in :customize" do
-        config[:customize] = {
-          a_key: "some value",
-          something: "else",
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :vmware_desktop do |p|
-            p.vmx["a_key"] = "some value"
-            p.vmx["something"] = "else"
-          end
-        RUBY
-      end
-
-      it "converts :memory into :memsize" do
-        config[:customize] = {
-          memory: "222",
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :vmware_desktop do |p|
-            p.vmx["memsize"] = "222"
-          end
-        RUBY
-      end
-
-      it "skips :memory if key :memsize exists" do
-        config[:customize] = {
-          memory: "222",
-          memsize: "444",
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :vmware_desktop do |p|
-            p.vmx["memsize"] = "444"
-          end
-        RUBY
-      end
-
-      it "converts :cpus into :numvcpus" do
-        config[:customize] = {
-          cpus: "2",
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :vmware_desktop do |p|
-            p.vmx["numvcpus"] = "2"
-          end
-        RUBY
-      end
-
-      it "skips :cpus if key :numvcpus exists" do
-        config[:customize] = {
-          cpus: "2",
-          numvcpus: "4",
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :vmware_desktop do |p|
-            p.vmx["numvcpus"] = "4"
-          end
-        RUBY
-      end
-    end
-
-    context "for managed provider" do
-
-      before { config[:provider] = "managed" }
-
-      it "adds a line a server" do
-        config[:customize] = {
-          server: "my_server",
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :managed do |p|
-            p.server = "my_server"
-          end
-        RUBY
-      end
-
-      it "ignores all other key types than server" do
-        config[:customize] = {
-          other: "stuff",
-          is: "ignored",
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :managed do |p|
-          end
-        RUBY
-      end
-    end
-
-    context "for openstack provider" do
-
-      before { config[:provider] = "openstack" }
-
-      it "adds a line for each element in :customize" do
-        config[:customize] = {
-          key1: "some string value",
-          key2: 22,
-          key3: false,
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :openstack do |p|
-            p.key1 = "some string value"
-            p.key2 = 22
-            p.key3 = false
-          end
-        RUBY
-      end
-    end
-
-    context "for cloudstack provider" do
-
-      before { config[:provider] = "cloudstack" }
-
-      it "adds a line for each element in :customize" do
-        config[:customize] = {
-          a_key: "some value",
-          something: "else",
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :cloudstack do |p|
-            p.a_key = "some value"
-            p.something = "else"
-          end
-        RUBY
-      end
-
-      it "builds an array of hashes for firewall rules in :customize" do
-        config[:customize] = {
-          firewall_rules: [
-            {
-              ipaddress: "A.A.A.A",
-              cidrlist: "B.B.B.B/24",
-              protocol: "tcp",
-              startport: 2222,
-              endport: 2222,
-            },
-            {
-              ipaddress: "C.C.C.C",
-              cidrlist: "D.D.D.D/32",
-              protocol: "tcp",
-              startport: 80,
-              endport: 81,
-            },
-          ],
-        }
-        cmd
-
-        expectation = <<-RUBY.gsub(/^ {8}/, "").gsub(/,\n     /, ",").chomp
-          c.vm.provider :cloudstack do |p|
-            p.firewall_rules = [{ipaddress: "A.A.A.A", cidrlist: "B.B.B.B/24",
-              protocol: "tcp", startport: 2222,
-              endport: 2222}, {ipaddress: "C.C.C.C", cidrlist: "D.D.D.D/32",
-              protocol: "tcp", startport: 80, endport: 81}]
-          end
-        RUBY
-
-        expect(vagrantfile).to match(regexify(expectation))
-      end
-
-      it "builds an array for security group ids in :customize" do
-        config[:customize] = {
-          security_group_ids: %w{aaaa-bbbb-cccc-dddd
-                                  1111-2222-3333-4444},
-        }
-        cmd
-
-        expectation = <<-RUBY.gsub(/^ {8}/, "").gsub(/,\n     /, ",").chomp
-          c.vm.provider :cloudstack do |p|
-            p.security_group_ids = ["aaaa-bbbb-cccc-dddd",
-              "1111-2222-3333-4444"]
-          end
-        RUBY
-
-        expect(vagrantfile).to match(regexify(expectation))
-      end
-
-      it "builds an array for security group names in :customize" do
-        config[:customize] = {
-          security_group_names: %w{min_fantastiska_security_group
-                                      another_security_group},
-        }
-        cmd
-
-        expectation = <<-RUBY.gsub(/^ {8}/, "").gsub(/,\n     /, ",").chomp
-          c.vm.provider :cloudstack do |p|
-            p.security_group_names = ["min_fantastiska_security_group",
-              "another_security_group"]
-          end
-        RUBY
-
-        expect(vagrantfile).to match(regexify(expectation))
-      end
-
-      it "builds an array of hashes for security groups in :customize" do
-        config[:customize] = {
-          security_groups: [
-            {
-              name: "Awesome_security_group",
-              description: "Created from the Vagrantfile",
-              rules: [
-                {
-                  type: "ingress",
-                  protocol: "TCP",
-                  startport: 22,
-                  endport: 22,
-                  cidrlist: "0.0.0.0/0",
-                },
-                {
-                  type: "egress",
-                  protocol: "TCP",
-                  startport: 81,
-                  endport: 82,
-                  cidrlist: "1.2.3.4/24",
-                },
-              ],
-            },
-          ],
-        }
-        cmd
-
-        expectation = <<-RUBY.gsub(/^ {8}/, "").gsub(/,\n     /, ",").chomp
-          c.vm.provider :cloudstack do |p|
-            p.security_groups = [{name: "Awesome_security_group",
-              description: "Created from the Vagrantfile",
-              rules: [{type: "ingress", protocol: "TCP", startport: 22,
-              endport: 22, cidrlist: "0.0.0.0/0"}, {type: "egress",
-              protocol: "TCP", startport: 81, endport: 82,
-              cidrlist: "1.2.3.4/24"}]}]
-          end
-        RUBY
-
-        expect(vagrantfile).to match(regexify(expectation))
-      end
-
-      it "builds an array of hashes for static nat in :customize" do
-        config[:customize] = {
-          static_nat: [{ idaddress: "A.A.A.A" }],
-        }
-        cmd
-
-        expect(vagrantfile).to match(regexify(<<-RUBY.gsub(/^ {8}/, "").chomp))
-          c.vm.provider :cloudstack do |p|
-            p.static_nat = [{idaddress: "A.A.A.A"}]
-          end
-        RUBY
-      end
-
-      it "builds an array of hashes for port forwarding rules in :customize" do
-        config[:customize] = {
-          port_forwarding_rules: [
-            {
-              ipaddress: "X.X.X.X",
-              protocol: "tcp",
-              publicport: 22,
-              privateport: 22,
-              openfirewall: false,
-            },
-            {
-              ipaddress: "X.X.X.X",
-              protocol: "tcp",
-              publicport: 80,
-              privateport: 80,
-              openfirewall: false,
-            },
-          ],
-        }
-        cmd
-
-        expectation = <<-RUBY.gsub(/^ {8}/, "").gsub(/,\n     /, ",").chomp
-          c.vm.provider :cloudstack do |p|
-            p.port_forwarding_rules = [{ipaddress: "X.X.X.X",
-              protocol: "tcp", publicport: 22, privateport: 22,
-              openfirewall: false}, {ipaddress: "X.X.X.X", protocol: "tcp",
-              publicport: 80, privateport: 80, openfirewall: false}]
-          end
-        RUBY
-
-        expect(vagrantfile).to match(regexify(expectation))
-      end
-    end
-
-    it 'sets no environment variables by default' do
-      cmd
-
-      expect(vagrantfile).to_not match(regexify(%(c.vm.provision "shell"), :partial))
-    end
-
-    it 'sets environment variables when :env is configured' do
-      config[:env] = ['AWS_REGION=us-east-1', 'AWS_ACCESS_KEY_ID=test123']
-      cmd
-
-      expect(vagrantfile).to match(/c\.vm\.provision "shell", inline: <<-SHELL/)
-      expect(vagrantfile).to match(/echo 'export AWS_REGION=us-east-1' >> \/etc\/profile\.d\/kitchen\.sh/)
-      expect(vagrantfile).to match(/echo 'export AWS_ACCESS_KEY_ID=test123' >> \/etc\/profile\.d\/kitchen\.sh/)
-      expect(vagrantfile).to match(regexify(
-        %(c.vm.provision "shell", inline: "chmod +x /etc/profile.d/kitchen.sh", run: "once")
-      ))
-    end
-
-    it 'properly escapes single quotes in environment variable values' do
-      config[:env] = ["TEST_VAR=value'with'quotes"]
-      cmd
-
-      expect(vagrantfile).to match(/echo 'export TEST_VAR=value'\\''with'\\''quotes' >> \/etc\/profile\.d\/kitchen\.sh/)
+      expect(commands).to be_empty
+      expect(File).to be_directory(vagrant_root)
     end
   end
 
-  def debug_lines
-    regex = /^D, .* : /
-    logged_output.string.lines
-      .select { |l| l =~ regex }.map { |l| l.sub(regex, "") }.join
+  describe "#package" do
+    include_context "with a real kitchen root"
+
+    before { state[:hostname] = "hosta" }
+
+    it "refuses to package an instance that was never created" do
+      state.delete(:hostname)
+
+      expect { driver.package(state) }
+        .to raise_error(Kitchen::UserError, /Vagrant instance not created!/)
+    end
+
+    it "packages into a box named after the instance, in the working directory" do
+      commands = stub_run_command!
+
+      driver.package(state)
+
+      expect(commands)
+        .to include("vagrant package --output #{File.join(Dir.pwd, "suitey-fooos-99.box")}")
+    end
+
+    it "warns that the default key will be baked into the box" do
+      driver.package(state)
+
+      expect(logged(:warn)).to match(/Disable vagrant ssh key replacement to preserve the default key!/)
+    end
+
+    it "stays quiet when key replacement is already disabled" do
+      config[:ssh] = { insert_key: false }
+
+      driver.package(state)
+
+      expect(logged(:warn)).to be_empty
+    end
+
+    it "destroys the instance once the box has been written" do
+      commands = stub_run_command!
+
+      driver.package(state)
+
+      expect(commands.index { |c| c.start_with?("vagrant package") })
+        .to be < commands.index("vagrant destroy -f")
+    end
+
+    it "closes the transport connection before packaging" do
+      conn = instance_double(Kitchen::Transport::Dummy::Connection)
+      allow(transport).to receive(:connection).with(state).and_return(conn)
+      allow(conn).to receive(:close)
+
+      driver.package(state)
+
+      expect(conn).to have_received(:close).at_least(:once)
+    end
   end
 
-  def with_modern_vagrant
-    with_vagrant("2.4.1")
+  describe "#wsl?" do
+    it "detects WSL from WSL_DISTRO_NAME" do
+      env["WSL_DISTRO_NAME"] = "Ubuntu"
+
+      expect(driver.send(:wsl?)).to be(true)
+    end
+
+    it "detects WSL from VAGRANT_WSL_ENABLE_WINDOWS_ACCESS" do
+      env["VAGRANT_WSL_ENABLE_WINDOWS_ACCESS"] = "1"
+
+      expect(driver.send(:wsl?)).to be(true)
+    end
+
+    it "detects WSL1 from /proc/version" do
+      allow(File).to receive(:exist?).with("/proc/version").and_return(true)
+      allow(File).to receive(:read).with("/proc/version")
+        .and_return("Linux version 4.4.0-19041-Microsoft")
+
+      expect(driver.send(:wsl?)).to be(true)
+    end
+
+    it "detects WSL2 from /proc/version" do
+      allow(File).to receive(:exist?).with("/proc/version").and_return(true)
+      allow(File).to receive(:read).with("/proc/version")
+        .and_return("Linux version 5.10.16.3-microsoft-standard-WSL2")
+
+      expect(driver.send(:wsl?)).to be(true)
+    end
+
+    it "is false on a plain Linux kernel" do
+      allow(File).to receive(:exist?).with("/proc/version").and_return(true)
+      allow(File).to receive(:read).with("/proc/version")
+        .and_return("Linux version 5.4.0-42-generic")
+
+      expect(driver.send(:wsl?)).to be(false)
+    end
+
+    it "is false when /proc/version does not exist" do
+      allow(File).to receive(:exist?).with("/proc/version").and_return(false)
+
+      expect(driver.send(:wsl?)).to be(false)
+    end
+
+    it "is false rather than exploding when the probe raises" do
+      allow(File).to receive(:exist?).and_raise(StandardError)
+
+      expect(driver.send(:wsl?)).to be(false)
+    end
   end
 
-  def with_unsupported_vagrant
-    with_vagrant("1.0.5")
+  describe "#windows_to_wsl_path" do
+    it "maps C: onto /mnt/c" do
+      expect(driver.send(:windows_to_wsl_path, "C:/Users/username/.vagrant.d/key"))
+        .to eq("/mnt/c/users/username/.vagrant.d/key")
+    end
+
+    it "maps any drive letter" do
+      expect(driver.send(:windows_to_wsl_path, "D:/Projects/key")).to eq("/mnt/d/projects/key")
+    end
+
+    it "accepts a lowercase drive letter" do
+      expect(driver.send(:windows_to_wsl_path, "c:/path/to/key")).to eq("/mnt/c/path/to/key")
+    end
+
+    it "leaves a Unix path alone" do
+      path = "/home/user/.vagrant.d/insecure_private_key"
+
+      expect(driver.send(:windows_to_wsl_path, path)).to eq(path)
+    end
+
+    it "leaves a relative path alone" do
+      path = ".vagrant/machines/default/virtualbox/private_key"
+
+      expect(driver.send(:windows_to_wsl_path, path)).to eq(path)
+    end
   end
 
-  def with_vagrant(version)
-    allow(driver_object).to receive(:run_command)
-      .with("vagrant --version", any_args).and_return("Vagrant #{version}")
-  end
+  describe "#vagrant_root" do
+    it "namespaces the instance under .kitchen/kitchen-vagrant" do
+      expect(driver.send(:vagrant_root))
+        .to eq("/kroot/.kitchen/kitchen-vagrant/suitey-fooos-99")
+    end
 
-  def regexify(str, line = :whole_line)
-    r = Regexp.escape(str)
-    r = "^\s*#{r}$" if line == :whole_line
-    Regexp.new(r)
-  end
-
-  def vagrantfile
-    IO.read(File.join(vagrant_root, "Vagrantfile"))
+    it "is nil before an Instance is attached, since the name is unknown" do
+      expect(driver_with_no_instance.send(:vagrant_root)).to be_nil
+    end
   end
 end
