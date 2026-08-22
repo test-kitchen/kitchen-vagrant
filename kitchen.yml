@@ -7,7 +7,7 @@ provisioner:
   command: 'echo "Hello, World!"'
 
 verifier:
-  name: inspec
+  name: cinc_auditor
 
 platforms:
   - name: almalinux-9
