@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.3.0](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.2.1...v2.3.0) (2026-08-22)
+
+
+### Features
+
+* **tart provider:** Consolidate VM name logic and add vendor to .gitignore ([#523](https://github.com/test-kitchen/kitchen-vagrant/issues/523)) ([c1c5ccf](https://github.com/test-kitchen/kitchen-vagrant/commit/c1c5ccf36d468364bee2dfc0ede709f63182a63e))
+
 ## [2.2.1](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.2.0...v2.2.1) (2026-01-22)
 
 
