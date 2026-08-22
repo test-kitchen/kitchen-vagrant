@@ -54,6 +54,7 @@ jobs:
       - name: Verify Vagrant
         env:
           CHEF_LICENSE: accept-no-persist
+          CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
         run: |
           export PATH="$(pwd)/bin:$PATH"
           bundle exec kitchen verify ${{ matrix.os }}
