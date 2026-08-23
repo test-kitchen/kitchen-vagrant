@@ -12,7 +12,7 @@ The driver writes a self-contained `Vagrantfile` into a sandbox directory for ea
 ## Requirements
 
 - [Vagrant](https://developer.hashicorp.com/vagrant/downloads) 2.4 or later
-- A Vagrant provider, most commonly [VirtualBox](https://www.virtualbox.org/). Others such as `hyperv`, `libvirt`, `vmware_desktop`, and `parallels` work too.
+- A Vagrant provider, most commonly [VirtualBox](https://www.virtualbox.org/). Others such as `hyperv`, `libvirt`, `vmware_desktop`, and `parallels` work too. VMware needs two extra pieces — see [Using the VMware provider](#using-the-vmware-provider).
 - Ruby 3.1 or later (already satisfied if you use Cinc Workstation)
 
 ## Installation
@@ -271,6 +271,59 @@ driver:
     - test/fixtures/Vagrantfile.extra
 ```
 
+## Using the VMware provider
+
+VMware is the most practical provider on Apple Silicon Macs, where VirtualBox
+cannot run the x86 boxes most platforms publish. Unlike VirtualBox, it needs
+three pieces beyond Vagrant itself:
+
+1. **[VMware Fusion](https://www.vmware.com/products/desktop-hypervisor.html)**
+   (macOS) or **VMware Workstation** (Linux, Windows).
+2. **The Vagrant VMware Utility**, a privileged local service Vagrant talks to
+   over `https://127.0.0.1:9922`. Installing it requires `sudo`, because it
+   registers a system service.
+3. **The `vagrant-vmware-desktop` plugin**, which is what actually exposes the
+   `vmware_desktop` provider to Vagrant.
+
+On macOS:
+
+```sh
+brew install --cask vagrant vagrant-vmware-utility
+vagrant plugin install vagrant-vmware-desktop
+```
+
+On other platforms, download the utility from
+[HashiCorp](https://developer.hashicorp.com/vagrant/docs/providers/vmware/vagrant-vmware-utility)
+and then install the plugin the same way.
+
+Then select the provider, either in `kitchen.yml`:
+
+```yaml
+driver:
+  name: vagrant
+  provider: vmware_desktop
+```
+
+...or through the environment, which the driver reads as its default:
+
+```sh
+export VAGRANT_DEFAULT_PROVIDER=vmware_desktop
+```
+
+### Box architecture
+
+Vagrant Cloud boxes are published per architecture. On an Apple Silicon Mac,
+Vagrant selects `arm64` automatically, but not every box publishes an `arm64`
+build for every provider — Bento does, while many community boxes are `amd64`
+only. Use `box_arch` to ask for a specific one:
+
+```yaml
+driver:
+  name: vagrant
+  provider: vmware_desktop
+  box_arch: arm64
+```
+
 ## Troubleshooting
 
 **The box cannot be found.** The default box is derived from the platform name,
@@ -279,6 +332,16 @@ exist. Set `box`, and `box_url` if it is not on Vagrant Cloud.
 
 **The machine boots but Test Kitchen cannot connect.** Watch the boot with
 `gui: true`, and raise `boot_timeout` if it is simply slow.
+
+**VMware fails with a connection or "utility" error.** The Vagrant VMware
+Utility is a separate service from the plugin. Confirm it is installed and
+listening with `nc -z 127.0.0.1 9922`, and see
+[Using the VMware provider](#using-the-vmware-provider).
+
+**VMware reports that the box has no matching provider or architecture.** The
+box does not publish a build for your architecture — this is common for
+`arm64` on Apple Silicon. Check the box on Vagrant Cloud, and set `box_arch`
+or pick a different box.
 
 **You want to see what Vagrant is being asked to do.** Set `dry_run: true` to
 print the commands instead of running them, and look at the generated
