@@ -70,6 +70,91 @@ with a real provider, since the unit tests only assert on the rendered template.
 Run `kitchen test` against at least one Linux and, where relevant, one Windows
 platform, and check the generated Vagrantfile in the sandbox directory.
 
+The repository ships a `kitchen.yml` for exactly this. It uses the `shell`
+provisioner and the Cinc Auditor verifier, so a run exercises the driver
+without pulling in a full Chef Infra setup.
+
+The verifier lives in the `integration` bundle group, which is excluded by
+default:
+
+```sh
+bundle config set --local with integration
+bundle install
+```
+
+Cinc republishes patched InSpec gems under the same name and version as
+Chef's. Bundler treats a same-name, same-version gem as already satisfied, so
+a previously installed Chef gem is never re-downloaded even when the lockfile
+points at `rubygems.cinc.sh`. The run then fails at verify time with
+`Chef InSpec cannot execute without valid licenses`.
+
+Check the `inspec-core` gem specifically:
+
+```sh
+bundle exec ruby -e 'puts File.read(File.join(Gem.loaded_specs["inspec-core"].gem_dir, "lib/inspec/dist.rb"))[/EXEC_NAME = "(.+)"/, 1]'
+```
+
+It must print `cinc-auditor`. If it prints `inspec`, the Chef build is on
+disk; remove it and reinstall:
+
+```sh
+gem uninstall inspec inspec-core -v <version> --force
+bundle install
+```
+
+Do not check this with `require "inspec/dist"`. The `cinc-auditor-bin` gem
+ships its own `lib/inspec/dist.rb` that shadows `inspec-core`'s on the load
+path, so the required constant reports `cinc-auditor` regardless of which
+build of `inspec-core` is actually installed. The gemspec metadata is no help
+either — Cinc republishes it unchanged, so both builds report the Chef author
+and license. Only the file contents differ.
+
+### Isolating Vagrant from Bundler
+
+Vagrant ships its own embedded Ruby. Running it from inside `bundle exec`
+leaks `RUBYOPT` and `GEM_PATH` into that Ruby, which fails immediately with a
+`gem_prelude` backtrace — and because the driver shells out to `vagrant` for
+every operation, it fails on the very first call. Wrap Vagrant in a script
+that clears the environment, as CI does:
+
+```sh
+mkdir -p bin
+cat > bin/vagrant << 'EOF'
+#!/usr/bin/env bash
+env -i \
+  PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
+  HOME="$HOME" USER="$USER" LOGNAME="$LOGNAME" \
+  /usr/local/bin/vagrant "$@"
+EOF
+chmod +x bin/vagrant
+export PATH="$(pwd)/bin:$PATH"
+```
+
+Adjust the final path if Vagrant is not at `/usr/local/bin/vagrant`.
+
+### Choosing a provider
+
+CI runs VirtualBox on Linux. Locally, pick whatever provider you have and tell
+the driver about it — it reads `VAGRANT_DEFAULT_PROVIDER`:
+
+```sh
+export VAGRANT_DEFAULT_PROVIDER=vmware_desktop
+bundle exec kitchen verify almalinux-9
+```
+
+On an Apple Silicon Mac, VMware is the practical choice: VirtualBox's ARM
+build cannot run the x86 boxes most platforms publish. See
+[Using the VMware provider](README.md#using-the-vmware-provider) in the README
+for the setup, which needs a privileged utility service in addition to the
+`vagrant-vmware-desktop` plugin.
+
+Note that the `windows-11` platform in `kitchen.yml` cannot run under VMware on
+Apple Silicon — `stromweld/windows-11` publishes a `vmware_desktop` build for
+`amd64` only. Use UTM or Parallels to exercise the Windows and WinRM paths on
+that hardware.
+
+Remember to `kitchen destroy` when you are done, so stray VMs do not accumulate.
+
 ## Submitting changes
 
 1. Fork the repository.
