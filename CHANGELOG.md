@@ -6,6 +6,19 @@
 * Drop CHEF_LICENSE env vars from integration CI; add Cinc gem canary ([#534](https://github.com/test-kitchen/kitchen-vagrant/pull/534)) ([3d164d0](https://github.com/test-kitchen/kitchen-vagrant/commit/3d164d0))
 * Remove dependabot config in favor of renovate ([#535](https://github.com/test-kitchen/kitchen-vagrant/pull/535)) ([0a402cb](https://github.com/test-kitchen/kitchen-vagrant/commit/0a402cb))
 
+## [2.4.0](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.3.0...v2.4.0) (2026-08-24)
+
+
+### Features
+
+* implement the driver doctor hook ([#541](https://github.com/test-kitchen/kitchen-vagrant/issues/541)) ([ec8ad65](https://github.com/test-kitchen/kitchen-vagrant/commit/ec8ad65f97c1b0a9892100da67d161c6fbe3d975))
+* implement the driver status hook ([#540](https://github.com/test-kitchen/kitchen-vagrant/issues/540)) ([a080cf6](https://github.com/test-kitchen/kitchen-vagrant/commit/a080cf6110cfee900fb947fbdb5c83691f6e0d6d))
+
+
+### Bug Fixes
+
+* require test-kitchen 3.0 or newer ([#538](https://github.com/test-kitchen/kitchen-vagrant/issues/538)) ([206621b](https://github.com/test-kitchen/kitchen-vagrant/commit/206621bb355ca331d83834dc3d776e5709b09be8))
+
 ## [2.3.0](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.2.1...v2.3.0) (2026-08-22)
 
 ### Features
