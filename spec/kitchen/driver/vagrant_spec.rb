@@ -1166,6 +1166,86 @@ RSpec.describe Kitchen::Driver::Vagrant do
     end
   end
 
+  describe "#status" do
+    include_context "with a real kitchen root"
+
+    let(:machine_readable) do
+      "1700000000,default,metadata,provider,virtualbox\n" \
+      "1700000000,default,provider-name,virtualbox\n" \
+      "1700000000,default,state,running\n" \
+      "1700000000,default,state-human-short,running\n"
+    end
+
+    before { state[:hostname] = "hosta" }
+
+    def with_vagrantfile!
+      FileUtils.mkdir_p(vagrant_root)
+      FileUtils.touch(File.join(vagrant_root, "Vagrantfile"))
+    end
+
+    it "reports an unknown status before the instance is created" do
+      state.delete(:hostname)
+
+      expect(driver.status(state)).to include(live: nil, state: "unknown")
+    end
+
+    it "reports an unknown status when there is no Vagrantfile to ask about" do
+      expect(driver.status(state)).to include(state: "unknown")
+    end
+
+    it "reports a running machine as live" do
+      with_vagrantfile!
+      stub_run_command!(/status --machine-readable/ => machine_readable)
+
+      expect(driver.status(state)).to include(
+        live: true, state: "running", source: "driver",
+        resource_id: "suitey-fooos-99"
+      )
+    end
+
+    it "stamps when the check happened" do
+      with_vagrantfile!
+      stub_run_command!(/status --machine-readable/ => machine_readable)
+
+      expect(driver.status(state)[:checked_at]).to match(/\A\d{4}-\d{2}-\d{2}T/)
+    end
+
+    it "reports a halted machine as not live" do
+      with_vagrantfile!
+      stub_run_command!(
+        /status --machine-readable/ => "1700000000,default,state,poweroff\n"
+      )
+
+      expect(driver.status(state)).to include(live: false, state: "poweroff")
+    end
+
+    it "reports a destroyed machine as not_created rather than guessing" do
+      with_vagrantfile!
+      stub_run_command!(
+        /status --machine-readable/ => "1700000000,default,state,not_created\n"
+      )
+
+      expect(driver.status(state)).to include(live: false, state: "not_created")
+    end
+
+    it "reports an unknown status when the output carries no state row" do
+      with_vagrantfile!
+      stub_run_command!(
+        /status --machine-readable/ => "1700000000,default,provider-name,virtualbox\n"
+      )
+
+      expect(driver.status(state)).to include(state: "unknown")
+    end
+
+    it "reports an unknown status when vagrant fails, and says why in debug" do
+      with_vagrantfile!
+      allow(driver).to receive(:run_command).and_raise(Kitchen::ShellOut::ShellCommandFailed.new("boom"))
+
+      expect(driver.status(state)).to include(state: "unknown")
+      expect(logged(:debug)).to match(/Could not read the Vagrant machine state/)
+    end
+  end
+
   describe "#package" do
     include_context "with a real kitchen root"
 

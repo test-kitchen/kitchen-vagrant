@@ -18,6 +18,13 @@
 require "erb" unless defined?(Erb)
 require "fileutils" unless defined?(FileUtils)
 require "rubygems/version"
+# :nocov:
+# Chefstyle's Chef/Ruby/UnlessDefinedRequire wants this guard, but the guard's
+# other branch is unreachable: kitchen has already loaded "time" by here. The
+# repo enforces a branch-coverage floor, so exclude the line rather than let
+# the two rules fight.
+require "time" unless defined?(Time.now.iso8601)
+# :nocov:
 
 require "kitchen"
 require_relative "vagrant_version"
@@ -31,6 +38,10 @@ module Kitchen
     #
     # @author Fletcher Nichol <fnichol@nichol.ca>
     class Vagrant < Kitchen::Driver::Base
+      # Machine states Vagrant reports for a box that is up and reachable.
+      #
+      # @return [Array<String>]
+      LIVE_STATES = %w{running}.freeze
 
       include ShellOut
       include Kitchen::Driver::HypervHelpers
@@ -186,6 +197,27 @@ module Kitchen
         box_name = File.join(Dir.pwd, instance.name + ".box")
         run("#{config[:vagrant_binary]} package --output #{box_name}")
         destroy(state)
+      end
+
+      # Reports what Vagrant currently thinks of the machine.
+      #
+      # @param state [Hash] instance state naming the machine
+      # @return [Hash] a Test Kitchen status hash, or the base implementation's
+      #   answer when there is nothing to ask Vagrant about
+      def status(state)
+        return super unless state[:hostname]
+
+        machine_state = vagrant_machine_state
+        return super unless machine_state
+
+        {
+          live: LIVE_STATES.include?(machine_state),
+          state: machine_state,
+          source: "driver",
+          resource_id: instance.name,
+          message: "Vagrant reports the machine as #{machine_state}",
+          checked_at: Time.now.utc.iso8601,
+        }
       end
 
       # A lifecycle method that should be invoked when the object is about
@@ -501,6 +533,40 @@ module Kitchen
         else
           raise ActionFailed, "Could not find Vagrantfile template #{template}"
         end
+      end
+
+      # Asks Vagrant for the machine state.
+      #
+      # `--machine-readable` is parsed rather than the human output because the
+      # human wording is localised and reworded between Vagrant releases, while
+      # the machine format is a stable comma-separated
+      # `timestamp,target,type,data` and the `state` row carries the raw value
+      # (`running`, `poweroff`, `not_created`, ...).
+      #
+      # @return [String, nil] the machine state, or nil when there is no
+      #   Vagrantfile to ask about, the command fails, or no state row is found
+      # @api private
+      def vagrant_machine_state
+        return nil unless File.exist?(File.join(vagrant_root, "Vagrantfile"))
+
+        output = run("#{config[:vagrant_binary]} status --machine-readable")
+        parse_machine_state(output)
+      rescue ::StandardError => e
+        debug("Could not read the Vagrant machine state: #{e.message}")
+        nil
+      end
+
+      # Pulls the `state` row out of Vagrant's machine-readable output.
+      #
+      # @param output [String] the raw `--machine-readable` output
+      # @return [String, nil] the state value, or nil when no state row is present
+      # @api private
+      def parse_machine_state(output)
+        output.to_s.each_line do |line|
+          fields = line.strip.split(",")
+          return fields[3] if fields[2] == "state" && fields[3]
+        end
+        nil
       end
 
       # Convenience method to run a command locally.
