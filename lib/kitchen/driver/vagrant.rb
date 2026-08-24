@@ -257,6 +257,23 @@ module Kitchen
         end
       end
 
+      # Checks the host-side things a Vagrant run needs, reporting rather than
+      # raising so `kitchen doctor` can list every problem at once.
+      #
+      # {#verify_dependencies} already raises on an old or absent Vagrant, but
+      # it only runs on the actions that need it. This repeats the version rule
+      # as a report and adds the file and folder checks that nothing validates
+      # today.
+      #
+      # @param state [Hash] mutable instance and driver state
+      # @return [Boolean] true when a problem was reported
+      def doctor(state) # rubocop:disable Lint/UnusedMethodArgument
+        problems = vagrant_problems + template_problems + synced_folder_problems
+
+        problems.each { |problem| warn(problem) }
+        !problems.empty?
+      end
+
       # @return [TrueClass,FalseClass] whether or not the transport's name
       #   implies a WinRM-based transport
       # @api private
@@ -567,6 +584,56 @@ module Kitchen
           return fields[3] if fields[2] == "state" && fields[3]
         end
         nil
+      end
+
+      # Vagrant itself: present, and new enough.
+      #
+      # @return [Array<String>] a problem, or an empty array
+      def vagrant_problems
+        found = vagrant_version
+        if Gem::Version.new(found) < Gem::Version.new(MIN_VER.dup)
+          return ["Vagrant #{found} is older than the #{MIN_VER} this driver " \
+                  "needs. Upgrade from #{WEBSITE}."]
+        end
+
+        info("vagrant #{found} found at #{config[:vagrant_binary]}")
+        []
+      rescue UserError => e
+        [e.message]
+      rescue ::StandardError => e
+        ["Could not run #{config[:vagrant_binary]} --version: #{e.message}"]
+      end
+
+      # The Vagrantfile template, and any extra Vagrantfiles spliced into it.
+      # Both are `expand_path_for` settings, so a wrong relative path becomes
+      # an absolute path that simply is not there.
+      #
+      # @return [Array<String>] one problem per missing file
+      def template_problems
+        problems = []
+
+        unless File.exist?(config[:vagrantfile_erb].to_s)
+          problems << "vagrantfile_erb #{config[:vagrantfile_erb]} does not exist."
+        end
+
+        Array(config[:vagrantfiles]).each do |path|
+          problems << "vagrantfiles entry #{path} does not exist." unless File.exist?(path.to_s)
+        end
+
+        problems
+      end
+
+      # Host paths in `synced_folders`. Vagrant creates a missing host path
+      # silently for some providers and fails for others, so an absent source
+      # is worth naming either way.
+      #
+      # @return [Array<String>] one problem per missing host path
+      def synced_folder_problems
+        Array(config[:synced_folders]).filter_map do |source, destination, _options|
+          next if source.nil? || File.exist?(source.to_s)
+
+          "synced_folders source #{source} (mounted at #{destination}) does not exist."
+        end
       end
 
       # Convenience method to run a command locally.
