@@ -1246,6 +1246,115 @@ RSpec.describe Kitchen::Driver::Vagrant do
     end
   end
 
+  describe "#doctor" do
+    include_context "with a real kitchen root"
+
+    # doctor reports through warn; collect the messages so the assertions are
+    # about what it found rather than how it was printed. Referencing `driver`
+    # is what installs the context's modern-vagrant stub.
+    def doctor_messages
+      messages = []
+      allow(driver).to receive(:warn) { |m| messages << m }
+      [driver.doctor({}), messages]
+    end
+
+    it "passes on a workable host" do
+      found, messages = doctor_messages
+
+      expect(found).to be(false)
+      expect(messages).to be_empty
+    end
+
+    it "says which vagrant it found, so a pass is informative" do
+      driver.doctor({})
+
+      expect(logged(:info)).to match(/vagrant 2\.4\.1 found at vagrant/)
+    end
+
+    it "reports a vagrant older than the driver needs" do
+      # Building `driver` is what stubs a modern vagrant and caches the version
+      # on the class, so an old version has to be installed after that, with the
+      # cache cleared, or the context's stub wins.
+      driver
+      Kitchen::Driver::Vagrant.send(:vagrant_version=, nil)
+      with_unsupported_vagrant
+
+      found, messages = doctor_messages
+
+      expect(found).to be(true)
+      expect(messages.join("\n")).to match(/older than the 2\.4\.0 this driver needs/)
+    end
+
+    it "reports a vagrant that is not installed" do
+      allow(driver).to receive(:vagrant_version)
+        .and_raise(Kitchen::UserError.new("Vagrant 2.4.0 or higher is not installed."))
+
+      found, messages = doctor_messages
+
+      expect(found).to be(true)
+      expect(messages.join("\n")).to match(/is not installed/)
+    end
+
+    it "reports a vagrant invocation that fails for any other reason" do
+      allow(driver).to receive(:vagrant_version)
+        .and_raise(StandardError.new("permission denied"))
+
+      found, messages = doctor_messages
+
+      expect(found).to be(true)
+      expect(messages.join("\n"))
+        .to match(/Could not run vagrant --version: permission denied/)
+    end
+
+    it "accepts vagrantfiles entries that are there" do
+      extra = File.join(kitchen_root, "extra.rb")
+      FileUtils.touch(extra)
+      config[:vagrantfiles] = [extra]
+
+      found, messages = doctor_messages
+
+      expect(found).to be(false)
+      expect(messages).to be_empty
+    end
+
+    it "reports a vagrantfile_erb template that is not there" do
+      config[:vagrantfile_erb] = "/nope/Vagrantfile.erb"
+
+      found, messages = doctor_messages
+
+      expect(found).to be(true)
+      expect(messages.join("\n")).to match(/vagrantfile_erb .*Vagrantfile.erb does not exist/)
+    end
+
+    it "reports an extra vagrantfiles entry that is not there" do
+      config[:vagrantfiles] = ["/nope/extra.rb"]
+
+      found, messages = doctor_messages
+
+      expect(found).to be(true)
+      expect(messages.join("\n")).to match(/vagrantfiles entry .*extra.rb does not exist/)
+    end
+
+    it "reports a synced_folders source that is not there" do
+      config[:synced_folders] = [["/nope/src", "/vagrant/dst"]]
+
+      found, messages = doctor_messages
+
+      expect(found).to be(true)
+      expect(messages.join("\n"))
+        .to match(/synced_folders source .*src \(mounted at .*dst\) does not exist/)
+    end
+
+    it "accepts a synced_folders source that exists" do
+      config[:synced_folders] = [[kitchen_root, "/vagrant/dst"]]
+
+      found, messages = doctor_messages
+
+      expect(found).to be(false)
+      expect(messages).to be_empty
+    end
+  end
+
   describe "#package" do
     include_context "with a real kitchen root"
 
