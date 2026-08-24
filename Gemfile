@@ -18,10 +18,6 @@ group :integration do
   gem "kitchen-cinc-auditor", git: "https://github.com/test-kitchen/kitchen-cinc-auditor.git"
 end
 
-group :debug do
-  gem "pry"
-end
-
 group :cookstyle do
   gem "cookstyle"
 end
