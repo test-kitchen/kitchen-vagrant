@@ -20,5 +20,5 @@ Gem::Specification.new do |gem|
   # base64 stopped being a default gem in Ruby 3.4, so it has to be declared
   # explicitly -- HypervHelpers#encode_command depends on it.
   gem.add_dependency "base64", "~> 0.2"
-  gem.add_dependency "test-kitchen", ">= 1.4", "< 5"
+  gem.add_dependency "test-kitchen", ">= 3.0", "< 5"
 end
