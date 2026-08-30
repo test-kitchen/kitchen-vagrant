@@ -115,6 +115,38 @@ RSpec.describe Kitchen::Driver::Vagrant do
       expect(driver[:provider]).to eq("mything")
     end
 
+    it "defaults :kitchen_cache_directory under the user's home" do
+      expect(driver[:kitchen_cache_directory])
+        .to eq(File.expand_path("~/.kitchen/cache"))
+    end
+
+    it "honours VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH from the environment" do
+      env["VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH"] = "/mnt/c/Users/bob"
+
+      expect(driver[:kitchen_cache_directory])
+        .to eq("/mnt/c/Users/bob/.kitchen/cache")
+    end
+
+    it "reads the WSL home per instance, not once when the driver was loaded" do
+      env["VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH"] = "/mnt/c/Users/bob"
+      expect(driver[:kitchen_cache_directory])
+        .to eq("/mnt/c/Users/bob/.kitchen/cache")
+
+      env["VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH"] = "/mnt/c/Users/alice"
+      second = Kitchen::Driver::Vagrant.new({ kitchen_root: "/kroot" })
+      second.finalize_config!(instance)
+
+      expect(second[:kitchen_cache_directory])
+        .to eq("/mnt/c/Users/alice/.kitchen/cache")
+    end
+
+    it "lets an explicit :kitchen_cache_directory beat the environment" do
+      env["VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH"] = "/mnt/c/Users/bob"
+      config[:kitchen_cache_directory] = "/somewhere/else"
+
+      expect(driver[:kitchen_cache_directory]).to eq("/somewhere/else")
+    end
+
     it "ships a Vagrantfile template" do
       expect(driver[:vagrantfile_erb]).to match(%r{/templates/Vagrantfile\.erb$})
       expect(File).to exist(driver[:vagrantfile_erb])
