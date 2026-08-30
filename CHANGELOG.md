@@ -6,6 +6,14 @@
 * Drop CHEF_LICENSE env vars from integration CI; add Cinc gem canary ([#534](https://github.com/test-kitchen/kitchen-vagrant/pull/534)) ([3d164d0](https://github.com/test-kitchen/kitchen-vagrant/commit/3d164d0))
 * Remove dependabot config in favor of renovate ([#535](https://github.com/test-kitchen/kitchen-vagrant/pull/535)) ([0a402cb](https://github.com/test-kitchen/kitchen-vagrant/commit/0a402cb))
 
+## [2.4.1](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.4.0...v2.4.1) (2026-08-30)
+
+
+### Bug Fixes
+
+* avoid colliding libvirt domain names across concurrent runs ([#547](https://github.com/test-kitchen/kitchen-vagrant/issues/547)) ([14af4bb](https://github.com/test-kitchen/kitchen-vagrant/commit/14af4bbdab0764e2e30922cf0f81e8317c24154b))
+* read the WSL home path when the instance needs it, not at load time ([#544](https://github.com/test-kitchen/kitchen-vagrant/issues/544)) ([9ac3ee9](https://github.com/test-kitchen/kitchen-vagrant/commit/9ac3ee95690e6ab76a483f4cb8f021a2d7c8ba73))
+
 ## [2.4.0](https://github.com/test-kitchen/kitchen-vagrant/compare/v2.3.0...v2.4.0) (2026-08-24)
 
 
