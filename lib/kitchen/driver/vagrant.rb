@@ -112,11 +112,17 @@ module Kitchen
         driver.windows_os? ? "/omnibus/cache" : "/tmp/omnibus/cache"
       end
 
-      # for use with vagrant on WSL
-      user_home = ENV["VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH"].nil? ? "~" : ENV["VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH"]
-
-      default_config :kitchen_cache_directory,
+      # Resolved per instance rather than when this file is loaded, so that
+      # `VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH` is read at the moment the
+      # driver needs it -- the same way `:provider` reads
+      # `VAGRANT_DEFAULT_PROVIDER`. Reading it eagerly froze one value into the
+      # class for the life of the process, which is wrong for anything that
+      # sets the variable after the driver has been required, and made the
+      # setting impossible to exercise.
+      default_config(:kitchen_cache_directory) do |_|
+        user_home = ENV["VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH"] || "~"
         File.expand_path("#{user_home}/.kitchen/cache")
+      end
 
       default_config :cachier, nil
 
