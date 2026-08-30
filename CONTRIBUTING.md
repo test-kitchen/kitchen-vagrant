@@ -45,10 +45,6 @@ Many style offenses can be corrected automatically:
 bundle exec cookstyle -a
 ```
 
-The unit suite enforces **100% line coverage** of `lib/` via SimpleCov, and an
-HTML report is written to `coverage/` on every run. A change that adds code
-without adding tests will fail the build on coverage alone.
-
 The unit tests do not invoke Vagrant, so they run without VirtualBox or any
 other provider installed.
 
@@ -159,8 +155,7 @@ Remember to `kitchen destroy` when you are done, so stray VMs do not accumulate.
 
 1. Fork the repository.
 2. Create a feature branch off `main`.
-3. Make your change, adding or updating tests to cover it — the suite requires
-   100% line coverage.
+3. Make your change, adding or updating tests to cover it.
 4. Make sure `bundle exec rake` passes.
 5. Push the branch to your fork and open a pull request.
 
