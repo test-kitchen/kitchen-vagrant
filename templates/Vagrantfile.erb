@@ -99,6 +99,8 @@ Vagrant.configure("2") do |c|
     p.name = "kitchen-<%= File.basename(config[:kitchen_root]) %>-<%= instance.name %>-<%= SecureRandom.uuid %>"
 <% when "tart" %>
     p.name = "kitchen-<%= File.basename(config[:kitchen_root]) %>-<%= instance.name %>"
+<% when "libvirt" %>
+    p.default_prefix = "<%="kitchen-#{File.basename(config[:kitchen_root])}-#{instance.name}-#{SecureRandom.uuid}"[0..99].chomp("-") %>"
 <% end %>
 
 <% case config[:provider]
