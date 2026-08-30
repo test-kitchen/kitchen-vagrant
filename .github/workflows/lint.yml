@@ -11,11 +11,12 @@ jobs:
   integration:
     runs-on: ubuntu-latest
     needs: lint-unit
-    name: Kitchen Verify
+    name: Kitchen Test ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         ruby: ["3.4"]
-        os: ["almalinux-9"]
+        os: ["almalinux-9", "ubuntu-2404"]
 
     steps:
       - name: Install VirtualBox
@@ -56,7 +57,20 @@ jobs:
         # Chef's, so a stale bundler cache can leave Chef's licensed gems on disk
         # even when the lockfile points at rubygems.cinc.sh. Fail loudly if so.
         run: bundle exec ruby -e 'require "inspec/dist"; abort "Chef InSpec gems loaded instead of Cinc - clear the bundler cache" if Inspec::Dist::EXEC_NAME == "inspec"'
-      - name: Verify Vagrant
+      - name: Kitchen Doctor
         run: |
           export PATH="$(pwd)/bin:$PATH"
-          bundle exec kitchen verify ${{ matrix.os }}
+          bundle exec kitchen doctor ${{ matrix.os }}
+      - name: Kitchen Test
+        # `test` rather than `verify`, so that destroy runs too. `verify`
+        # leaves the machine up and the driver's destroy path -- `vagrant
+        # destroy -f` and the removal of the instance sandbox -- is never
+        # exercised against a real Vagrant.
+        run: |
+          export PATH="$(pwd)/bin:$PATH"
+          bundle exec kitchen test ${{ matrix.os }}
+      - name: Confirm the instance was destroyed
+        run: |
+          export PATH="$(pwd)/bin:$PATH"
+          bundle exec kitchen list ${{ matrix.os }}
+          test ! -d ".kitchen/kitchen-vagrant/default-${{ matrix.os }}"
