@@ -127,7 +127,7 @@ module Kitchen
       # @param cmd [String] command to run locally
       # @param options [Hash] options hash
       # @return [Hash,nil] the parsed JSON the script emitted, if any
-      # @see Kitchen::ShellOut.run_command
+      # @see Kitchen::ShellOut#run_command
       # @api private
       def run_ps(cmd, options = {})
         cmd = "echo #{cmd}" if config[:dry_run]
