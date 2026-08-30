@@ -6,7 +6,6 @@
 Gemfile.lock
 InstalledFiles
 _yardoc
-coverage
 doc/
 lib/bundler/man
 pkg
@@ -17,4 +16,3 @@ test/version_tmp
 tmp
 vendor
 spec/examples.txt
-coverage/

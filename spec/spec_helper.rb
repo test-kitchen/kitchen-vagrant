@@ -15,27 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "simplecov"
-require "simplecov-lcov"
-
-SimpleCov::Formatter::LcovFormatter.config do |c|
-  c.report_with_single_file = true
-  c.single_report_path = "coverage/lcov.info"
-end
-
-SimpleCov.start do
-  add_filter %r{^/spec/}
-  add_group "Driver", "lib/kitchen/driver"
-  enable_coverage :branch
-  minimum_coverage line: 100, branch: 95
-  formatter SimpleCov::Formatter::MultiFormatter.new(
-    [
-      SimpleCov::Formatter::HTMLFormatter,
-      SimpleCov::Formatter::LcovFormatter,
-    ]
-  )
-end
-
 require "logger" unless defined?(Logger)
 require "stringio" unless defined?(StringIO)
 require "securerandom" unless defined?(SecureRandom)

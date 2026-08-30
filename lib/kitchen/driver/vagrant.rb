@@ -18,13 +18,9 @@
 require "erb" unless defined?(Erb)
 require "fileutils" unless defined?(FileUtils)
 require "rubygems/version"
-# :nocov:
-# Chefstyle's Chef/Ruby/UnlessDefinedRequire wants this guard, but the guard's
-# other branch is unreachable: kitchen has already loaded "time" by here. The
-# repo enforces a branch-coverage floor, so exclude the line rather than let
-# the two rules fight.
+# Chefstyle's Chef/Ruby/UnlessDefinedRequire wants this guard, even though the
+# guard's other branch is unreachable: kitchen has already loaded "time" by here.
 require "time" unless defined?(Time.now.iso8601)
-# :nocov:
 
 require "kitchen"
 require_relative "vagrant_version"
