@@ -131,6 +131,7 @@ module Kitchen
       # Creates a Vagrant VM instance.
       #
       # @param state [Hash] mutable instance state
+      # @return [void]
       # @raise [ActionFailed] if the action could not be completed
       def create(state)
         create_vagrantfile
@@ -171,6 +172,7 @@ module Kitchen
       # Destroys an instance.
       #
       # @param state [Hash] mutable instance state
+      # @return [void]
       # @raise [ActionFailed] if the action could not be completed
       def destroy(state)
         return if state[:hostname].nil?
@@ -188,6 +190,7 @@ module Kitchen
       # current working directory, then destroys the instance.
       #
       # @param state [Hash] mutable instance state
+      # @return [void]
       # @raise [UserError] if the instance has not been created
       # @raise [ActionFailed] if the action could not be completed
       def package(state)
@@ -252,6 +255,7 @@ module Kitchen
       # checking for the presence of certain directories, software installed,
       # etc.
       #
+      # @return [void]
       # @raise [UserError] if the driver will not be able to perform or if a
       #   documented dependency is missing from the system
       def verify_dependencies
@@ -309,9 +313,20 @@ module Kitchen
       MIN_VER = "2.4.0".freeze
 
       class << self
-        # @return [String] the version of Vagrant installed on the workstation
+        # Memoises `vagrant --version` for the life of the process, so that
+        # every instance in a multi-instance run shells out at most once.
+        #
+        # @return [String,nil] the version of Vagrant installed on the
+        #   workstation, or nil before anything has looked it up
         # @api private
         attr_accessor :vagrant_version
+
+        # @!method self.vagrant_version=(value)
+        #   Records the version of Vagrant found on the workstation.
+        #
+        #   @param value [String] the version string to memoise
+        #   @return [String] the version string just stored
+        #   @api private
       end
 
       # Returns whether or not a platform name could have a corresponding Bento
@@ -431,6 +446,7 @@ module Kitchen
 
       # Replaces any `{{vagrant_root}}` tokens in the pre create command.
       #
+      # @return [void]
       # @api private
       def finalize_pre_create_command!
         return if config[:pre_create_command].nil?
@@ -642,11 +658,14 @@ module Kitchen
         end
       end
 
-      # Convenience method to run a command locally.
+      # Convenience method to run a command locally, from {#vagrant_root}.
       #
       # @param cmd [String] command to run locally
       # @param options [Hash] options hash
-      # @see Kitchen::ShellOut.run_command
+      # @return [String] the standard output of the command
+      # @raise [Kitchen::ShellOut::ShellCommandFailed] if the command exits
+      #   non-zero
+      # @see Kitchen::ShellOut#run_command
       # @api private
       def run(cmd, options = {})
         cmd = "echo #{cmd}" if config[:dry_run]
@@ -668,6 +687,8 @@ module Kitchen
       # @param cmd [String] command to run locally
       # @param options [Hash] options hash
       # @return [String] the standard output of the command
+      # @raise [Kitchen::ShellOut::ShellCommandFailed] if the command exits
+      #   non-zero
       # @see Kitchen::ShellOut#run_command
       # rubocop:disable Metrics/CyclomaticComplexity
       def run_command(cmd, options = {})
@@ -891,7 +912,12 @@ module Kitchen
         state[:rdp_port] = hash["RDPPort"] if hash["RDPPort"]
       end
 
-      # @return [String] full absolute path to the kitchen cache directory
+      # The *host* side of the omnibus package cache: the directory that
+      # {#add_extra_synced_folders!} shares into the guest, where it is
+      # mounted at {#cache_directory}.
+      #
+      # @return [String] full absolute path, on the host, to the kitchen
+      #   cache directory
       # @api private
       def local_kitchen_cache
         @local_kitchen_cache ||= config[:kitchen_cache_directory]
@@ -928,9 +954,15 @@ module Kitchen
         false
       end
 
-      # Converts a Windows path to a WSL path
-      # @param path [String] Windows path (e.g., "C:/Users/...")
-      # @return [String] WSL path (e.g., "/mnt/c/users/...")
+      # Converts a Windows path to a WSL path.
+      #
+      # Anything that does not look like a drive-lettered Windows path is
+      # returned untouched. Note that the conversion downcases the whole
+      # path, not just the drive letter, so a path whose remainder is
+      # case-sensitive does not survive it.
+      #
+      # @param path [String] Windows path (e.g., `"C:/Users/..."`)
+      # @return [String] WSL path (e.g., `"/mnt/c/users/..."`)
       # @api private
       def windows_to_wsl_path(path)
         # Only convert if it looks like a Windows path

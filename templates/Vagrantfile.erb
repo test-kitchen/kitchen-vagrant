@@ -257,7 +257,9 @@ Vagrant.configure("2") do |c|
   end
 
 <% if config[:env] && !config[:env].empty? %>
-  # Set environment variables
+  # Environment variables for the *guest*, not for the host's Vagrant
+  # process: each entry becomes an export line in /etc/profile.d/kitchen.sh,
+  # so it applies to logins on Linux guests only.
   <% config[:env].each do |env_var| %>
   c.vm.provision "shell", inline: <<-SHELL
     echo 'export <%= env_var.gsub("'", "'\\\\''") %>' >> /etc/profile.d/kitchen.sh
