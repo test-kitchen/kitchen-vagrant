@@ -661,6 +661,38 @@ RSpec.describe "the rendered Vagrantfile" do
     describe "libvirt" do
       before { config[:provider] = "libvirt" }
 
+      # vagrant-libvirt derives the domain name from default_prefix, which
+      # defaults to the basename of the working directory. Every kitchen
+      # instance sits under a directory named for the instance, so two
+      # developers running the same suite against one shared libvirtd end up
+      # asking for the same domain name and the second one fails.
+      it "gives the domain a prefix built from the kitchen root and instance name" do
+        expect(vagrantfile).to match(
+          /p\.default_prefix = "kitchen-#{Regexp.escape(kitchen_root_name)}-suitey-fooos-99-\h{8}-\h{4}-\h{4}-\h{4}-\h{12}"/
+        )
+      end
+
+      it "gives two renders different prefixes so concurrent runs cannot collide" do
+        first = vagrantfile[/p\.default_prefix = "([^"]*)"/, 1]
+        second = driver.send(:render_template)[/p\.default_prefix = "([^"]*)"/, 1]
+
+        expect(first).not_to eq(second)
+      end
+
+      it "keeps the prefix within 100 characters" do
+        config[:kitchen_root] = "/#{"x" * 120}"
+
+        expect(vagrantfile[/p\.default_prefix = "([^"]*)"/, 1].length).to be <= 100
+      end
+
+      it "does not leave a trailing hyphen when the prefix is truncated" do
+        config[:kitchen_root] = "/#{"x" * 120}"
+        prefix = vagrantfile[/p\.default_prefix = "([^"]*)"/, 1]
+
+        expect(prefix).not_to be_nil
+        expect(prefix).not_to end_with("-")
+      end
+
       it "quotes strings and leaves numbers bare" do
         config[:customize] = { a_key: "some value", something: "else", a_number_key: 1024 }
 
